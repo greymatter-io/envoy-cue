@@ -5,6 +5,7 @@ import (
 )
 
 // gRPC statistics filter configuration
+// [#next-free-field: 6]
 #FilterConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.grpc_stats.v3.FilterConfig"
 	// If true, the filter maintains a filter state object with the request and response message
@@ -38,6 +39,14 @@ import (
 	// <envoy_v3_api_field_extensions.filters.http.grpc_stats.v3.FilterConfig.individual_method_stats_allowlist>` the same way
 	// request_message_count and response_message_count works.
 	enable_upstream_stats?: bool
+	// If true, the filter will replace dots in the grpc_service_name with underscores before emitting
+	// the metrics. Only works when :ref:`stats_for_all_methods
+	// <envoy_v3_api_field_extensions.filters.http.grpc_stats.v3.FilterConfig.stats_for_all_methods>`
+	// is set to true. It could cause metrics to be merged if the edited service name conflicts with
+	// an existing service. For example there are both service "foo.bar" & "foo_bar" running.
+	// This config can fix incorrect gRPC metrics with dots because the existing stats tag extractor
+	// assumes no dots in the gRPC service name. By default this is set as false.
+	replace_dots_in_grpc_service_name?: bool
 }
 
 // gRPC statistics filter state object in protobuf form.
