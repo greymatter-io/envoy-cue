@@ -10,7 +10,7 @@ RingHash_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 // This configuration allows the built-in RING_HASH LB policy to be configured via the LB policy
 // extension point. See the :ref:`load balancing architecture overview
 // <arch_overview_load_balancing_types>` for more information.
-// [#extension: envoy.clusters.lb_policy]
+// [#extension: envoy.load_balancing_policies]
 // [#next-free-field: 6]
 #RingHash: {
 	"@type": "type.googleapis.com/envoy.extensions.load_balancing_policies.ring_hash.v3.RingHash"

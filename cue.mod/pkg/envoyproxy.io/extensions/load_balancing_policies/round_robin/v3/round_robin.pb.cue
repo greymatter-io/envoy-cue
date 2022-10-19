@@ -7,7 +7,7 @@ import (
 // This configuration allows the built-in ROUND_ROBIN LB policy to be configured via the LB policy
 // extension point. See the :ref:`load balancing architecture overview
 // <arch_overview_load_balancing_types>` for more information.
-// [#extension: envoy.clusters.lb_policy]
+// [#extension: envoy.load_balancing_policies]
 #RoundRobin: {
 	"@type": "type.googleapis.com/envoy.extensions.load_balancing_policies.round_robin.v3.RoundRobin"
 	// Configuration for slow start mode.

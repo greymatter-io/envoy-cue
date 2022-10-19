@@ -8,7 +8,7 @@ import (
 // This configuration allows the built-in LEAST_REQUEST LB policy to be configured via the LB policy
 // extension point. See the :ref:`load balancing architecture overview
 // <arch_overview_load_balancing_types>` for more information.
-// [#extension: envoy.clusters.lb_policy]
+// [#extension: envoy.load_balancing_policies]
 #LeastRequest: {
 	"@type": "type.googleapis.com/envoy.extensions.load_balancing_policies.least_request.v3.LeastRequest"
 	// The number of random healthy hosts from which the host with the fewest active requests will
