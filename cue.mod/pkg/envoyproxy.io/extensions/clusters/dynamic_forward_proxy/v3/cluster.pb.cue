@@ -17,7 +17,6 @@ import (
 	// in the :ref:`cluster's upstream_http_protocol_options
 	// <envoy_v3_api_field_config.cluster.v3.Cluster.upstream_http_protocol_options>`
 	allow_insecure_cluster_options?: bool
-	// [#not-implemented-hide:]
 	// If true allow HTTP/2 and HTTP/3 connections to be reused for requests to different
 	// origins than the connection was initially created for. This will only happen when the
 	// resolved address for the new connection matches the peer address of the connection and
@@ -30,7 +29,6 @@ import (
 	//   By design, this feature will maximize reuse of connections. This means that instead
 	//   opening a new connection when an existing connection reaches the maximum number of
 	//   concurrent streams, requests will instead be sent to the existing connection.
-	//   TODO(alyssawilk) implement request queueing in connections.
 	//
 	// .. note::
 	//   The coalesced connections might be to upstreams that would not be otherwise

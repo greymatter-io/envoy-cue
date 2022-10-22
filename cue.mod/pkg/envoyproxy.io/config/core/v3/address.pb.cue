@@ -82,7 +82,6 @@ SocketAddress_Protocol_UDP: "UDP"
 	"@type": "type.googleapis.com/envoy.config.core.v3.ExtraSourceAddress"
 	// The additional address to bind.
 	address?: #SocketAddress
-	// [#not-implemented-hide:]
 	// Additional socket options that may not be present in Envoy source code or
 	// precompiled binaries. If specified, this will override the
 	// :ref:`socket_options <envoy_v3_api_field_config.core.v3.BindConfig.socket_options>`

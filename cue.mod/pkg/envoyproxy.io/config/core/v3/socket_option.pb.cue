@@ -47,7 +47,6 @@ SocketOption_SocketState_STATE_LISTENING: "STATE_LISTENING"
 	state?: #SocketOption_SocketState
 }
 
-// [#not-implemented-hide:]
 #SocketOptionsOverride: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.SocketOptionsOverride"
 	socket_options?: [...#SocketOption]

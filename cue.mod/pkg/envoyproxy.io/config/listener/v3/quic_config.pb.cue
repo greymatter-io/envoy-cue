@@ -5,7 +5,7 @@ import (
 )
 
 // Configuration specific to the UDP QUIC listener.
-// [#next-free-field: 8]
+// [#next-free-field: 9]
 #QuicProtocolOptions: {
 	"@type":                "type.googleapis.com/envoy.config.listener.v3.QuicProtocolOptions"
 	quic_protocol_options?: v3.#QuicProtocolOptions
@@ -37,4 +37,8 @@ import (
 	// If not specified the :ref:`default one configured by <envoy_v3_api_msg_extensions.quic.proof_source.v3.ProofSourceConfig>` will be used.
 	// [#extension-category: envoy.quic.proof_source]
 	proof_source_config?: v3.#TypedExtensionConfig
+	// Config which implementation of ``quic::ConnectionIdGeneratorInterface`` to be used for this listener.
+	// If not specified the :ref:`default one configured by <envoy_v3_api_msg_extensions.quic.connection_id_generator.v3.DeterministicConnectionIdGeneratorConfig>` will be used.
+	// [#extension-category: envoy.quic.connection_id_generator]
+	connection_id_generator_config?: v3.#TypedExtensionConfig
 }
