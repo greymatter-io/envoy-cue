@@ -164,7 +164,7 @@ import (
 	"@type": "type.googleapis.com/envoy.config.core.v3.GrpcService_GoogleGrpc_CallCredentials_StsService"
 	// URI of the token exchange service that handles token exchange requests.
 	// [#comment:TODO(asraa): Add URI validation when implemented. Tracked by
-	// https://github.com/envoyproxy/protoc-gen-validate/issues/303]
+	// https://github.com/bufbuild/protoc-gen-validate/issues/303]
 	token_exchange_service_uri?: string
 	// Location of the target service or resource where the client
 	// intends to use the requested security token.
