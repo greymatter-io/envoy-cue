@@ -161,7 +161,7 @@ import (
 	// response headers that have a correspondent match will be added to the original client request.
 	// Note that coexistent headers will be overridden.
 	allowed_upstream_headers?: matcher.#ListStringMatcher
-	// When this :ref:`list <envoy_api_msg_type.matcher.ListStringMatcher>`. is set, authorization
+	// When this :ref:`list <envoy_api_msg_type.matcher.ListStringMatcher>` is set, authorization
 	// response headers that have a correspondent match will be added to the client's response. Note
 	// that when this list is *not* set, all the authorization response headers, except *Authority
 	// (Host)* will be in the response to the client. When a header is included in this list, *Path*,
