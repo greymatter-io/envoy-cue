@@ -747,6 +747,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 // Specific configuration for the
 // :ref:`Original Destination <arch_overview_load_balancing_types_original_destination>`
 // load balancing policy.
+// [#extension: envoy.clusters.original_dst]
 #Cluster_OriginalDstLbConfig: {
 	"@type": "type.googleapis.com/envoy.config.cluster.v3.Cluster_OriginalDstLbConfig"
 	// When true, a HTTP header can be used to override the original dst address. The default header is

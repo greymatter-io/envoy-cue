@@ -7,7 +7,7 @@ import (
 )
 
 // Configuration for the UDP proxy filter.
-// [#next-free-field: 10]
+// [#next-free-field: 11]
 #UdpProxyConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.udp.udp_proxy.v3.UdpProxyConfig"
 	// The stat prefix used when emitting UDP proxy filter stats.
@@ -51,8 +51,10 @@ import (
 	// The default if not specified is false, that means each data chunk is forwarded
 	// to upstream host selected on first chunk receival for that "session" (identified by source IP/port and local IP/port).
 	use_per_packet_load_balancing?: bool
-	// Configuration for access logs emitted by the UDP proxy. Note that certain UDP specific data is emitted as :ref:`Dynamic Metadata <config_access_log_format_dynamic_metadata>`.
+	// Configuration for session access logs emitted by the UDP proxy. Note that certain UDP specific data is emitted as :ref:`Dynamic Metadata <config_access_log_format_dynamic_metadata>`.
 	access_log?: [...v31.#AccessLog]
+	// Configuration for proxy access logs emitted by the UDP proxy. Note that certain UDP specific data is emitted as :ref:`Dynamic Metadata <config_access_log_format_dynamic_metadata>`.
+	proxy_access_log?: [...v31.#AccessLog]
 }
 
 // Specifies the UDP hash policy.
