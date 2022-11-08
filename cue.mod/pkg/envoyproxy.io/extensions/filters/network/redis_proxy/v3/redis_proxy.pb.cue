@@ -2,6 +2,7 @@ package v3
 
 import (
 	v3 "envoyproxy.io/config/core/v3"
+	v31 "envoyproxy.io/extensions/common/dynamic_forward_proxy/v3"
 )
 
 // ReadPolicy controls how Envoy routes read commands to Redis nodes. This is currently
@@ -138,7 +139,7 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 }
 
 // Redis connection pool settings.
-// [#next-free-field: 9]
+// [#next-free-field: 10]
 #RedisProxy_ConnPoolSettings: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.redis_proxy.v3.RedisProxy_ConnPoolSettings"
 	// Per-operation timeout in milliseconds. The timer starts when the first
@@ -165,6 +166,11 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	// need to be known to the cluster manager. If the command cannot be redirected, then the
 	// original error is passed downstream unchanged. By default, this support is not enabled.
 	enable_redirection?: bool
+	// If ``enable_redirection`` is set to true this option configures the DNS cache that the
+	// connection pool will use to resolve hostnames that are returned with MOVED and ASK responses.
+	// If no configuration is provided, DNS lookups will not be performed (and thus the MOVED/ASK errors
+	// will be propagated verbatim to the user).
+	dns_cache_config?: v31.#DnsCacheConfig
 	// Maximum size of encoded request buffer before flush is triggered and encoded requests
 	// are sent upstream. If this is unset, the buffer flushes whenever it receives data
 	// and performs no batching.
