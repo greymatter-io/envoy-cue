@@ -144,7 +144,10 @@ Listener_DrainType_MODIFY_ONLY: "MODIFY_ONLY"
 	// nor disabled.
 	freebind?: bool
 	// Additional socket options that may not be present in Envoy source code or
-	// precompiled binaries.
+	// precompiled binaries. The socket options can be updated for a listener when
+	// :ref:`enable_reuse_port <envoy_v3_api_field_config.listener.v3.Listener.enable_reuse_port>`
+	// is `true`. Otherwise, if socket options change during a listener update the update will be rejected
+	// to make it clear that the options were not updated.
 	socket_options?: [...v3.#SocketOption]
 	// Whether the listener should accept TCP Fast Open (TFO) connections.
 	// When this flag is set to a value greater than 0, the option TCP_FASTOPEN is enabled on
@@ -205,7 +208,9 @@ Listener_DrainType_MODIFY_ONLY: "MODIFY_ONLY"
 	// create one socket for each worker thread. This makes inbound connections
 	// distribute among worker threads roughly evenly in cases where there are a high number
 	// of connections. When this flag is set to false, all worker threads share one socket. This field
-	// defaults to true.
+	// defaults to true. The change of field will be rejected during an listener update when the
+	// runtime flag ``envoy.reloadable_features.enable_update_listener_socket_options`` is enabled.
+	// Otherwise, the update of this field will be ignored quietly.
 	//
 	// .. attention::
 	//
