@@ -60,6 +60,11 @@ import (
 	// with the header prefix set via
 	// :ref:`header_prefix <envoy_v3_api_field_config.bootstrap.v3.Bootstrap.header_prefix>`
 	// (which is usually "x-envoy").
+	// Note that changing headers such as "host" or ":authority" may not in itself
+	// change Envoy's routing decision, as routes can be cached. To also force the
+	// route to be recomputed, set the
+	// :ref:`clear_route_cache <envoy_v3_api_field_service.ext_proc.v3.CommonResponse.clear_route_cache>`
+	// field to true in the same response.
 	mutation_rules?: v31.#HeaderMutationRules
 }
 
