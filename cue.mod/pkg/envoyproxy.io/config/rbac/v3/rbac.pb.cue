@@ -169,7 +169,7 @@ RBAC_Action_LOG:   "LOG"
 
 // Principal defines an identity or a group of identities for a downstream
 // subject.
-// [#next-free-field: 12]
+// [#next-free-field: 13]
 #Principal: {
 	"@type": "type.googleapis.com/envoy.config.rbac.v3.Principal"
 	// A set of identifiers that all must match in order to define the
@@ -209,6 +209,8 @@ RBAC_Action_LOG:   "LOG"
 	url_path?: v31.#PathMatcher
 	// Metadata that describes additional information about the principal.
 	metadata?: v31.#MetadataMatcher
+	// Identifies the principal using a filter state object.
+	filter_state?: v31.#FilterStateMatcher
 	// Negates matching the provided principal. For instance, if the value of
 	// ``not_id`` would match, this principal would not match. Conversely, if the
 	// value of ``not_id`` would not match, this principal would match.

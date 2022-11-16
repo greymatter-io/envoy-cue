@@ -143,6 +143,9 @@ import (
 	//
 	//   The form of the health check host address is expected to be a direct IP address.
 	address?: v3.#Address
+	// Optional flag to control if perform active health check for this endpoint.
+	// Active health check is enabled by default if there is a health checker.
+	disable_active_health_check?: bool
 }
 
 // [#not-implemented-hide:]
