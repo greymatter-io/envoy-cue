@@ -61,9 +61,8 @@ import (
 	use_downstream_protocol_config?: #HttpProtocolOptions_UseDownstreamHttpConfig
 	// This allows switching on protocol based on ALPN
 	auto_config?: #HttpProtocolOptions_AutoHttpConfig
-	// .. warning::
-	//   Upstream HTTP filters are not supported by default.
-	//   This warning will be removed as support moves beyond alpha.
+	// .. note::
+	//   Upstream HTTP filters are currently in alpha.
 	//
 	// Optional HTTP filters for the upstream filter chain.
 	//

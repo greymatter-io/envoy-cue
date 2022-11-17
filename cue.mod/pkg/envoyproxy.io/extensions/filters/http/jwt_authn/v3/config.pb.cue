@@ -36,7 +36,7 @@ import (
 //       cache_duration:
 //         seconds: 300
 //
-// [#next-free-field: 15]
+// [#next-free-field: 16]
 #JwtProvider: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtProvider"
 	// Specify the `principal <https://tools.ietf.org/html/rfc7519#section-4.1.1>`_ that issued
@@ -238,6 +238,17 @@ import (
 	// Enables JWT cache, its size is specified by ``jwt_cache_size``.
 	// Only valid JWT tokens are cached.
 	jwt_cache_config?: #JwtCacheConfig
+	// Add JWT claim to HTTP Header
+	// Specify the claim name you want to copy in which HTTP header. For examples, following config:
+	// The claim must be of type; string, int, double, bool. Array type claims are not supported
+	// .. code-block:: yaml
+	//
+	//   claim_to_headers:
+	//     - name: x-jwt-claim-nested-claim
+	//       claim: claim.nested.key
+	//
+	// This header is only reserved for jwt claim; any other value will be overwrite.
+	claim_to_headers?: [...#JwtClaimToHeader]
 }
 
 // This message specifies JWT Cache configuration.
@@ -631,4 +642,16 @@ import (
 	// :ref:`requirement_map <envoy_v3_api_field_extensions.filters.http.jwt_authn.v3.JwtAuthentication.requirement_map>`
 	// in ``JwtAuthentication``. If no, the requests using this route will be rejected with 403.
 	requirement_name?: string
+}
+
+// This message specifies a combination of header name and claim name.
+#JwtClaimToHeader: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtClaimToHeader"
+	// The HTTP header name to copy the claim to.
+	// The header name will be sanitized and replaced.
+	header_name?: string
+	// The field name for the JWT Claim : it can be a nested claim of type (eg. "claim.nested.key", "sub")
+	// String separated with "." in case of nested claims. The nested claim name must use dot "." to separate
+	// the JSON name path.
+	claim_name?: string
 }
