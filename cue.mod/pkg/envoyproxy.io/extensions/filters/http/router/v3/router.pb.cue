@@ -2,9 +2,10 @@ package v3
 
 import (
 	v3 "envoyproxy.io/config/accesslog/v3"
+	v31 "envoyproxy.io/extensions/filters/network/http_connection_manager/v3"
 )
 
-// [#next-free-field: 8]
+// [#next-free-field: 9]
 #Router: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.router.v3.Router"
 	// Whether the router generates dynamic cluster statistics. Defaults to
@@ -55,4 +56,19 @@ import (
 	// :ref:`gRPC stats filter<config_http_filters_grpc_stats>` documentation
 	// for more details.
 	suppress_grpc_request_failure_code_stats?: bool
+	// .. note::
+	//   Upstream HTTP filters are currently in alpha.
+	//
+	// Optional HTTP filters for the upstream filter chain.
+	//
+	// These filters will be applied for all requests that pass through the router.
+	// They will also be applied to shadowed requests.
+	// Upstream filters cannot change route or cluster.
+	// Upstream filters specified on the cluster will override these filters.
+	//
+	// If using upstream filters, please be aware that local errors sent by
+	// upstream filters will not trigger retries, and local errors sent by
+	// upstream filters will count as a final response if hedging is configured.
+	// [#extension-category: envoy.filters.http.upstream]
+	upstream_http_filters?: [...v31.#HttpFilter]
 }
