@@ -6,7 +6,7 @@ import (
 	v32 "envoyproxy.io/type/v3"
 )
 
-// [#next-free-field: 15]
+// [#next-free-field: 16]
 #TcpProxy: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy"
 	// The prefix to use when emitting :ref:`statistics
@@ -63,6 +63,11 @@ import (
 	// was established. If not set, there is no max duration. When max_downstream_connection_duration
 	// is reached the connection will be closed. Duration must be at least 1ms.
 	max_downstream_connection_duration?: string
+	// The interval to flush access log. The TCP proxy will flush only one access log when the connection
+	// is closed by default. If this field is set, the TCP proxy will flush access log periodically with
+	// the specified interval.
+	// The interval must be at least 1ms.
+	access_log_flush_interval?: string
 }
 
 // Allows for specification of multiple upstream clusters along with weights

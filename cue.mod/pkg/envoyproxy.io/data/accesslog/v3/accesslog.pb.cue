@@ -56,7 +56,7 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 }
 
 // Defines fields that are shared by all Envoy access logs.
-// [#next-free-field: 26]
+// [#next-free-field: 28]
 #AccessLogCommon: {
 	"@type": "type.googleapis.com/envoy.data.accesslog.v3.AccessLogCommon"
 	// [#not-implemented-hide:]
@@ -152,6 +152,17 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	upstream_request_attempt_count?: uint32
 	// Connection termination details may provide additional information about why the connection was terminated by Envoy for L4 reasons.
 	connection_termination_details?: string
+	// Optional unique id of stream (TCP connection, long-live HTTP2 stream, HTTP request) for logging and tracing.
+	// This could be any format string that could be used to identify one stream.
+	stream_id?: string
+	// If this log entry is final log entry that flushed after the stream completed or
+	// intermediate log entry that flushed periodically during the stream.
+	// There may be multiple intermediate log entries and only one final log entry for each
+	// long-live stream (TCP connection, long-live HTTP2 stream).
+	// And if it is necessary, unique ID or identifier can be added to the log entry
+	// :ref:`stream_id <envoy_v3_api_field_data.accesslog.v3.AccessLogCommon.stream_id>` to
+	// correlate all these intermediate log entries and final log entry.
+	intermediate_log_entry?: bool
 }
 
 // Flags indicating occurrences during request/response processing.
