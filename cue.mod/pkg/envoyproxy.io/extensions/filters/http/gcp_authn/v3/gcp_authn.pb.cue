@@ -15,6 +15,9 @@ import (
 	retry_policy?: v3.#RetryPolicy
 	// Token cache configuration. This field is optional.
 	cache_config?: #TokenCacheConfig
+	// Request header location to extract the token. By default (i.e. if this field is not specified), the token
+	// is extracted to the Authorization HTTP header, in the format "Authorization: Bearer <token>".
+	token_header?: #TokenHeader
 }
 
 // Audience is the URL of the receiving service that performs token authentication.
@@ -30,4 +33,14 @@ import (
 	// The number of cache entries. The maximum number of entries is INT64_MAX as it is constrained by underlying cache implementation.
 	// Default value 0 (i.e., proto3 defaults) disables the cache by default. Other default values will enable the cache.
 	cache_size?: uint64
+}
+
+#TokenHeader: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.gcp_authn.v3.TokenHeader"
+	// The HTTP header's name.
+	name?: string
+	// The header's prefix. The format is "value_prefix<token>"
+	// For example, for "Authorization: Bearer <token>", value_prefix="Bearer " with a space at the
+	// end.
+	value_prefix?: string
 }

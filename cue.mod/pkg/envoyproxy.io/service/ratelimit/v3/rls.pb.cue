@@ -14,13 +14,15 @@ RateLimitResponse_Code_OVER_LIMIT: "OVER_LIMIT"
 
 // Identifies the unit of of time for rate limit.
 // [#comment: replace by envoy/type/v3/ratelimit_unit.proto in v4]
-#RateLimitResponse_RateLimit_Unit: "UNKNOWN" | "SECOND" | "MINUTE" | "HOUR" | "DAY"
+#RateLimitResponse_RateLimit_Unit: "UNKNOWN" | "SECOND" | "MINUTE" | "HOUR" | "DAY" | "MONTH" | "YEAR"
 
 RateLimitResponse_RateLimit_Unit_UNKNOWN: "UNKNOWN"
 RateLimitResponse_RateLimit_Unit_SECOND:  "SECOND"
 RateLimitResponse_RateLimit_Unit_MINUTE:  "MINUTE"
 RateLimitResponse_RateLimit_Unit_HOUR:    "HOUR"
 RateLimitResponse_RateLimit_Unit_DAY:     "DAY"
+RateLimitResponse_RateLimit_Unit_MONTH:   "MONTH"
+RateLimitResponse_RateLimit_Unit_YEAR:    "YEAR"
 
 // Main message for a rate limit request. The rate limit service is designed to be fully generic
 // in the sense that it can operate on arbitrary hierarchical key/value pairs. The loaded
