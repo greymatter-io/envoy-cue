@@ -119,7 +119,7 @@ import (
 //   the current bucket assignment is ``expired``, the data plane must immediately
 //   end the current assignment, report the bucket usage, and apply the new assignment.
 //   The new assignment becomes bucket's ``active`` assignment.
-// `` If the rate limiting strategy is the same as the bucket's ``active`` (not ``expired``)
+// * If the rate limiting strategy is the same as the bucket's ``active`` (not ``expired``)
 //   assignment, the data plane should extend the duration of the ``active`` assignment
 //   for the duration of the new assignment provided in the :ref:`assignment_time_to_live
 //   <envoy_v3_api_field_service.rate_limit_quota.v3.RateLimitQuotaResponse.BucketAction.QuotaAssignmentAction.assignment_time_to_live>`
@@ -149,7 +149,6 @@ import (
 	//   the bucket from the data plane memory, and stops the usage reports.
 	assignment_time_to_live?: string
 	// Configures the local rate limiter for the request matched to the bucket.
-	//
 	// If not set, allow all requests.
 	rate_limit_strategy?: v3.#RateLimitStrategy
 }
@@ -176,9 +175,11 @@ import (
 // 1. The process of :ref:`subscription and reporting
 //    <envoy_v3_api_field_extensions.filters.http.rate_limit_quota.v3.RateLimitQuotaBucketSettings.reporting_interval>`
 //    starts from the beginning.
+//
 // 2. The bucket transitions to the :ref:`"no assignment"
 //    <envoy_v3_api_field_extensions.filters.http.rate_limit_quota.v3.RateLimitQuotaBucketSettings.no_assignment_behavior>`
 //    state.
+//
 // 3. Once the new assignment is received, it's applied per
 //    "Applying the first assignment to the bucket" section of the :ref:`QuotaAssignmentAction
 //    <envoy_v3_api_msg_service.rate_limit_quota.v3.RateLimitQuotaResponse.BucketAction.QuotaAssignmentAction>`.
