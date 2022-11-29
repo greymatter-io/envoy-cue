@@ -82,6 +82,7 @@ import (
 // Configuration for tunneling TCP over other transports or application layers.
 // Tunneling is supported over both HTTP/1.1 and HTTP/2. Upstream protocol is
 // determined by the cluster configuration.
+// [#next-free-field: 6]
 #TcpProxy_TunnelingConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy_TunnelingConfig"
 	// The hostname to send in the synthesized CONNECT headers to the upstream proxy.
@@ -115,6 +116,10 @@ import (
 	// Save the response headers to the downstream info filter state for consumption
 	// by the network filters. The filter state key is ``envoy.tcp_proxy.propagate_response_headers``.
 	propagate_response_headers?: bool
+	// The path used with POST method. Default path is ``/``. If post path is specified and
+	// :ref:`use_post field <envoy_v3_api_field_extensions.filters.network.tcp_proxy.v3.TcpProxy.TunnelingConfig.use_post>`
+	// isn't true, it will be rejected.
+	post_path?: string
 }
 
 #TcpProxy_OnDemand: {

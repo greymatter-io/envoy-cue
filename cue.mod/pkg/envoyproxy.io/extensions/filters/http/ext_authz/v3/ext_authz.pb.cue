@@ -6,7 +6,7 @@ import (
 	v32 "envoyproxy.io/type/matcher/v3"
 )
 
-// [#next-free-field: 17]
+// [#next-free-field: 18]
 #ExtAuthz: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz"
 	// gRPC service configuration (default timeout: 200ms).
@@ -110,6 +110,26 @@ import (
 	// :ref:`destination<envoy_v3_api_field_service.auth.v3.AttributeContext.destination>`.
 	// The labels will be read from :ref:`metadata<envoy_v3_api_msg_config.core.v3.Node>` with the specified key.
 	bootstrap_metadata_labels_key?: string
+	// Check request to authorization server will include the client request headers that have a correspondent match
+	// in the :ref:`list <envoy_v3_api_msg_type.matcher.v3.ListStringMatcher>`. If this option isn't specified, then
+	// all client request headers are included in the check request to a gRPC authorization server, whereas no client request headers
+	// (besides the ones allowed by default - see note below) are included in the check request to an HTTP authorization server.
+	// This inconsistency between gRPC and HTTP servers is to maintain backwards compatibility with legacy behavior.
+	//
+	// .. note::
+	//
+	//  1. For requests to an HTTP authorization server: in addition to the the user's supplied matchers, ``Host``, ``Method``, ``Path``,
+	//     ``Content-Length``, and ``Authorization`` are **additionally included** in the list.
+	//
+	// .. note::
+	//
+	//  2. For requests to an HTTP authorization server: *Content-Length* will be set to 0 and the request to the
+	//  authorization server will not have a message body. However, the check request can include the buffered
+	//  client request body (controlled by :ref:`with_request_body
+	//  <envoy_v3_api_field_extensions.filters.http.ext_authz.v3.ExtAuthz.with_request_body>` setting),
+	//  consequently the value of *Content-Length* of the authorization request reflects the size of
+	//  its payload size.
+	allowed_headers?: v32.#ListStringMatcher
 }
 
 // Configuration for buffering the request data.
@@ -190,6 +210,10 @@ import (
 	//   <envoy_v3_api_field_extensions.filters.http.ext_authz.v3.ExtAuthz.with_request_body>`
 	//   setting) hence the value of its ``Content-Length`` reflects the size of its payload size.
 	//
+	//   This field has been deprecated in favor of :ref:`allowed_headers
+	//   <envoy_v3_api_field_extensions.filters.http.ext_authz.v3.ExtAuthz.allowed_headers>`.
+	//
+	// Deprecated: Do not use.
 	allowed_headers?: v32.#ListStringMatcher
 	// Sets a list of headers that will be included to the request to authorization service. Note that
 	// client request of the same key will be overridden.
