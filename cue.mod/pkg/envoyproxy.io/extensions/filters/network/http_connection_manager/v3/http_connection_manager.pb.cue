@@ -48,7 +48,7 @@ HttpConnectionManager_PathWithEscapedSlashesAction_UNESCAPE_AND_FORWARD:        
 HttpConnectionManager_Tracing_OperationName_INGRESS: "INGRESS"
 HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 
-// [#next-free-field: 51]
+// [#next-free-field: 52]
 #HttpConnectionManager: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
 	// Supplies the type of codec that the connection manager should use.
@@ -428,6 +428,9 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// [#not-implemented-hide:]
 	// [#extension-category: envoy.http.header_validators]
 	typed_header_validation_config?: v3.#TypedExtensionConfig
+	// Append the `x-forwarded-port` header with the port value client used to connect to Envoy. It
+	// will be ignored if the `x-forwarded-port` header has been set by any trusted proxy in front of Envoy.
+	append_x_forwarded_port?: bool
 }
 
 // The configuration to customize local reply returned by Envoy.

@@ -16,7 +16,6 @@ Listener_DrainType_MODIFY_ONLY: "MODIFY_ONLY"
 #AdditionalAddress: {
 	"@type":  "type.googleapis.com/envoy.config.listener.v3.AdditionalAddress"
 	address?: v3.#Address
-	// [#not-implemented-hide:]
 	// Additional socket options that may not be present in Envoy source code or
 	// precompiled binaries. If specified, this will override the
 	// :ref:`socket_options <envoy_v3_api_field_config.listener.v3.Listener.socket_options>`

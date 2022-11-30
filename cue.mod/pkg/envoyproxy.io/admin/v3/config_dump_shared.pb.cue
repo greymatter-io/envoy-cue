@@ -96,6 +96,16 @@ ClientResourceStatus_NACKED:         "NACKED"
 	dynamic_endpoint_configs?: [...#EndpointsConfigDump_DynamicEndpointConfig]
 }
 
+// Envoy's ECDS service fills this message with all currently extension
+// configuration. Extension configuration information can be used to recreate
+// an Envoy ECDS listener and HTTP filters as static filters or by returning
+// them in ECDS response.
+#EcdsConfigDump: {
+	"@type": "type.googleapis.com/envoy.admin.v3.EcdsConfigDump"
+	// The ECDS filter configs.
+	ecds_filters?: [...#EcdsConfigDump_EcdsFilterConfig]
+}
+
 // Describes a statically loaded listener.
 #ListenersConfigDump_StaticListener: {
 	"@type": "type.googleapis.com/envoy.admin.v3.ListenersConfigDump_StaticListener"
@@ -267,6 +277,29 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// The ``error_state`` field contains the rejected version of this particular
 	// resource along with the reason and timestamp. For successfully updated or
 	// acknowledged resource, this field should be empty.
+	// [#not-implemented-hide:]
+	error_state?: #UpdateFailureState
+	// The client status of this resource.
+	// [#not-implemented-hide:]
+	client_status?: #ClientResourceStatus
+}
+
+// [#next-free-field: 6]
+#EcdsConfigDump_EcdsFilterConfig: {
+	"@type": "type.googleapis.com/envoy.admin.v3.EcdsConfigDump_EcdsFilterConfig"
+	// This is the per-resource version information. This version is currently
+	// taken from the :ref:`version_info
+	// <envoy_v3_api_field_service.discovery.v3.DiscoveryResponse.version_info>`
+	// field at the time that the ECDS filter was loaded.
+	version_info?: string
+	// The ECDS filter config.
+	ecds_filter?: _
+	// The timestamp when the ECDS filter was last updated.
+	last_updated?: string
+	// Set if the last update failed, cleared after the next successful update.
+	// The ``error_state`` field contains the rejected version of this
+	// particular resource along with the reason and timestamp. For successfully
+	// updated or acknowledged resource, this field should be empty.
 	// [#not-implemented-hide:]
 	error_state?: #UpdateFailureState
 	// The client status of this resource.

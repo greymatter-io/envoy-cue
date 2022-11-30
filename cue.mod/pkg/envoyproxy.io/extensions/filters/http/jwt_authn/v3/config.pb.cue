@@ -272,7 +272,7 @@ import (
 	//
 	http_uri?: v3.#HttpUri
 	// Duration after which the cached JWKS should be expired. If not specified, default cache
-	// duration is 5 minutes.
+	// duration is 10 minutes.
 	cache_duration?: string
 	// Fetch Jwks asynchronously in the main thread before the listener is activated.
 	// Fetched Jwks can be used by all worker threads.
@@ -333,6 +333,8 @@ import (
 	// If true, it is activated without waiting for the initial fetch to complete.
 	// Default is false.
 	fast_listener?: bool
+	// The duration to refetch after a failed fetch. If not specified, default is 1 second.
+	failed_refetch_duration?: string
 }
 
 // This message specifies a header location to extract JWT token.
