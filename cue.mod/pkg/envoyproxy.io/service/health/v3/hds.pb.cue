@@ -74,6 +74,7 @@ Capability_Protocol_REDIS: "REDIS"
 // health checks to support statistics reporting, logging and debugging by the
 // Envoy instance (outside of HDS). For maximum usefulness, it should match the
 // same cluster structure as that provided by EDS.
+// [#next-free-field: 6]
 #ClusterHealthCheck: {
 	"@type":       "type.googleapis.com/envoy.service.health.v3.ClusterHealthCheck"
 	cluster_name?: string
@@ -83,6 +84,9 @@ Capability_Protocol_REDIS: "REDIS"
 	// on connection when health checking. For more details, see
 	// :ref:`config.cluster.v3.Cluster.transport_socket_matches <envoy_v3_api_field_config.cluster.v3.Cluster.transport_socket_matches>`.
 	transport_socket_matches?: [...v32.#Cluster_TransportSocketMatch]
+	// Optional configuration used to bind newly established upstream connections.
+	// If the address and port are empty, no bind will be performed.
+	upstream_bind_config?: v3.#BindConfig
 }
 
 #HealthCheckSpecifier: {
