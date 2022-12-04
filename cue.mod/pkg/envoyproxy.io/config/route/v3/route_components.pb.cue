@@ -190,6 +190,14 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	action?: _
 }
 
+// This can be used in route matcher :ref:`VirtualHost.matcher <envoy_v3_api_field_config.route.v3.VirtualHost.matcher>`.
+// When the matcher matches, routes will be matched and run.
+#RouteList: {
+	"@type": "type.googleapis.com/envoy.config.route.v3.RouteList"
+	// The list of routes that will be matched and run, in order. The first route that matches will be used.
+	routes?: [...#Route]
+}
+
 // A route is both a specification of how to match a request as well as an indication of what to do
 // next (e.g., redirect, forward, rewrite, etc.).
 //
@@ -1130,7 +1138,9 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 //
 //     {
 //       "name": ":method",
-//       "exact_match": "POST"
+//       "string_match": {
+//         "exact": "POST"
+//       }
 //     }
 //
 // .. attention::
