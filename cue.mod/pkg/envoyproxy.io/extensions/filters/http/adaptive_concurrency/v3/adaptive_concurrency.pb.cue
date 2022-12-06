@@ -21,6 +21,13 @@ import (
 	// If set to false, the adaptive concurrency filter will operate as a pass-through filter. If the
 	// message is unspecified, the filter will be enabled.
 	enabled?: v31.#RuntimeFeatureFlag
+	// This field allows for a custom HTTP response status code to the downstream client when
+	// the concurrency limit has been exceeded.
+	// Defaults to 503 (Service Unavailable).
+	//
+	// .. note::
+	//   If this is set to < 400, 503 will be used instead.
+	concurrency_limit_exceeded_status?: v3.#HttpStatus
 }
 
 // Parameters controlling the periodic recalculation of the concurrency limit from sampled request
