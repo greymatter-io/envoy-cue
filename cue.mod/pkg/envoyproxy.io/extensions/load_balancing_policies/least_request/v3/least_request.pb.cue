@@ -2,13 +2,12 @@ package v3
 
 import (
 	v3 "envoyproxy.io/config/core/v3"
-	v31 "envoyproxy.io/config/cluster/v3"
+	v31 "envoyproxy.io/extensions/load_balancing_policies/common/v3"
 )
 
 // This configuration allows the built-in LEAST_REQUEST LB policy to be configured via the LB policy
 // extension point. See the :ref:`load balancing architecture overview
 // <arch_overview_load_balancing_types>` for more information.
-// [#extension: envoy.load_balancing_policies]
 #LeastRequest: {
 	"@type": "type.googleapis.com/envoy.extensions.load_balancing_policies.least_request.v3.LeastRequest"
 	// The number of random healthy hosts from which the host with the fewest active requests will
@@ -40,5 +39,7 @@ import (
 	active_request_bias?: v3.#RuntimeDouble
 	// Configuration for slow start mode.
 	// If this configuration is not set, slow start will not be not enabled.
-	slow_start_config?: v31.#Cluster_SlowStartConfig
+	slow_start_config?: v31.#SlowStartConfig
+	// Configuration for local zone aware load balancing or locality weighted load balancing.
+	locality_lb_config?: v31.#LocalityLbConfig
 }

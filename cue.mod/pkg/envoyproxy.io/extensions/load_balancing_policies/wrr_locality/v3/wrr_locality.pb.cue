@@ -6,7 +6,6 @@ import (
 
 // Configuration for the wrr_locality LB policy. See the :ref:`load balancing architecture overview
 // <arch_overview_load_balancing_types>` for more information.
-// [#extension: envoy.load_balancing_policies]
 #WrrLocality: {
 	"@type": "type.googleapis.com/envoy.extensions.load_balancing_policies.wrr_locality.v3.WrrLocality"
 	// The child LB policy to create for endpoint-picking within the chosen locality.

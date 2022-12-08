@@ -1,5 +1,9 @@
 package v3
 
+import (
+	v3 "envoyproxy.io/extensions/load_balancing_policies/common/v3"
+)
+
 // The hash function used to hash hosts onto the ketama ring.
 #RingHash_HashFunction: "DEFAULT_HASH" | "XX_HASH" | "MURMUR_HASH_2"
 
@@ -10,8 +14,7 @@ RingHash_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 // This configuration allows the built-in RING_HASH LB policy to be configured via the LB policy
 // extension point. See the :ref:`load balancing architecture overview
 // <arch_overview_load_balancing_types>` for more information.
-// [#extension: envoy.load_balancing_policies]
-// [#next-free-field: 6]
+// [#next-free-field: 7]
 #RingHash: {
 	"@type": "type.googleapis.com/envoy.extensions.load_balancing_policies.ring_hash.v3.RingHash"
 	// The hash function used to hash hosts onto the ketama ring. The value defaults to
@@ -28,6 +31,12 @@ RingHash_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	maximum_ring_size?: uint64
 	// If set to `true`, the cluster will use hostname instead of the resolved
 	// address as the key to consistently hash to an upstream host. Only valid for StrictDNS clusters with hostnames which resolve to a single IP address.
+	//
+	// ..note::
+	//   This is deprecated and please use :ref:`consistent_hashing_lb_config
+	//   <envoy_v3_api_field_extensions.load_balancing_policies.ring_hash.v3.RingHash.consistent_hashing_lb_config>` instead.
+	//
+	// Deprecated: Do not use.
 	use_hostname_for_hashing?: bool
 	// Configures percentage of average cluster load to bound per upstream host. For example, with a value of 150
 	// no upstream host will get a load more than 1.5 times the average load of all the hosts in the cluster.
@@ -45,5 +54,13 @@ RingHash_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// This is an O(N) algorithm, unlike other load balancers. Using a lower `hash_balance_factor` results in more hosts
 	// being probed, so use a higher value if you require better performance.
+	//
+	// ..note::
+	//   This is deprecated and please use :ref:`consistent_hashing_lb_config
+	//   <envoy_v3_api_field_extensions.load_balancing_policies.ring_hash.v3.RingHash.consistent_hashing_lb_config>` instead.
+	//
+	// Deprecated: Do not use.
 	hash_balance_factor?: uint32
+	// Common configuration for hashing-based load balancing policies.
+	consistent_hashing_lb_config?: v3.#ConsistentHashingLbConfig
 }
