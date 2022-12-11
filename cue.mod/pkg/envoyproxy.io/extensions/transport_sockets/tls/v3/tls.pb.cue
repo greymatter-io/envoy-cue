@@ -35,7 +35,7 @@ DownstreamTlsContext_OcspStaplePolicy_MUST_STAPLE:      "MUST_STAPLE"
 	max_session_keys?: uint32
 }
 
-// [#next-free-field: 10]
+// [#next-free-field: 9]
 #DownstreamTlsContext: {
 	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext"
 	// Common TLS context settings.
@@ -67,10 +67,6 @@ DownstreamTlsContext_OcspStaplePolicy_MUST_STAPLE:      "MUST_STAPLE"
 	// an accompanying OCSP response or if the response expires at runtime.
 	// Defaults to LENIENT_STAPLING
 	ocsp_staple_policy?: #DownstreamTlsContext_OcspStaplePolicy
-	// Multiple certificates are allowed in Downstream transport socket to serve different SNI.
-	// If the client provides SNI but no such cert matched, it will decide to full scan certificates or not based on this config.
-	// Defaults to false. See more details in :ref:`Multiple TLS certificates <arch_overview_ssl_cert_select>`.
-	full_scan_certs_on_sni_mismatch?: bool
 }
 
 // TLS key log configuration.
@@ -93,9 +89,12 @@ DownstreamTlsContext_OcspStaplePolicy_MUST_STAPLE:      "MUST_STAPLE"
 	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.CommonTlsContext"
 	// TLS protocol versions, cipher suites etc.
 	tls_params?: #TlsParameters
-	// Only a single TLS certificate is supported in client contexts. In server contexts,
 	// :ref:`Multiple TLS certificates <arch_overview_ssl_cert_select>` can be associated with the
-	// same context to allow both RSA and ECDSA certificates and support SNI-based selection.
+	// same context to allow both RSA and ECDSA certificates.
+	//
+	// Only a single TLS certificate is supported in client contexts. In server contexts, the first
+	// RSA certificate is used for clients that only support RSA and the first ECDSA certificate is
+	// used for clients that support ECDSA.
 	//
 	// Only one of ``tls_certificates``, ``tls_certificate_sds_secret_configs``,
 	// and ``tls_certificate_provider_instance`` may be used.
