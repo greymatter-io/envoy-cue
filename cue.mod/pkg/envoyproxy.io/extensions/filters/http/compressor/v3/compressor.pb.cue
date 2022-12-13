@@ -35,7 +35,8 @@ import (
 	// Deprecated: Do not use.
 	remove_accept_encoding_header?: bool
 	// Runtime flag that controls whether the filter is enabled or not. If set to false, the
-	// filter will operate as a pass-through filter. If not specified, defaults to enabled.
+	// filter will operate as a pass-through filter, unless overridden by
+	// CompressorPerRoute. If not specified, defaults to enabled.
 	//
 	// Deprecated: Do not use.
 	runtime_enabled?: v3.#RuntimeFeatureFlag
@@ -64,11 +65,36 @@ import (
 	choose_first?: bool
 }
 
+// Per-route overrides of `ResponseDirectionConfig`. Anything added here should be optional,
+// to allow overriding arbitrary subsets of configuration. Omitted fields must have no affect.
+#ResponseDirectionOverrides: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.compressor.v3.ResponseDirectionOverrides"
+}
+
+// Per-route overrides. As per-route overrides are needed, they should be
+// added here, mirroring the structure of `Compressor`. All fields should be
+// optional, to allow overriding arbitrary subsets of configuration.
+#CompressorOverrides: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.compressor.v3.CompressorOverrides"
+	// If present, response compression is enabled.
+	response_direction_config?: #ResponseDirectionOverrides
+}
+
+#CompressorPerRoute: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.compressor.v3.CompressorPerRoute"
+	// If set, the filter will operate as a pass-through filter.
+	// Overrides Compressor.runtime_enabled and CommonDirectionConfig.enabled.
+	disabled?: bool
+	// Per-route overrides. Fields set here will override corresponding fields in `Compressor`.
+	overrides?: #CompressorOverrides
+}
+
 #Compressor_CommonDirectionConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.compressor.v3.Compressor_CommonDirectionConfig"
 	// Runtime flag that controls whether compression is enabled or not for the direction this
 	// common config is put in. If set to false, the filter will operate as a pass-through filter
-	// in the chosen direction. If the field is omitted, the filter will be enabled.
+	// in the chosen direction, unless overridden by CompressorPerRoute.
+	// If the field is omitted, the filter will be enabled.
 	enabled?: v3.#RuntimeFeatureFlag
 	// Minimum value of Content-Length header of request or response messages (depending on the direction
 	// this common config is put in), in bytes, which will trigger compression. The default value is 30.
