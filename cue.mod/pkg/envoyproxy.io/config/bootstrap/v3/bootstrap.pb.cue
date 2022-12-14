@@ -35,7 +35,7 @@ CustomInlineHeader_InlineHeaderType_RESPONSE_HEADER:  "RESPONSE_HEADER"
 CustomInlineHeader_InlineHeaderType_RESPONSE_TRAILER: "RESPONSE_TRAILER"
 
 // Bootstrap :ref:`configuration overview <config_overview_bootstrap>`.
-// [#next-free-field: 36]
+// [#next-free-field: 37]
 #Bootstrap: {
 	"@type": "type.googleapis.com/envoy.config.bootstrap.v3.Bootstrap"
 	// Node identity to present to the management server and for instance
@@ -236,6 +236,17 @@ CustomInlineHeader_InlineHeaderType_RESPONSE_TRAILER: "RESPONSE_TRAILER"
 	// TODO(abeyad): Add public-facing documentation.
 	// [#not-implemented-hide:]
 	xds_delegate_extension?: v3.#TypedExtensionConfig
+	// Optional XdsConfigTracker configuration, which allows tracking xDS responses in external components,
+	// e.g., external tracer or monitor. It provides the process point when receive, ingest, or fail to
+	// process xDS resources and messages. If a value is not specified, no XdsConfigTracker will be used.
+	//
+	// .. note::
+	//
+	//    There are no in-repo extensions currently, and the :repo:`XdsConfigTracker <envoy/config/xds_config_tracker.h>`
+	//    interface should be implemented before using.
+	//    See :repo:`xds_config_tracker_integration_test <test/integration/xds_config_tracker_integration_test.cc>`
+	//    for an example usage of the interface.
+	xds_config_tracker_extension?: v3.#TypedExtensionConfig
 }
 
 // Administration interface :ref:`operations documentation
