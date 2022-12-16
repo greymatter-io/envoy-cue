@@ -2,6 +2,7 @@ package v3
 
 import (
 	v3 "envoyproxy.io/type/matcher/v3"
+	v31 "envoyproxy.io/config/core/v3"
 )
 
 // The HeaderMutationRules structure specifies what headers may be
@@ -66,4 +67,14 @@ import (
 	// cause the ``rejected_header_mutations`` counter to be incremented.
 	// Default is false.
 	disallow_is_error?: bool
+}
+
+// The HeaderMutation structure specifies an action that may be taken on HTTP
+// headers.
+#HeaderMutation: {
+	"@type": "type.googleapis.com/envoy.config.common.mutation_rules.v3.HeaderMutation"
+	// Remove the specified header if it exists.
+	remove?: string
+	// Append new header by the specified HeaderValueOption.
+	append?: v31.#HeaderValueOption
 }

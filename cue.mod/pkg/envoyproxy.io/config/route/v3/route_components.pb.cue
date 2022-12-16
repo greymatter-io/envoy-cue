@@ -1702,7 +1702,7 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	max_interval?: string
 }
 
-// [#next-free-field: 11]
+// [#next-free-field: 12]
 #RateLimit_Action: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action"
 	// Rate limit on source cluster.
@@ -1737,6 +1737,8 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	extension?: v31.#TypedExtensionConfig
 	// Rate limit on masked remote address.
 	masked_remote_address?: #RateLimit_Action_MaskedRemoteAddress
+	// Rate limit on the existence of query parameters.
+	query_parameter_value_match?: #RateLimit_Action_QueryParameterValueMatch
 }
 
 #RateLimit_Override: {
@@ -1904,6 +1906,30 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	default_value?: string
 	// Source of metadata
 	source?: #RateLimit_Action_MetaData_Source
+}
+
+// The following descriptor entry is appended to the descriptor:
+//
+// .. code-block:: cpp
+//
+//   ("query_match", "<descriptor_value>")
+#RateLimit_Action_QueryParameterValueMatch: {
+	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action_QueryParameterValueMatch"
+	// The key to use in the descriptor entry. Defaults to ``query_match``.
+	descriptor_key?: string
+	// The value to use in the descriptor entry.
+	descriptor_value?: string
+	// If set to true, the action will append a descriptor entry when the
+	// request matches the headers. If set to false, the action will append a
+	// descriptor entry when the request does not match the headers. The
+	// default value is true.
+	expect_match?: bool
+	// Specifies a set of query parameters that the rate limit action should match
+	// on. The action will check the request’s query parameters against all the
+	// specified query parameters in the config. A match will happen if all the
+	// query parameters in the config are present in the request with the same values
+	// (or based on presence if the value field is not in the config).
+	query_parameters?: [...#QueryParameterMatcher]
 }
 
 // Fetches the override from the dynamic metadata.

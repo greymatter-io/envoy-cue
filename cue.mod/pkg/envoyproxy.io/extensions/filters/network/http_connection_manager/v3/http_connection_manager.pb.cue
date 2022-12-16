@@ -48,7 +48,7 @@ HttpConnectionManager_PathWithEscapedSlashesAction_UNESCAPE_AND_FORWARD:        
 HttpConnectionManager_Tracing_OperationName_INGRESS: "INGRESS"
 HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 
-// [#next-free-field: 52]
+// [#next-free-field: 53]
 #HttpConnectionManager: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
 	// Supplies the type of codec that the connection manager should use.
@@ -231,6 +231,14 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	//
 	// [#extension-category: envoy.http.original_ip_detection]
 	original_ip_detection_extensions?: [...v3.#TypedExtensionConfig]
+	// The configuration for the early header mutation extensions.
+	//
+	// When configured the extensions will be called before any routing, tracing, or any filter processing.
+	// Each extension will be applied in the order they are configured.
+	// If the same header is mutated by multiple extensions, then the last extension will win.
+	//
+	// [#extension-category: envoy.http.early_header_mutation]
+	early_header_mutation_extensions?: [...v3.#TypedExtensionConfig]
 	// Configures what network addresses are considered internal for stats and header sanitation
 	// purposes. If unspecified, only RFC1918 IP addresses will be considered internal.
 	// See the documentation for :ref:`config_http_conn_man_headers_x-envoy-internal` for more
