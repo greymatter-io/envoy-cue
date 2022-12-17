@@ -6,7 +6,7 @@ GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS_EXCEPT_RESERVED: "ALL_CHARACTE
 GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS_EXCEPT_SLASH:    "ALL_CHARACTERS_EXCEPT_SLASH"
 GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS:                 "ALL_CHARACTERS"
 
-// [#next-free-field: 15]
+// [#next-free-field: 17]
 // GrpcJsonTranscoder filter configuration.
 // The filter itself can be used per route / per virtual host or on the general level. The most
 // specific one is being used for a given route. If the list of services is empty - filter
@@ -163,6 +163,20 @@ GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS:                 "ALL_CHARACTE
 	// Proto enum values are supposed to be in upper cases when used in JSON.
 	// Set this to true if your JSON request uses non uppercase enum values.
 	case_insensitive_enum_parsing?: bool
+	// The maximum size of a request body to be transcoded, in bytes. A body exceeding this size will
+	// provoke a ``HTTP 413 Request Entity Too Large`` response.
+	//
+	// Large values may cause envoy to use a lot of memory if there are many concurrent requests.
+	//
+	// If unset, the current stream buffer size is used.
+	max_request_body_size?: uint32
+	// The maximum size of a response body to be transcoded, in bytes. A body exceeding this size will
+	// provoke a ``HTTP 500 Internal Server Error`` response.
+	//
+	// Large values may cause envoy to use a lot of memory if there are many concurrent requests.
+	//
+	// If unset, the current stream buffer size is used.
+	max_response_body_size?: uint32
 }
 
 // [#next-free-field: 6]

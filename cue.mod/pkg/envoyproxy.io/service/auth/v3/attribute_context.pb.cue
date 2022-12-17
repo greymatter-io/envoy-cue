@@ -69,9 +69,10 @@ import (
 	// ``URI Subject Alternative Names``, ``DNS Subject Alternate Names`` or ``Subject`` in that order.
 	// The primary identity should be the principal. The principal format is issuer specific.
 	//
-	// Example:
-	// *    SPIFFE format is ``spiffe://trust-domain/path``
-	// *    Google account format is ``https://accounts.google.com/{userid}``
+	// Examples:
+	//
+	// - SPIFFE format is ``spiffe://trust-domain/path``.
+	// - Google account format is ``https://accounts.google.com/{userid}``.
 	principal?: string
 	// The X.509 certificate used to authenticate the identify of this peer.
 	// When present, the certificate contents are encoded in URL and PEM format.
@@ -106,7 +107,7 @@ import (
 	// The request target, as it appears in the first line of the HTTP request. This includes
 	// the URL path and query-string. No decoding is performed.
 	path?: string
-	// The HTTP request ``Host`` or '`Authority`` header value.
+	// The HTTP request ``Host`` or ``:authority`` header value.
 	host?: string
 	// The HTTP URL scheme, such as ``http`` and ``https``.
 	scheme?: string
