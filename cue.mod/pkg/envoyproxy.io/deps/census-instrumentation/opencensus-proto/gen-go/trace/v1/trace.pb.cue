@@ -1,7 +1,9 @@
 package v1
 
 import (
+	timestamppb "envoyproxy.io/deps/protobuf/types/known/timestamppb"
 	v1 "envoyproxy.io/deps/census-instrumentation/opencensus-proto/gen-go/resource/v1"
+	wrapperspb "envoyproxy.io/deps/protobuf/types/known/wrapperspb"
 )
 
 // Type of span. Can be used to specify additional relationships between spans
@@ -90,7 +92,7 @@ Span_Link_Type_PARENT_LINKED_SPAN: "PARENT_LINKED_SPAN"
 	// keep end_time > start_time for consistency.
 	//
 	// This field is required.
-	start_time?: string
+	start_time?: timestamppb.#Timestamp
 	// The end time of the span. On the client side, this is the time kept by
 	// the local machine where the span execution ends. On the server side, this
 	// is the time when the server application handler stops running.
@@ -100,7 +102,7 @@ Span_Link_Type_PARENT_LINKED_SPAN: "PARENT_LINKED_SPAN"
 	// keep end_time > start_time for consistency.
 	//
 	// This field is required.
-	end_time?: string
+	end_time?: timestamppb.#Timestamp
 	// A set of attributes on the span.
 	attributes?: #Span_Attributes
 	// A stack trace captured at the start of the span.
@@ -122,10 +124,10 @@ Span_Link_Type_PARENT_LINKED_SPAN: "PARENT_LINKED_SPAN"
 	// to the same process as the current span. This flag is most commonly
 	// used to indicate the need to adjust time as clocks in different
 	// processes may not be synchronized.
-	same_process_as_parent_span?: bool
+	same_process_as_parent_span?: wrapperspb.#BoolValue
 	// An optional number of child spans that were generated while this span
 	// was active. If set, allows an implementation to detect missing child spans.
-	child_span_count?: uint32
+	child_span_count?: wrapperspb.#UInt32Value
 }
 
 // The `Status` type defines a logical error model that is suitable for different
@@ -234,7 +236,7 @@ Span_Link_Type_PARENT_LINKED_SPAN: "PARENT_LINKED_SPAN"
 #Span_TimeEvent: {
 	"@type": "type.googleapis.com/github.com.census-instrumentation.opencensus-proto.gen-go.trace.v1.Span_TimeEvent"
 	// The time the event occurred.
-	time?: string
+	time?: timestamppb.#Timestamp
 	// A text annotation with a set of attributes.
 	annotation?: #Span_TimeEvent_Annotation
 	// An event describing a message sent/received between Spans.

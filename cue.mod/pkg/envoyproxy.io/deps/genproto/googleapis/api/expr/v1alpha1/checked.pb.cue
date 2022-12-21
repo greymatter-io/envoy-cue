@@ -250,7 +250,7 @@ Type_WellKnownType_DURATION:                    "DURATION"
 	// `string.isEmpty()` would have `result_type` of `kind: BOOL`.
 	result_type?: #Type
 	// Whether the function is to be used in a method call-style `x.f(...)`
-	// of a function call-style `f(x, ...)`.
+	// or a function call-style `f(x, ...)`.
 	//
 	// For methods, the first parameter declaration, `params[0]` is the
 	// expected type of the target receiver.
