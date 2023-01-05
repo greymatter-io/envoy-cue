@@ -53,7 +53,7 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 // host header. This allows a single listener to service multiple top level domain path trees. Once
 // a virtual host is selected based on the domain, the routes are processed in order to see which
 // upstream cluster to route to or whether to perform a redirect.
-// [#next-free-field: 23]
+// [#next-free-field: 24]
 #VirtualHost: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.VirtualHost"
 	// The logical name of the virtual host. This is used when emitting certain
@@ -174,6 +174,9 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// route level entry will take precedence over this config and it'll be treated
 	// independently (e.g.: values are not inherited).
 	hedge_policy?: #HedgePolicy
+	// Decides whether to include the :ref:`x-envoy-is-timeout-retry <config_http_filters_router_x-envoy-is-timeout-retry>`
+	// request header in retries initiated by per try timeouts.
+	include_is_timeout_retry_header?: bool
 	// The maximum bytes which will be buffered for retries and shadowing.
 	// If set and a route-specific limit is not set, the bytes actually buffered will be the minimum
 	// value of this and the listener per_connection_buffer_limit_bytes.
