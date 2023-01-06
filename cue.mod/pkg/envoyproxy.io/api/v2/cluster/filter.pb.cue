@@ -1,5 +1,9 @@
 package cluster
 
+import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
+)
+
 #Filter: {
 	"@type": "type.googleapis.com/envoy.api.v2.cluster.Filter"
 	// The name of the filter to instantiate. The name must match a
@@ -7,5 +11,5 @@ package cluster
 	name?: string
 	// Filter specific configuration which depends on the filter being
 	// instantiated. See the supported filters for further documentation.
-	typed_config?: _
+	typed_config?: any1.#Any
 }

@@ -1,6 +1,7 @@
 package v3
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/type/matcher/v3"
 	v31 "envoyproxy.io/config/core/v3"
 )
@@ -13,7 +14,7 @@ import (
 	// See the :ref:`extensions listed in typed_config below <extension_category_envoy.stats_sinks>` for the default list of available stats sink.
 	// Sinks optionally support tagged/multiple dimensional metrics.
 	name?:         string
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // Statistics configuration such as tagging.

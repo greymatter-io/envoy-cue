@@ -1,6 +1,7 @@
 package v3
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/config/core/v3"
 )
 
@@ -111,7 +112,7 @@ import (
 	// [#comment: An entry's value may be wrapped in a
 	// :ref:`FilterConfig<envoy_v3_api_msg_config.route.v3.FilterConfig>`
 	// message to specify additional options.]
-	typed_per_filter_config?: [string]: _
+	typed_per_filter_config?: [string]: any1.#Any
 }
 
 #Vhds: {

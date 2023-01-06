@@ -1,6 +1,7 @@
 package v2alpha
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	matcher "envoyproxy.io/type/matcher"
 	route "envoyproxy.io/api/v2/route"
 )
@@ -8,7 +9,7 @@ import (
 #CacheConfig: {
 	"@type": "type.googleapis.com/envoy.config.filter.http.cache.v2alpha.CacheConfig"
 	// Config specific to the cache storage implementation.
-	typed_config?: _
+	typed_config?: any1.#Any
 	// List of matching rules that defines allowed *Vary* headers.
 	//
 	// The *vary* response header holds a list of header names that affect the

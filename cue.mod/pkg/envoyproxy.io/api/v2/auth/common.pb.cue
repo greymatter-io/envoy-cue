@@ -2,6 +2,7 @@ package auth
 
 import (
 	_struct "envoyproxy.io/deps/golang/protobuf/ptypes/struct"
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	core "envoyproxy.io/api/v2/core"
 	matcher "envoyproxy.io/type/matcher"
 )
@@ -94,7 +95,7 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	provider_name?: string
 	// Deprecated: Do not use.
 	config?:       _struct.#Struct
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // [#next-free-field: 7]

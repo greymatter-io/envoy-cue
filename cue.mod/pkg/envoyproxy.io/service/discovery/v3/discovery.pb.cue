@@ -1,6 +1,7 @@
 package v3
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	status "envoyproxy.io/deps/genproto/googleapis/rpc/status"
 	v3 "envoyproxy.io/config/core/v3"
 )
@@ -80,7 +81,7 @@ import (
 	// The version of the response data.
 	version_info?: string
 	// The response resources. These resources are typed and depend on the API being called.
-	resources?: _
+	resources?: [...any1.#Any]
 	// [#not-implemented-hide:]
 	// Canary is used to support two Envoy command line flags:
 	//
@@ -272,7 +273,7 @@ import (
 	// resources.
 	version?: string
 	// The resource being tracked.
-	resource?: _
+	resource?: any1.#Any
 	// Time-to-live value for the resource. For each resource, a timer is started. The timer is
 	// reset each time the resource is received with a new TTL. If the resource is received with
 	// no TTL set, the timer is removed for the resource. Upon expiration of the timer, the

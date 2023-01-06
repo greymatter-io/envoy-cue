@@ -1,6 +1,7 @@
 package v3
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/config/core/v3"
 )
 
@@ -75,7 +76,7 @@ import (
 	// (proxy_on_start). ``google.protobuf.Struct`` is serialized as JSON before
 	// passing it to the plugin. ``google.protobuf.BytesValue`` and
 	// ``google.protobuf.StringValue`` are passed directly without the wrapper.
-	configuration?: _
+	configuration?: any1.#Any
 	// Allow the wasm file to include pre-compiled code on VMs which support it.
 	// Warning: this should only be enable for trusted sources as the precompiled code is not
 	// verified.
@@ -119,7 +120,7 @@ import (
 	// ``google.protobuf.Struct`` is serialized as JSON before
 	// passing it to the plugin. ``google.protobuf.BytesValue`` and
 	// ``google.protobuf.StringValue`` are passed directly without the wrapper.
-	configuration?: _
+	configuration?: any1.#Any
 	// If there is a fatal error on the VM (e.g. exception, abort(), on_start or on_configure return false),
 	// then all plugins associated with the VM will either fail closed (by default), e.g. by returning an HTTP 503 error,
 	// or fail open (if 'fail_open' is set to true) by bypassing the filter. Note: when on_start or on_configure return false

@@ -2,6 +2,7 @@ package v2alpha1
 
 import (
 	_struct "envoyproxy.io/deps/golang/protobuf/ptypes/struct"
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 )
 
 // Thrift transport types supported by Envoy.
@@ -53,7 +54,7 @@ ProtocolType_TWITTER:       "TWITTER"
 	name?: string
 	// Deprecated: Do not use.
 	config?:       _struct.#Struct
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // ThriftProtocolOptions specifies Thrift upstream protocol options. This object is used in

@@ -1,6 +1,7 @@
 package v3
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/config/core/v3"
 	v31 "envoyproxy.io/config/accesslog/v3"
 )
@@ -83,7 +84,7 @@ ProtocolType_TWITTER:       "TWITTER"
 	// * :ref:`envoy.filters.thrift.router <config_thrift_filters_router>`
 	// * :ref:`envoy.filters.thrift.rate_limit <config_thrift_filters_rate_limit>`
 	name?:         string
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // ThriftProtocolOptions specifies Thrift upstream protocol options. This object is used in

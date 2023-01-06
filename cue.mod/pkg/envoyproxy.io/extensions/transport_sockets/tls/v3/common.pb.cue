@@ -1,6 +1,7 @@
 package v3
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/config/core/v3"
 	v31 "envoyproxy.io/type/matcher/v3"
 )
@@ -114,7 +115,7 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	// Private key method provider name. The name must match a
 	// supported private key method provider type.
 	provider_name?: string
-	typed_config?:  _
+	typed_config?:  any1.#Any
 }
 
 // [#next-free-field: 9]

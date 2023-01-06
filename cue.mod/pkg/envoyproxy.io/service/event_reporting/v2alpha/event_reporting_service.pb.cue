@@ -1,6 +1,7 @@
 package v2alpha
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	core "envoyproxy.io/api/v2/core"
 )
 
@@ -19,7 +20,7 @@ import (
 	//
 	// * :ref:`HealthCheckEvent <envoy_api_msg_data.core.v2alpha.HealthCheckEvent>`
 	// * :ref:`OutlierDetectionEvent <envoy_api_msg_data.cluster.v2alpha.OutlierDetectionEvent>`
-	events?: _
+	events?: [...any1.#Any]
 }
 
 // [#not-implemented-hide:]

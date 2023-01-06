@@ -1,5 +1,9 @@
 package v3
 
+import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
+)
+
 #Filter: {
 	"@type": "type.googleapis.com/envoy.config.cluster.v3.Filter"
 	// The name of the filter configuration.
@@ -8,5 +12,5 @@ package v3
 	// instantiated. See the supported filters for further documentation.
 	// Note that Envoy's :ref:`downstream network
 	// filters <config_network_filters>` are not valid upstream filters.
-	typed_config?: _
+	typed_config?: any1.#Any
 }

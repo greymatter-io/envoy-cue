@@ -2,6 +2,7 @@ package listener
 
 import (
 	_struct "envoyproxy.io/deps/golang/protobuf/ptypes/struct"
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 )
 
 #UdpListenerConfig: {
@@ -12,7 +13,7 @@ import (
 	udp_listener_name?: string
 	// Deprecated: Do not use.
 	config?:       _struct.#Struct
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 #ActiveRawUdpListenerConfig: {

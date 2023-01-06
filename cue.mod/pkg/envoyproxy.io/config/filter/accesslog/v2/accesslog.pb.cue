@@ -3,6 +3,7 @@ package v2
 import (
 	_struct "envoyproxy.io/deps/golang/protobuf/ptypes/struct"
 	_type "envoyproxy.io/type"
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	core "envoyproxy.io/api/v2/core"
 	route "envoyproxy.io/api/v2/route"
 )
@@ -46,7 +47,7 @@ GrpcStatusFilter_Status_UNAUTHENTICATED:     "UNAUTHENTICATED"
 	filter?: #AccessLogFilter
 	// Deprecated: Do not use.
 	config?:       _struct.#Struct
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // [#next-free-field: 12]
@@ -188,5 +189,5 @@ GrpcStatusFilter_Status_UNAUTHENTICATED:     "UNAUTHENTICATED"
 	name?: string
 	// Deprecated: Do not use.
 	config?:       _struct.#Struct
-	typed_config?: _
+	typed_config?: any1.#Any
 }

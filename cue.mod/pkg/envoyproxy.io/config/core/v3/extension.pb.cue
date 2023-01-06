@@ -1,5 +1,9 @@
 package v3
 
+import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
+)
+
 // Message type for extension configuration.
 // [#next-major-version: revisit all existing typed_config that doesn't use this wrapper.].
 #TypedExtensionConfig: {
@@ -13,5 +17,5 @@ package v3
 	// URL of ``TypedStruct`` will be utilized. See the
 	// :ref:`extension configuration overview
 	// <config_overview_extension_configuration>` for further details.
-	typed_config?: _
+	typed_config?: any1.#Any
 }

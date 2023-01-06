@@ -1,5 +1,9 @@
 package v3
 
+import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
+)
+
 // Resource status from the view of a xDS client, which tells the synchronization
 // status between the xDS client and the xDS server.
 #ClientResourceStatus: "UNKNOWN" | "REQUESTED" | "DOES_NOT_EXIST" | "ACKED" | "NACKED"
@@ -14,7 +18,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 	"@type": "type.googleapis.com/envoy.admin.v3.UpdateFailureState"
 	// What the component configuration would have been if the update had succeeded.
 	// This field may not be populated by xDS clients due to storage overhead.
-	failed_configuration?: _
+	failed_configuration?: any1.#Any
 	// Time of the latest failed update attempt.
 	last_update_attempt?: string
 	// Details about the last failed update attempt.
@@ -110,7 +114,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 #ListenersConfigDump_StaticListener: {
 	"@type": "type.googleapis.com/envoy.admin.v3.ListenersConfigDump_StaticListener"
 	// The listener config.
-	listener?: _
+	listener?: any1.#Any
 	// The timestamp when the Listener was last successfully updated.
 	last_updated?: string
 }
@@ -123,7 +127,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// by the API.
 	version_info?: string
 	// The listener config.
-	listener?: _
+	listener?: any1.#Any
 	// The timestamp when the Listener was last successfully updated.
 	last_updated?: string
 }
@@ -161,7 +165,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 #ClustersConfigDump_StaticCluster: {
 	"@type": "type.googleapis.com/envoy.admin.v3.ClustersConfigDump_StaticCluster"
 	// The cluster config.
-	cluster?: _
+	cluster?: any1.#Any
 	// The timestamp when the Cluster was last updated.
 	last_updated?: string
 }
@@ -176,7 +180,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// the API.
 	version_info?: string
 	// The cluster config.
-	cluster?: _
+	cluster?: any1.#Any
 	// The timestamp when the Cluster was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.
@@ -193,7 +197,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 #RoutesConfigDump_StaticRouteConfig: {
 	"@type": "type.googleapis.com/envoy.admin.v3.RoutesConfigDump_StaticRouteConfig"
 	// The route config.
-	route_config?: _
+	route_config?: any1.#Any
 	// The timestamp when the Route was last updated.
 	last_updated?: string
 }
@@ -206,7 +210,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// the route configuration was loaded.
 	version_info?: string
 	// The route config.
-	route_config?: _
+	route_config?: any1.#Any
 	// The timestamp when the Route was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.
@@ -225,7 +229,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// The name assigned to the scoped route configurations.
 	name?: string
 	// The scoped route configurations.
-	scoped_route_configs?: _
+	scoped_route_configs?: [...any1.#Any]
 	// The timestamp when the scoped route config set was last updated.
 	last_updated?: string
 }
@@ -240,7 +244,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// the scoped routes configuration was loaded.
 	version_info?: string
 	// The scoped route configurations.
-	scoped_route_configs?: _
+	scoped_route_configs?: [...any1.#Any]
 	// The timestamp when the scoped route config set was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.
@@ -257,7 +261,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 #EndpointsConfigDump_StaticEndpointConfig: {
 	"@type": "type.googleapis.com/envoy.admin.v3.EndpointsConfigDump_StaticEndpointConfig"
 	// The endpoint config.
-	endpoint_config?: _
+	endpoint_config?: any1.#Any
 	// [#not-implemented-hide:] The timestamp when the Endpoint was last updated.
 	last_updated?: string
 }
@@ -270,7 +274,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// the endpoint configuration was loaded.
 	version_info?: string
 	// The endpoint config.
-	endpoint_config?: _
+	endpoint_config?: any1.#Any
 	// [#not-implemented-hide:] The timestamp when the Endpoint was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.
@@ -293,7 +297,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// field at the time that the ECDS filter was loaded.
 	version_info?: string
 	// The ECDS filter config.
-	ecds_filter?: _
+	ecds_filter?: any1.#Any
 	// The timestamp when the ECDS filter was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.

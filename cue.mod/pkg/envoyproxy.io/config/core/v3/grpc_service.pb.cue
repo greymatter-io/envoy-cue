@@ -2,6 +2,7 @@ package v3
 
 import (
 	_struct "envoyproxy.io/deps/golang/protobuf/ptypes/struct"
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	emptypb "envoyproxy.io/deps/protobuf/types/known/emptypb"
 )
 
@@ -152,7 +153,7 @@ import (
 #GrpcService_GoogleGrpc_CallCredentials_MetadataCredentialsFromPlugin: {
 	"@type":       "type.googleapis.com/envoy.config.core.v3.GrpcService_GoogleGrpc_CallCredentials_MetadataCredentialsFromPlugin"
 	name?:         string
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // Security token service configuration that allows Google gRPC to

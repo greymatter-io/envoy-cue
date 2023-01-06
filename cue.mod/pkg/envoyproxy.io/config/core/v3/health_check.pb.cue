@@ -2,6 +2,7 @@ package v3
 
 import (
 	_struct "envoyproxy.io/deps/golang/protobuf/ptypes/struct"
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/type/v3"
 	v31 "envoyproxy.io/type/matcher/v3"
 )
@@ -275,7 +276,7 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	"@type": "type.googleapis.com/envoy.config.core.v3.HealthCheck_CustomHealthCheck"
 	// The registered name of the custom health checker.
 	name?:         string
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // Health checks occur over the transport socket specified for the cluster. This implies that if a

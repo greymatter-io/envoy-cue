@@ -3,6 +3,7 @@ package core
 import (
 	_struct "envoyproxy.io/deps/golang/protobuf/ptypes/struct"
 	_type "envoyproxy.io/type"
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	matcher "envoyproxy.io/type/matcher"
 )
 
@@ -209,7 +210,7 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	name?: string
 	// Deprecated: Do not use.
 	config?:       _struct.#Struct
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // Health checks occur over the transport socket specified for the cluster. This implies that if a

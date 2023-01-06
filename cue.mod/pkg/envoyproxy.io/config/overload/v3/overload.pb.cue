@@ -1,6 +1,7 @@
 package v3
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/type/v3"
 )
 
@@ -17,7 +18,7 @@ ScaleTimersOverloadActionConfig_TimerType_TRANSPORT_SOCKET_CONNECT:        "TRAN
 	// resource monitor type.
 	// See the :ref:`extensions listed in typed_config below <extension_category_envoy.resource_monitors>` for the default list of available resource monitor.
 	name?:         string
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 #ThresholdTrigger: {
@@ -65,7 +66,7 @@ ScaleTimersOverloadActionConfig_TimerType_TRANSPORT_SOCKET_CONNECT:        "TRAN
 	// are notified when the overload action changes state.
 	triggers?: [...#Trigger]
 	// Configuration for the action being instantiated.
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // Configuration for which accounts the WatermarkBuffer Factories should

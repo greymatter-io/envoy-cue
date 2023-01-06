@@ -3,6 +3,7 @@ package core
 import (
 	_struct "envoyproxy.io/deps/golang/protobuf/ptypes/struct"
 	_type "envoyproxy.io/type"
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 )
 
 // Envoy supports :ref:`upstream priority routing
@@ -296,7 +297,7 @@ TrafficDirection_OUTBOUND:    "OUTBOUND"
 	name?: string
 	// Deprecated: Do not use.
 	config?:       _struct.#Struct
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // Runtime derived FractionalPercent with defaults for when the numerator or denominator is not

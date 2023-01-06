@@ -1,6 +1,7 @@
 package v2
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	core "envoyproxy.io/api/v2/core"
 	status "envoyproxy.io/deps/genproto/googleapis/rpc/status"
 )
@@ -51,7 +52,7 @@ import (
 	// The version of the response data.
 	version_info?: string
 	// The response resources. These resources are typed and depend on the API being called.
-	resources?: _
+	resources?: [...any1.#Any]
 	// [#not-implemented-hide:]
 	// Canary is used to support two Envoy command line flags:
 	//
@@ -197,5 +198,5 @@ import (
 	// resources.
 	version?: string
 	// The resource being tracked.
-	resource?: _
+	resource?: any1.#Any
 }

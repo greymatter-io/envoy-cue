@@ -2,6 +2,7 @@ package v3
 
 import (
 	_struct "envoyproxy.io/deps/golang/protobuf/ptypes/struct"
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/deps/cncf/xds/go/xds/core/v3"
 	v31 "envoyproxy.io/config/endpoint/v3"
 	v32 "envoyproxy.io/config/core/v3"
@@ -273,7 +274,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// "envoy.filters.network.thrift_proxy". See the extension's documentation for details on
 	// specific options.
 	// [#next-major-version: make this a list of typed extensions.]
-	typed_extension_protocol_options?: [string]: _
+	typed_extension_protocol_options?: [string]: any1.#Any
 	// If the DNS refresh rate is specified and the cluster type is either
 	// :ref:`STRICT_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.STRICT_DNS>`,
 	// or :ref:`LOGICAL_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.LOGICAL_DNS>`,
@@ -562,7 +563,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// Cluster specific configuration which depends on the cluster being instantiated.
 	// See the supported cluster for further documentation.
 	// [#extension-category: envoy.clusters]
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // Only valid when discovery type is EDS.

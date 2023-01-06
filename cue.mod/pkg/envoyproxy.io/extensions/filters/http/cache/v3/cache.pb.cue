@@ -1,6 +1,7 @@
 package v3
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/type/matcher/v3"
 	v31 "envoyproxy.io/config/route/v3"
 )
@@ -10,7 +11,7 @@ import (
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.cache.v3.CacheConfig"
 	// Config specific to the cache storage implementation.
 	// [#extension-category: envoy.http.cache]
-	typed_config?: _
+	typed_config?: any1.#Any
 	// List of matching rules that defines allowed ``Vary`` headers.
 	//
 	// The ``vary`` response header holds a list of header names that affect the

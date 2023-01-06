@@ -2,6 +2,7 @@ package v3
 
 import (
 	_struct "envoyproxy.io/deps/golang/protobuf/ptypes/struct"
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/type/v3"
 	v31 "envoyproxy.io/deps/cncf/xds/go/xds/core/v3"
 )
@@ -205,7 +206,7 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	// If both :ref:`filter_metadata <envoy_v3_api_field_config.core.v3.Metadata.filter_metadata>`
 	// and ``typed_filter_metadata`` fields are present in the metadata with same keys,
 	// only ``typed_filter_metadata`` field will be parsed.
-	typed_filter_metadata?: [string]: _
+	typed_filter_metadata?: [string]: any1.#Any
 }
 
 // Runtime derived uint32 with a default when not specified.
@@ -363,7 +364,7 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	// The name of the transport socket to instantiate. The name must match a supported transport
 	// socket implementation.
 	name?:         string
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // Runtime derived FractionalPercent with defaults for when the numerator or denominator is not

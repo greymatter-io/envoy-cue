@@ -1,6 +1,7 @@
 package v3
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/deps/cncf/xds/go/xds/core/v3"
 )
 
@@ -197,7 +198,7 @@ ApiConfigSource_ApiType_AGGREGATED_DELTA_GRPC:                 "AGGREGATED_DELTA
 	// Optional default configuration to use as the initial configuration if
 	// there is a failure to receive the initial extension configuration or if
 	// ``apply_default_config_without_warming`` flag is set.
-	default_config?: _
+	default_config?: any1.#Any
 	// Use the default config as the initial configuration without warming and
 	// waiting for the first discovery response. Requires the default configuration
 	// to be supplied.

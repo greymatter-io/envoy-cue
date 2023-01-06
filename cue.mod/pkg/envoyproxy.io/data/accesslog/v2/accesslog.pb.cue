@@ -1,6 +1,7 @@
 package v2
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	core "envoyproxy.io/api/v2/core"
 )
 
@@ -137,7 +138,7 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	// Map of filter state in stream info that have been configured to be logged. If the filter
 	// state serialized to any message other than `google.protobuf.Any` it will be packed into
 	// `google.protobuf.Any`.
-	filter_state_objects?: [string]: _
+	filter_state_objects?: [string]: any1.#Any
 }
 
 // Flags indicating occurrences during request/response processing.

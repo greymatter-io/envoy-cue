@@ -3,6 +3,7 @@ package v2
 import (
 	_struct "envoyproxy.io/deps/golang/protobuf/ptypes/struct"
 	_type "envoyproxy.io/type"
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	core "envoyproxy.io/api/v2/core"
 	v2 "envoyproxy.io/config/filter/accesslog/v2"
 	v21 "envoyproxy.io/api/v2"
@@ -339,13 +340,13 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	name?: string
 	// Deprecated: Do not use.
 	config?:       _struct.#Struct
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 #RequestIDExtension: {
 	"@type": "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.RequestIDExtension"
 	// Request ID extension specific configuration.
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // [#next-free-field: 10]

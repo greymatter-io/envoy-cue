@@ -1,6 +1,7 @@
 package v3
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/config/bootstrap/v3"
 )
 
@@ -34,7 +35,7 @@ import (
 	// :ref:`/config_dump?mask={} <operations_admin_interface_config_dump_by_mask>`,
 	// or :ref:`/config_dump?resource={},mask={}
 	// <operations_admin_interface_config_dump_by_resource_and_mask>` for more information.
-	configs?: _
+	configs?: [...any1.#Any]
 }
 
 // This message describes the bootstrap configuration that Envoy was started with. This includes
@@ -74,7 +75,7 @@ import (
 	// The actual secret information.
 	// Security sensitive information is redacted (replaced with "[redacted]") for
 	// private keys and passwords in TLS certificates.
-	secret?: _
+	secret?: any1.#Any
 	// Set if the last update failed, cleared after the next successful update.
 	// The *error_state* field contains the rejected version of this particular
 	// resource along with the reason and timestamp. For successfully updated or
@@ -96,5 +97,5 @@ import (
 	// The actual secret information.
 	// Security sensitive information is redacted (replaced with "[redacted]") for
 	// private keys and passwords in TLS certificates.
-	secret?: _
+	secret?: any1.#Any
 }

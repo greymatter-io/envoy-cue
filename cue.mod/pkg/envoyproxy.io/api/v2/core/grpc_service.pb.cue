@@ -2,6 +2,7 @@ package core
 
 import (
 	_struct "envoyproxy.io/deps/golang/protobuf/ptypes/struct"
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	emptypb "envoyproxy.io/deps/protobuf/types/known/emptypb"
 )
 
@@ -137,7 +138,7 @@ import (
 	name?:   string
 	// Deprecated: Do not use.
 	config?:       _struct.#Struct
-	typed_config?: _
+	typed_config?: any1.#Any
 }
 
 // Security token service configuration that allows Google gRPC to

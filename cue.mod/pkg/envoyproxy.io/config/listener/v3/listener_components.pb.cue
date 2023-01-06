@@ -1,6 +1,7 @@
 package v3
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/config/core/v3"
 	v31 "envoyproxy.io/type/v3"
 )
@@ -19,7 +20,7 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL:            "EXTERNAL"
 	// Filter specific configuration which depends on the filter being
 	// instantiated. See the supported filters for further documentation.
 	// [#extension-category: envoy.filters.network]
-	typed_config?: _
+	typed_config?: any1.#Any
 	// Configuration source specifier for an extension configuration discovery
 	// service. In case of a failure and without the default configuration, the
 	// listener closes the connections.
@@ -254,7 +255,7 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL:            "EXTERNAL"
 	// Filter specific configuration which depends on the filter being
 	// instantiated. See the supported filters for further documentation.
 	// [#extension-category: envoy.filters.listener,envoy.filters.udp_listener]
-	typed_config?: _
+	typed_config?: any1.#Any
 	// Configuration source specifier for an extension configuration discovery
 	// service. In case of a failure and without the default configuration, the
 	// listener closes the connections.

@@ -1,5 +1,9 @@
 package v3
 
+import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
+)
+
 // The tracing configuration specifies settings for an HTTP tracer provider used by Envoy.
 //
 // Envoy may support other tracers in the future, but right now the HTTP tracer is the only one
@@ -27,5 +31,5 @@ package v3
 	// supported HTTP trace driver.
 	// See the :ref:`extensions listed in typed_config below <extension_category_envoy.tracers>` for the default list of the HTTP trace driver.
 	name?:         string
-	typed_config?: _
+	typed_config?: any1.#Any
 }

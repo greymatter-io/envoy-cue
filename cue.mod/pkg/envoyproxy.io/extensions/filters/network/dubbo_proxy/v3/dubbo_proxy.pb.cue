@@ -1,6 +1,7 @@
 package v3
 
 import (
+	any1 "envoyproxy.io/deps/golang/protobuf/ptypes/any"
 	v3 "envoyproxy.io/config/core/v3"
 )
 
@@ -60,5 +61,5 @@ SerializationType_Hessian2: "Hessian2"
 	name?: string
 	// Filter specific configuration which depends on the filter being
 	// instantiated. See the supported filters for further documentation.
-	config?: _
+	config?: any1.#Any
 }
