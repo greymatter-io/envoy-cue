@@ -44,8 +44,8 @@ import (
 	// altering another client request header.
 	//
 	clear_route_cache?: bool
-	// Sets the HTTP status that is returned to the client when there is a network error between the
-	// filter and the authorization server. The default status is HTTP 403 Forbidden.
+	// Sets the HTTP status that is returned to the client when the authorization server returns an error
+	// or cannot be reached. The default status is HTTP 403 Forbidden.
 	status_on_error?: v31.#HttpStatus
 	// Specifies a list of metadata namespaces whose values, if present, will be passed to the
 	// ext_authz service. :ref:`filter_metadata <envoy_v3_api_field_config.core.v3.Metadata.filter_metadata>` is passed as an opaque ``protobuf::Struct``.
@@ -84,6 +84,10 @@ import (
 	// typed_per_filter_config for the path, requests will not be denied.
 	//
 	// If this field is not specified, all requests will be allowed when disabled.
+	//
+	// If a request is denied due to this setting, the response code in :ref:`status_on_error
+	// <envoy_v3_api_field_extensions.filters.http.ext_authz.v3.ExtAuthz.status_on_error>` will
+	// be returned.
 	deny_at_disable?: v3.#RuntimeFeatureFlag
 	// Specifies if the peer certificate is sent to the external service.
 	//
