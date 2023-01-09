@@ -969,6 +969,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 }
 
 #LoadBalancingPolicy_Policy: {
-	"@type":                 "type.googleapis.com/envoy.config.cluster.v3.LoadBalancingPolicy_Policy"
+	"@type": "type.googleapis.com/envoy.config.cluster.v3.LoadBalancingPolicy_Policy"
+	// [#extension-category: envoy.load_balancing_policies]
 	typed_extension_config?: v32.#TypedExtensionConfig
 }
