@@ -31,17 +31,17 @@ Type_WellKnownType_DURATION:                    "DURATION"
 	//
 	// The following entries are in this table:
 	//
-	// - An Ident or Select expression is represented here if it resolves to a
-	//   declaration. For instance, if `a.b.c` is represented by
-	//   `select(select(id(a), b), c)`, and `a.b` resolves to a declaration,
-	//   while `c` is a field selection, then the reference is attached to the
-	//   nested select expression (but not to the id or or the outer select).
-	//   In turn, if `a` resolves to a declaration and `b.c` are field selections,
-	//   the reference is attached to the ident expression.
-	// - Every Call expression has an entry here, identifying the function being
-	//   called.
-	// - Every CreateStruct expression for a message has an entry, identifying
-	//   the message.
+	//   - An Ident or Select expression is represented here if it resolves to a
+	//     declaration. For instance, if `a.b.c` is represented by
+	//     `select(select(id(a), b), c)`, and `a.b` resolves to a declaration,
+	//     while `c` is a field selection, then the reference is attached to the
+	//     nested select expression (but not to the id or or the outer select).
+	//     In turn, if `a` resolves to a declaration and `b.c` are field selections,
+	//     the reference is attached to the ident expression.
+	//   - Every Call expression has an entry here, identifying the function being
+	//     called.
+	//   - Every CreateStruct expression for a message has an entry, identifying
+	//     the message.
 	reference_map?: [int64]: #Reference
 	// A map from expression ids to types.
 	//
@@ -121,9 +121,11 @@ Type_WellKnownType_DURATION:                    "DURATION"
 	// Declarations are organized in containers and this represents the full path
 	// to the declaration in its container, as in `google.api.expr.Decl`.
 	//
-	// Declarations used as [FunctionDecl.Overload][google.api.expr.v1alpha1.Decl.FunctionDecl.Overload] parameters may or may not
-	// have a name depending on whether the overload is function declaration or a
-	// function definition containing a result [Expr][google.api.expr.v1alpha1.Expr].
+	// Declarations used as
+	// [FunctionDecl.Overload][google.api.expr.v1alpha1.Decl.FunctionDecl.Overload]
+	// parameters may or may not have a name depending on whether the overload is
+	// function declaration or a function definition containing a result
+	// [Expr][google.api.expr.v1alpha1.Expr].
 	name?: string
 	// Identifier declaration.
 	ident?: #Decl_IdentDecl
@@ -143,7 +145,8 @@ Type_WellKnownType_DURATION:                    "DURATION"
 	// presented candidates must happen at runtime because of dynamic types. The
 	// type checker attempts to narrow down this list as much as possible.
 	//
-	// Empty if this is not a reference to a [Decl.FunctionDecl][google.api.expr.v1alpha1.Decl.FunctionDecl].
+	// Empty if this is not a reference to a
+	// [Decl.FunctionDecl][google.api.expr.v1alpha1.Decl.FunctionDecl].
 	overload_id?: [...string]
 	// For references to constants, this may contain the value of the
 	// constant if known at compile time.
@@ -213,8 +216,8 @@ Type_WellKnownType_DURATION:                    "DURATION"
 }
 
 // An overload indicates a function's parameter types and return type, and
-// may optionally include a function body described in terms of [Expr][google.api.expr.v1alpha1.Expr]
-// values.
+// may optionally include a function body described in terms of
+// [Expr][google.api.expr.v1alpha1.Expr] values.
 //
 // Functions overloads are declared in either a function or method
 // call-style. For methods, the `params[0]` is the expected type of the
@@ -227,10 +230,12 @@ Type_WellKnownType_DURATION:                    "DURATION"
 	// Required. Globally unique overload name of the function which reflects
 	// the function name and argument types.
 	//
-	// This will be used by a [Reference][google.api.expr.v1alpha1.Reference] to indicate the `overload_id` that
-	// was resolved for the function `name`.
+	// This will be used by a [Reference][google.api.expr.v1alpha1.Reference]
+	// to indicate the `overload_id` that was resolved for the function
+	// `name`.
 	overload_id?: string
-	// List of function parameter [Type][google.api.expr.v1alpha1.Type] values.
+	// List of function parameter [Type][google.api.expr.v1alpha1.Type]
+	// values.
 	//
 	// Param types are disjoint after generic type parameters have been
 	// replaced with the type `DYN`. Since the `DYN` type is compatible with

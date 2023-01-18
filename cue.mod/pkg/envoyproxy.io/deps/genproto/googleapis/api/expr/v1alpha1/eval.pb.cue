@@ -48,22 +48,22 @@ import (
 	// unknowns *might* be included included when evaluation could result in
 	// different unknowns. For example:
 	//
-	//     (<unknown[1]> || true) && <unknown[2]> -> <unknown[2]>
-	//     <unknown[1]> || <unknown[2]> -> <unknown[1,2]>
-	//     <unknown[1]>.foo -> <unknown[1]>
-	//     foo(<unknown[1]>) -> <unknown[1]>
-	//     <unknown[1]> + <unknown[2]> -> <unknown[1]> or <unknown[2[>
+	// (<unknown[1]> || true) && <unknown[2]> -> <unknown[2]>
+	// <unknown[1]> || <unknown[2]> -> <unknown[1,2]>
+	// <unknown[1]>.foo -> <unknown[1]>
+	// foo(<unknown[1]>) -> <unknown[1]>
+	// <unknown[1]> + <unknown[2]> -> <unknown[1]> or <unknown[2[>
 	//
 	// Unknown takes precidence over Error in cases where a `Value` can short
 	// circuit the result:
 	//
-	//     <error> || <unknown> -> <unknown>
-	//     <error> && <unknown> -> <unknown>
+	// <error> || <unknown> -> <unknown>
+	// <error> && <unknown> -> <unknown>
 	//
 	// Errors take precidence in all other cases:
 	//
-	//     <unknown> + <error> -> <error>
-	//     foo(<unknown>, <error>) -> <error>
+	//        <unknown> + <error> -> <error>
+	//        foo(<unknown>, <error>) -> <error>
 	unknown?: #UnknownSet
 }
 

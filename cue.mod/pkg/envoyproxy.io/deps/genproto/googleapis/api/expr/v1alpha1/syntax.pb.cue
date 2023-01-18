@@ -272,5 +272,11 @@ import (
 	// The key expression for a map creation statement.
 	map_key?: #Expr
 	// Required. The value assigned to the key.
+	//
+	// If the optional_entry field is true, the expression must resolve to an
+	// optional-typed value. If the optional value is present, the key will be
+	// set; however, if the optional value is absent, the key will be unset.
 	value?: #Expr
+	// Whether the key-value pair is optional.
+	optional_entry?: bool
 }
