@@ -287,6 +287,7 @@ RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 // .. code-block:: cpp
 //
 //   ("<descriptor_key>", "<value_queried_from_metadata>")
+// [#next-free-field: 6]
 #RateLimitConfig_Action_MetaData: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimitConfig_Action_MetaData"
 	// The key to use in the descriptor entry.
@@ -295,10 +296,15 @@ RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 	// only happen if the value in the metadata is of type string.
 	metadata_key?: v34.#MetadataKey
 	// An optional value to use if ``metadata_key`` is empty. If not set and
-	// no value is present under the metadata_key then no descriptor is generated.
+	// no value is present under the metadata_key then ``skip_if_absent`` is followed to
+	// skip calling the rate limiting service or skip the descriptor.
 	default_value?: string
 	// Source of metadata
 	source?: #RateLimitConfig_Action_MetaData_Source
+	// If set to true, Envoy skips the descriptor while calling rate limiting service
+	// when ``metadata_key`` is empty and ``default_value`` is not set. By default it skips calling the
+	// rate limiting service in that case.
+	skip_if_absent?: bool
 }
 
 // Fetches the override from the dynamic metadata.

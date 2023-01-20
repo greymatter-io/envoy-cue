@@ -35,7 +35,7 @@ CustomInlineHeader_InlineHeaderType_RESPONSE_HEADER:  "RESPONSE_HEADER"
 CustomInlineHeader_InlineHeaderType_RESPONSE_TRAILER: "RESPONSE_TRAILER"
 
 // Bootstrap :ref:`configuration overview <config_overview_bootstrap>`.
-// [#next-free-field: 37]
+// [#next-free-field: 38]
 #Bootstrap: {
 	"@type": "type.googleapis.com/envoy.config.bootstrap.v3.Bootstrap"
 	// Node identity to present to the management server and for instance
@@ -247,6 +247,11 @@ CustomInlineHeader_InlineHeaderType_RESPONSE_TRAILER: "RESPONSE_TRAILER"
 	//    See :repo:`xds_config_tracker_integration_test <test/integration/xds_config_tracker_integration_test.cc>`
 	//    for an example usage of the interface.
 	xds_config_tracker_extension?: v3.#TypedExtensionConfig
+	// [#not-implemented-hide:]
+	// This controls the type of listener manager configured for Envoy. Currently
+	// Envoy only supports ListenerManager for this field and Envoy Mobile
+	// supports ApiListenerManager.
+	listener_manager?: v3.#TypedExtensionConfig
 }
 
 // Administration interface :ref:`operations documentation

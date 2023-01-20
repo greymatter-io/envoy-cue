@@ -260,6 +260,20 @@ Listener_DrainType_MODIFY_ONLY: "MODIFY_ONLY"
 	ignore_global_conn_limit?: bool
 }
 
+// A placeholder proto so that users can explicitly configure the standard
+// Listener Manager via the bootstrap's :ref:`listener_manager <envoy_v3_api_field_config.bootstrap.v3.Bootstrap.listener_manager>`.
+// [#not-implemented-hide:]
+#ListenerManager: {
+	"@type": "type.googleapis.com/envoy.config.listener.v3.ListenerManager"
+}
+
+// A placeholder proto so that users can explicitly configure the API
+// Listener Manager via the bootstrap's :ref:`listener_manager <envoy_v3_api_field_config.bootstrap.v3.Bootstrap.listener_manager>`.
+// [#not-implemented-hide:]
+#ApiListenerManager: {
+	"@type": "type.googleapis.com/envoy.config.listener.v3.ApiListenerManager"
+}
+
 // [#not-implemented-hide:]
 #Listener_DeprecatedV1: {
 	"@type": "type.googleapis.com/envoy.config.listener.v3.Listener_DeprecatedV1"

@@ -1339,7 +1339,8 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// The weight of the cluster. This value is relative to the other clusters'
 	// weights. When a request matches the route, the choice of an upstream cluster
 	// is determined by its weight. The sum of weights across all
-	// entries in the clusters array must be greater than 0.
+	// entries in the clusters array must be greater than 0, and must not exceed
+	// uint32_t maximal value (4294967295).
 	weight?: uint32
 	// Optional endpoint metadata match criteria used by the subset load balancer. Only endpoints in
 	// the upstream cluster with metadata matching what is set in this field will be considered for
@@ -1898,6 +1899,7 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 // .. code-block:: cpp
 //
 //   ("<descriptor_key>", "<value_queried_from_metadata>")
+// [#next-free-field: 6]
 #RateLimit_Action_MetaData: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action_MetaData"
 	// The key to use in the descriptor entry.
@@ -1906,10 +1908,15 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// only happen if the value in the metadata is of type string.
 	metadata_key?: v35.#MetadataKey
 	// An optional value to use if ``metadata_key`` is empty. If not set and
-	// no value is present under the metadata_key then no descriptor is generated.
+	// no value is present under the metadata_key then ``skip_if_absent`` is followed to
+	// skip calling the rate limiting service or skip the descriptor.
 	default_value?: string
 	// Source of metadata
 	source?: #RateLimit_Action_MetaData_Source
+	// If set to true, Envoy skips the descriptor while calling rate limiting service
+	// when ``metadata_key`` is empty and ``default_value`` is not set. By default it skips calling the
+	// rate limiting service in that case.
+	skip_if_absent?: bool
 }
 
 // The following descriptor entry is appended to the descriptor:
