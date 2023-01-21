@@ -16,4 +16,6 @@ import (
 	table_size?: uint64
 	// Common configuration for hashing-based load balancing policies.
 	consistent_hashing_lb_config?: v3.#ConsistentHashingLbConfig
+	// Enable locality weighted load balancing for maglev lb explicitly.
+	locality_weighted_lb_config?: v3.#LocalityLbConfig_LocalityWeightedLbConfig
 }

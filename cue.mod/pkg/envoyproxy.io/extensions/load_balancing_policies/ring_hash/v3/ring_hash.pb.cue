@@ -14,7 +14,7 @@ RingHash_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 // This configuration allows the built-in RING_HASH LB policy to be configured via the LB policy
 // extension point. See the :ref:`load balancing architecture overview
 // <arch_overview_load_balancing_types>` for more information.
-// [#next-free-field: 7]
+// [#next-free-field: 8]
 #RingHash: {
 	"@type": "type.googleapis.com/envoy.extensions.load_balancing_policies.ring_hash.v3.RingHash"
 	// The hash function used to hash hosts onto the ketama ring. The value defaults to
@@ -63,4 +63,6 @@ RingHash_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	hash_balance_factor?: uint32
 	// Common configuration for hashing-based load balancing policies.
 	consistent_hashing_lb_config?: v3.#ConsistentHashingLbConfig
+	// Enable locality weighted load balancing for ring hash lb explicitly.
+	locality_weighted_lb_config?: v3.#LocalityLbConfig_LocalityWeightedLbConfig
 }
