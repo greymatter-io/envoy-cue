@@ -267,6 +267,13 @@ Listener_DrainType_MODIFY_ONLY: "MODIFY_ONLY"
 	"@type": "type.googleapis.com/envoy.config.listener.v3.ListenerManager"
 }
 
+// A placeholder proto so that users can explicitly configure the standard
+// Validation Listener Manager via the bootstrap's :ref:`listener_manager <envoy_v3_api_field_config.bootstrap.v3.Bootstrap.listener_manager>`.
+// [#not-implemented-hide:]
+#ValidationListenerManager: {
+	"@type": "type.googleapis.com/envoy.config.listener.v3.ValidationListenerManager"
+}
+
 // A placeholder proto so that users can explicitly configure the API
 // Listener Manager via the bootstrap's :ref:`listener_manager <envoy_v3_api_field_config.bootstrap.v3.Bootstrap.listener_manager>`.
 // [#not-implemented-hide:]
