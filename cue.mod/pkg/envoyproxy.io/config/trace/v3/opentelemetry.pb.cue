@@ -10,6 +10,7 @@ import (
 	"@type": "type.googleapis.com/envoy.config.trace.v3.OpenTelemetryConfig"
 	// The upstream gRPC cluster that will receive OTLP traces.
 	// Note that the tracer drops traces if the server does not read data fast enough.
+	// This field can be left empty to disable reporting traces to the collector.
 	grpc_service?: v3.#GrpcService
 	// The name for the service. This will be populated in the ResourceSpan Resource attributes.
 	// If it is not provided, it will default to "unknown_service:envoy".

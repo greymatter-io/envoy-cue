@@ -35,6 +35,6 @@ package v3
 	// value, if we later start seeing fresh reports again, the
 	// blackout_period applies. Defaults to 3 minutes.
 	weight_expiration_period?: string
-	// How often endpoint weights are recalculated.  Default is 1 second.
+	// How often endpoint weights are recalculated. Default is 1 second.
 	weight_update_period?: string
 }
