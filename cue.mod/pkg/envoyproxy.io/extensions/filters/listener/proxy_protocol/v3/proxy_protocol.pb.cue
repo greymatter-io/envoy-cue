@@ -1,5 +1,9 @@
 package v3
 
+import (
+	v3 "envoyproxy.io/config/core/v3"
+)
+
 #ProxyProtocol: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.listener.proxy_protocol.v3.ProxyProtocol"
 	// The list of rules to apply to requests.
@@ -20,6 +24,9 @@ package v3
 	//   signature will timeout (Envoy is unable to differentiate these requests
 	//   from incomplete proxy protocol requests).
 	allow_requests_without_proxy_protocol?: bool
+	// This config controls which TLVs can be passed to filter state if it is Proxy Protocol
+	// V2 header. If there is no setting for this field, no TLVs will be passed through.
+	pass_through_tlvs?: v3.#ProxyProtocolPassThroughTLVs
 }
 
 #ProxyProtocol_KeyValuePair: {
