@@ -34,6 +34,7 @@ HeaderValidatorConfig_UriPathNormalizationOptions_PathWithEscapedSlashesAction_U
 // #. Normalization of the URI path according to `Normalization and Comparison <https://datatracker.ietf.org/doc/html/rfc3986#section-6>`_
 //    without `case normalization <https://datatracker.ietf.org/doc/html/rfc3986#section-6.2.2.1>`_
 //
+// [#comment:TODO(yanavlasov): Put #extension: envoy.http.header_validators.envoy_default after it is not hidden any more]
 #HeaderValidatorConfig: {
 	"@type":                 "type.googleapis.com/envoy.extensions.http.header_validators.envoy_default.v3.HeaderValidatorConfig"
 	http1_protocol_options?: #HeaderValidatorConfig_Http1ProtocolOptions

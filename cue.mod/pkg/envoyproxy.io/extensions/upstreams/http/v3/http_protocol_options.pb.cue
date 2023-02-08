@@ -46,7 +46,7 @@ import (
 //             http2_protocol_options:
 //               max_concurrent_streams: 100
 //        .... [further cluster config]
-// [#next-free-field: 7]
+// [#next-free-field: 8]
 #HttpProtocolOptions: {
 	"@type": "type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions"
 	// This contains options common across HTTP/1 and HTTP/2
@@ -74,6 +74,15 @@ import (
 	// upstream filters will count as a final response if hedging is configured.
 	// [#extension-category: envoy.filters.http.upstream]
 	http_filters?: [...v31.#HttpFilter]
+	// Configuration options for Unified Header Validation (UHV).
+	// UHV is an extensible mechanism for checking validity of HTTP responses.
+	//
+	// [#comment:TODO(yanavlasov): Make it a link to the default header validator doc when it becomes visible.]
+	// Leaving this field unspecified, selects the default header validator ``envoy.http.header_validators.envoy_default``.
+	//
+	// [#not-implemented-hide:]
+	// [#extension-category: envoy.http.header_validators]
+	header_validation_config?: v3.#TypedExtensionConfig
 }
 
 // If this is used, the cluster will only operate on one of the possible upstream protocols.
