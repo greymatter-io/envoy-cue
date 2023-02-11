@@ -26,6 +26,12 @@ import (
 	allow_requests_without_proxy_protocol?: bool
 	// This config controls which TLVs can be passed to filter state if it is Proxy Protocol
 	// V2 header. If there is no setting for this field, no TLVs will be passed through.
+	//
+	// .. note::
+	//
+	//   If this is configured, you likely also want to set
+	//   :ref:`core.v3.ProxyProtocolConfig.pass_through_tlvs <envoy_v3_api_field_config.core.v3.ProxyProtocolConfig.pass_through_tlvs>`,
+	//   which controls pass-through for the upstream.
 	pass_through_tlvs?: v3.#ProxyProtocolPassThroughTLVs
 }
 

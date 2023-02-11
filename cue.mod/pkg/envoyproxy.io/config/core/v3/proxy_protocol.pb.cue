@@ -25,7 +25,7 @@ ProxyProtocolConfig_Version_V2: "V2"
 	"@type": "type.googleapis.com/envoy.config.core.v3.ProxyProtocolConfig"
 	// The PROXY protocol version to use. See https://www.haproxy.org/download/2.1/doc/proxy-protocol.txt for details
 	version?: #ProxyProtocolConfig_Version
-	// This config controls which TLVs can be passed to filter state if it is Proxy Protocol
+	// This config controls which TLVs can be passed to upstream if it is Proxy Protocol
 	// V2 header. If there is no setting for this field, no TLVs will be passed through.
 	pass_through_tlvs?: #ProxyProtocolPassThroughTLVs
 }
