@@ -47,3 +47,13 @@ package v3
 	// The response trailer to match on.
 	header_name?: string
 }
+
+// Match input indicates that matching should be done on a specific query parameter.
+// The resulting input string will be the first query parameter for the value
+// 'query_param'.
+// [#extension: envoy.matching.inputs.query_params]
+#HttpRequestQueryParamMatchInput: {
+	"@type": "type.googleapis.com/envoy.type.matcher.v3.HttpRequestQueryParamMatchInput"
+	// The query parameter to match on.
+	query_param?: string
+}
