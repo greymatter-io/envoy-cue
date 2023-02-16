@@ -36,7 +36,7 @@ import (
 //       cache_duration:
 //         seconds: 300
 //
-// [#next-free-field: 16]
+// [#next-free-field: 17]
 #JwtProvider: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtProvider"
 	// Specify the `principal <https://tools.ietf.org/html/rfc7519#section-4.1.1>`_ that issued
@@ -232,6 +232,20 @@ import (
 	//   config validation.
 	//
 	header_in_metadata?: string
+	// If non empty, the failure status `::google::jwt_verify::Status` for a non verified JWT will be written to StreamInfo DynamicMetadata
+	// in the format as: ``namespace`` is the jwt_authn filter name as ````envoy.filters.http.jwt_authn````
+	// The value is the ``protobuf::Struct``. The values of this field will be ``code`` and ``message``
+	// and they will contain the JWT authentication failure status code and a message describing the failure.
+	//
+	// For example, if failed_status_in_metadata is ``my_auth_failure_status``:
+	//
+	// .. code-block:: yaml
+	//
+	//   envoy.filters.http.jwt_authn:
+	//     my_auth_failure_status:
+	//       code: 3
+	//       message: Jwt expired
+	failed_status_in_metadata?: string
 	// Specify the clock skew in seconds when verifying JWT time constraint,
 	// such as ``exp``, and ``nbf``. If not specified, default is 60 seconds.
 	clock_skew_seconds?: uint32
