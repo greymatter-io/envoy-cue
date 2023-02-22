@@ -57,7 +57,7 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 }
 
 // Defines fields that are shared by all Envoy access logs.
-// [#next-free-field: 28]
+// [#next-free-field: 29]
 #AccessLogCommon: {
 	"@type": "type.googleapis.com/envoy.data.accesslog.v3.AccessLogCommon"
 	// [#not-implemented-hide:]
@@ -164,6 +164,10 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	// :ref:`stream_id <envoy_v3_api_field_data.accesslog.v3.AccessLogCommon.stream_id>` to
 	// correlate all these intermediate log entries and final log entry.
 	intermediate_log_entry?: bool
+	// If downstream connection in listener failed due to transport socket (e.g. TLS handshake), provides the
+	// failure reason from the transport socket. The format of this field depends on the configured downstream
+	// transport socket. Common TLS failures are in :ref:`TLS trouble shooting <arch_overview_ssl_trouble_shooting>`.
+	downstream_transport_failure_reason?: string
 }
 
 // Flags indicating occurrences during request/response processing.
