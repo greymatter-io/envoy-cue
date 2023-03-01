@@ -5,7 +5,7 @@ import (
 )
 
 // Configuration specific to the UDP QUIC listener.
-// [#next-free-field: 9]
+// [#next-free-field: 10]
 #QuicProtocolOptions: {
 	"@type":                "type.googleapis.com/envoy.config.listener.v3.QuicProtocolOptions"
 	quic_protocol_options?: v3.#QuicProtocolOptions
@@ -41,4 +41,9 @@ import (
 	// If not specified the :ref:`default one configured by <envoy_v3_api_msg_extensions.quic.connection_id_generator.v3.DeterministicConnectionIdGeneratorConfig>` will be used.
 	// [#extension-category: envoy.quic.connection_id_generator]
 	connection_id_generator_config?: v3.#TypedExtensionConfig
+	// Configure the server's preferred address to advertise so that client can migrate to it. See :ref:`example <envoy_v3_api_msg_extensions.quic.server_preferred_address.v3.FixedServerPreferredAddressConfig>` which configures a pair of v4 and v6 preferred addresses.
+	// The current QUICHE implementation will advertise only one of the preferred IPv4 and IPv6 addresses based on the address family the client initially connects with, and only if the client is also QUICHE-based.
+	// If not specified, Envoy will not advertise any server's preferred address.
+	// [#extension-category: envoy.quic.server_preferred_address]
+	server_preferred_address_config?: v3.#TypedExtensionConfig
 }
