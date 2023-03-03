@@ -49,7 +49,7 @@ HttpConnectionManager_PathWithEscapedSlashesAction_UNESCAPE_AND_FORWARD:        
 HttpConnectionManager_Tracing_OperationName_INGRESS: "INGRESS"
 HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 
-// [#next-free-field: 53]
+// [#next-free-field: 54]
 #HttpConnectionManager: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
 	// Supplies the type of codec that the connection manager should use.
@@ -440,6 +440,10 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// Append the `x-forwarded-port` header with the port value client used to connect to Envoy. It
 	// will be ignored if the `x-forwarded-port` header has been set by any trusted proxy in front of Envoy.
 	append_x_forwarded_port?: bool
+	// Whether the HCM will add ProxyProtocolFilterState to the Connection lifetime filter state. Defaults to `true`.
+	// This should be set to `false` in cases where Envoy's view of the downstream address may not correspond to the
+	// actual client address, for example, if there's another proxy in front of the Envoy.
+	add_proxy_protocol_connection_state?: bool
 }
 
 // The configuration to customize local reply returned by Envoy.
