@@ -23,7 +23,7 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	statuses?: [...#HealthStatus]
 }
 
-// [#next-free-field: 26]
+// [#next-free-field: 25]
 #HealthCheck: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.HealthCheck"
 	// The time to wait for a health check response. If the timeout is reached the
@@ -153,14 +153,6 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// the cluster's :ref:`transport socket <envoy_v3_api_field_config.cluster.v3.Cluster.transport_socket>`
 	// will be used for health check socket configuration.
 	transport_socket_match_criteria?: _struct.#Struct
-	// When the health status of a host is healthy, if this field is enabled, when envoy wants to send an active health check packet to a target host, it will first check whether
-	// there was successful non-health check traffic that targeted the host during the previous interval. If there was successful non-health check traffic, Envoy will not send a health check packet.
-	// For HTTP, if the traffic response is 2xx, it will be considered as successful traffic.
-	// For TCP, if any TCP connections successfully connect, it will be considered as successful traffic.
-	// For gRPC, if grpc_status is not one of ( DeadlineExceeded, Unimplemented, Internal, Unavailable, Unknown, DataLoss), it will be considered as successful traffic. Refer to UpstreamEndpointStats.
-	// For Custom health check, this option can not be used.
-	// The default value is false.
-	disable_health_check_if_active_traffic?: bool
 }
 
 // Describes the encoding of the payload bytes in the payload.

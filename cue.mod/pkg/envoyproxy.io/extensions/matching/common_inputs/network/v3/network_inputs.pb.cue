@@ -92,3 +92,11 @@ package v3
 #ApplicationProtocolInput: {
 	"@type": "type.googleapis.com/envoy.extensions.matching.common_inputs.network.v3.ApplicationProtocolInput"
 }
+
+// Input that matches by a specific filter state key.
+// The value of the provided filter state key will be the raw string representation of the filter state object
+// [#extension: envoy.matching.inputs.filter_state]
+#FilterStateInput: {
+	"@type": "type.googleapis.com/envoy.extensions.matching.common_inputs.network.v3.FilterStateInput"
+	key?:    string
+}
