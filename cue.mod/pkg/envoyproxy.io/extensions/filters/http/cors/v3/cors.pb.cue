@@ -5,11 +5,18 @@ import (
 	v31 "envoyproxy.io/config/core/v3"
 )
 
-// Cors filter config.
+// Cors filter config. Set this in
+// ref:`http_filters <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.http_filters>`
+// to enable the CORS filter.
+//
+// Please note that the :ref:`CorsPolicy <envoy_v3_api_msg_extensions.filters.http.cors.v3.CorsPolicy>`
+// must be configured in the ``RouteConfiguration`` as ``typed_per_filter_config`` at some level to make the filter work.
 #Cors: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.cors.v3.Cors"
 }
 
+// Per route configuration for the CORS filter. This configuration should be configured in the ``RouteConfiguration`` as ``typed_per_filter_config`` at some level to
+// make the filter work.
 // [#next-free-field: 10]
 #CorsPolicy: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.cors.v3.CorsPolicy"

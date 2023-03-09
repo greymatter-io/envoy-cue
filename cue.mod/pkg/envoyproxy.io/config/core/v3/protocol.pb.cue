@@ -130,7 +130,7 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// this list contained the value ``.c.example.com``, then an Alt-Svc entry for ``foo.c.example.com``
 	// could be shared with ``bar.c.example.com`` but would not be shared with ``baz.example.com``. On
 	// the other hand, if the list contained the value ``.example.com`` then all three hosts could share
-	// Alt-Svc entries. Each entry must start with ``.``.  If a hostname matches multiple suffixes, the
+	// Alt-Svc entries. Each entry must start with ``.``. If a hostname matches multiple suffixes, the
 	// first listed suffix will be used.
 	//
 	// Since lookup in this list is O(n), it is recommended that the number of suffixes be limited.
@@ -185,7 +185,7 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	max_requests_per_connection?: uint32
 }
 
-// [#next-free-field: 9]
+// [#next-free-field: 10]
 #Http1ProtocolOptions: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.Http1ProtocolOptions"
 	// Handle HTTP requests with absolute URLs in the requests. These requests
@@ -240,6 +240,12 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// (inferred if not present), host (from the host/:authority header) and path
 	// (from first line or :path header).
 	send_fully_qualified_url?: bool
+	// [#not-implemented-hide:] Hiding so that field can be removed after BalsaParser is rolled out.
+	// If set, force HTTP/1 parser: BalsaParser if true, http-parser if false.
+	// If unset, HTTP/1 parser is selected based on
+	// envoy.reloadable_features.http1_use_balsa_parser.
+	// See issue #21245.
+	use_balsa_parser?: bool
 }
 
 #KeepaliveSettings: {
