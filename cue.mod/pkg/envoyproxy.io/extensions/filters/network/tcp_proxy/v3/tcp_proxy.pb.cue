@@ -58,6 +58,8 @@ import (
 	hash_policy?: [...v32.#HashPolicy]
 	// If set, this configures tunneling, e.g. configuration options to tunnel TCP payload over
 	// HTTP CONNECT. If this message is absent, the payload will be proxied upstream as per usual.
+	// It is possible to dynamically override this configuration and disable tunneling per connection,
+	// by setting a per-connection filter state object for the key ``envoy.tcp_proxy.disable_tunneling``.
 	tunneling_config?: #TcpProxy_TunnelingConfig
 	// The maximum duration of a connection. The duration is defined as the period since a connection
 	// was established. If not set, there is no max duration. When max_downstream_connection_duration

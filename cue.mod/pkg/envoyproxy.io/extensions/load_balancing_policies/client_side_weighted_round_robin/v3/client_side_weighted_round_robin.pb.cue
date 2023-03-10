@@ -6,13 +6,17 @@ package v3
 // how the endpoint weights are determined. In the ROUND_ROBIN policy,
 // the endpoint weights are sent by the control plane via EDS. However,
 // in this policy, the endpoint weights are instead determined via
-// qps and CPU utilization metrics sent by the endpoint using the Open
-// Request Cost Aggregation (ORCA) protocol. The weight of a given endpoint
-// is computed as qps / cpu_utilization.
+// qps (queries per second), eps (errors per second), and CPU utilization
+// metrics sent by the endpoint using the Open Request Cost Aggregation (ORCA)
+// protocol. A query counts towards qps when successful, otherwise towards both
+// qps and eps. What counts as an error is up to the endpoint to define.
+// A config parameter error_utilization_penalty controls the penalty to adjust
+// endpoint weights using eps and qps. The weight of a given endpoint is
+// computed as: qps / (cpu_utilization + eps/qps * error_utilization_penalty)
 //
 // See the :ref:`load balancing architecture overview<arch_overview_load_balancing_types>` for more information.
 //
-// [#next-free-field: 6]
+// [#next-free-field: 7]
 #ClientSideWeightedRoundRobin: {
 	"@type": "type.googleapis.com/envoy.extensions.load_balancing_policies.client_side_weighted_round_robin.v3.ClientSideWeightedRoundRobin"
 	// Whether to enable out-of-band utilization reporting collection from
@@ -37,4 +41,7 @@ package v3
 	weight_expiration_period?: string
 	// How often endpoint weights are recalculated. Default is 1 second.
 	weight_update_period?: string
+	// The multiplier used to adjust endpoint weights with the error rate
+	// calculated as eps/qps. Default is 1.0.
+	error_utilization_penalty?: float32
 }
