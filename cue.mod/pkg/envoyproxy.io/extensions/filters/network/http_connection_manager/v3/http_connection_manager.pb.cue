@@ -49,7 +49,7 @@ HttpConnectionManager_PathWithEscapedSlashesAction_UNESCAPE_AND_FORWARD:        
 HttpConnectionManager_Tracing_OperationName_INGRESS: "INGRESS"
 HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 
-// [#next-free-field: 54]
+// [#next-free-field: 55]
 #HttpConnectionManager: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
 	// Supplies the type of codec that the connection manager should use.
@@ -200,6 +200,14 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// Configuration for :ref:`HTTP access logs <arch_overview_access_logs>`
 	// emitted by the connection manager.
 	access_log?: [...v31.#AccessLog]
+	// The interval to flush the above access logs. By default, the HCM will flush exactly one access log
+	// on stream close, when the HTTP request is complete. If this field is set, the HCM will flush access
+	// logs periodically at the specified interval. This is especially useful in the case of long-lived
+	// requests, such as CONNECT and Websockets. Final access logs can be detected via the
+	// `requestComplete()` method of `StreamInfo` in access log filters, or thru the `%DURATION%` substitution
+	// string.
+	// The interval must be at least 1 millisecond.
+	access_log_flush_interval?: string
 	// If set to true, the connection manager will use the real remote address
 	// of the client connection when determining internal versus external origin and manipulating
 	// various headers. If set to false or absent, the connection manager will use the
