@@ -7,11 +7,19 @@ import (
 )
 
 // [#extension: envoy.filters.http.cache]
+// [#next-free-field: 6]
 #CacheConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.cache.v3.CacheConfig"
-	// Config specific to the cache storage implementation.
+	// Config specific to the cache storage implementation. Required unless ``disabled``
+	// is true.
 	// [#extension-category: envoy.http.cache]
 	typed_config?: any1.#Any
+	// When true, the cache filter is a no-op filter.
+	//
+	// Possible use-cases for this include:
+	// - Turning a filter on and off with :ref:`ECDS <envoy_v3_api_file_envoy/service/extension/v3/config_discovery.proto>`.
+	// [#comment: once route-specific overrides are implemented, they are the more likely use-case.]
+	disabled?: bool
 	// List of matching rules that defines allowed ``Vary`` headers.
 	//
 	// The ``vary`` response header holds a list of header names that affect the
