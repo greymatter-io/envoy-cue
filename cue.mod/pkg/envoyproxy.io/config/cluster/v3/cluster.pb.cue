@@ -343,7 +343,8 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	typed_dns_resolver_config?: v32.#TypedExtensionConfig
 	// Optional configuration for having cluster readiness block on warm-up. Currently, only applicable for
 	// :ref:`STRICT_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.STRICT_DNS>`,
-	// or :ref:`LOGICAL_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.LOGICAL_DNS>`.
+	// or :ref:`LOGICAL_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.LOGICAL_DNS>`,
+	// or :ref:`Redis Cluster<arch_overview_redis>`.
 	// If true, cluster readiness blocks on warm-up. If false, the cluster will complete
 	// initialization whether or not warm-up has completed. Defaults to true.
 	wait_for_warm_on_init?: bool
