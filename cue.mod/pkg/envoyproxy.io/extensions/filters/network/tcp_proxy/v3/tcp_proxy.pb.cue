@@ -6,7 +6,7 @@ import (
 	v32 "envoyproxy.io/type/v3"
 )
 
-// [#next-free-field: 16]
+// [#next-free-field: 17]
 #TcpProxy: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy"
 	// The prefix to use when emitting :ref:`statistics
@@ -70,6 +70,9 @@ import (
 	// the specified interval.
 	// The interval must be at least 1ms.
 	access_log_flush_interval?: string
+	// If set to true, access log will be flushed when the TCP proxy has successfully established a
+	// connection with the upstream. If the connection failed, the access log will not be flushed.
+	flush_access_log_on_connected?: bool
 }
 
 // Allows for specification of multiple upstream clusters along with weights

@@ -1310,6 +1310,19 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// not support the specified filter, it may ignore the map entry rather
 	// than rejecting the config.
 	is_optional?: bool
+	// If true, the filter is disabled in the route or virtual host and the ``config`` field is ignored.
+	//
+	// .. note::
+	//
+	//   This field will take effect when the request arrive and filter chain is created for the request.
+	//   If initial route is selected for the request and a filter is disabled in the initial route, then
+	//   the filter will not be added to the filter chain.
+	//   And if the request is mutated later and re-match to another route, the disabled filter by the
+	//   initial route will not be added back to the filter chain because the filter chain is already
+	//   created and it is too late to change the chain.
+	//
+	//   This field only make sense for the downstream HTTP filters for now.
+	disabled?: bool
 }
 
 // [#next-free-field: 13]

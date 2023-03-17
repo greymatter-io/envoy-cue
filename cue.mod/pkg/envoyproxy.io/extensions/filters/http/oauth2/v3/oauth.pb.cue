@@ -68,6 +68,7 @@ OAuth2Config_AuthType_BASIC_AUTH:       "BASIC_AUTH"
 	config?: #OAuth2Config
 }
 
+// [#next-free-field: 6]
 #OAuth2Credentials_CookieNames: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.OAuth2Credentials_CookieNames"
 	// Cookie name to hold OAuth bearer token value. When the authentication server validates the
@@ -80,4 +81,8 @@ OAuth2Config_AuthType_BASIC_AUTH:       "BASIC_AUTH"
 	oauth_hmac?: string
 	// Cookie name to hold OAuth expiry value. Defaults to ``OauthExpires``.
 	oauth_expires?: string
+	// Cookie name to hold the id token. Defaults to ``IdToken``.
+	id_token?: string
+	// Cookie name to hold the refresh token. Defaults to ``RefreshToken``.
+	refresh_token?: string
 }
