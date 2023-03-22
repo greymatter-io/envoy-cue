@@ -15,6 +15,14 @@ RBAC_Action_ALLOW: "ALLOW"
 RBAC_Action_DENY:  "DENY"
 RBAC_Action_LOG:   "LOG"
 
+// Deny and allow here refer to RBAC decisions, not actions.
+#RBAC_AuditLoggingOptions_AuditCondition: "NONE" | "ON_DENY" | "ON_ALLOW" | "ON_DENY_AND_ALLOW"
+
+RBAC_AuditLoggingOptions_AuditCondition_NONE:              "NONE"
+RBAC_AuditLoggingOptions_AuditCondition_ON_DENY:           "ON_DENY"
+RBAC_AuditLoggingOptions_AuditCondition_ON_ALLOW:          "ON_ALLOW"
+RBAC_AuditLoggingOptions_AuditCondition_ON_DENY_AND_ALLOW: "ON_DENY_AND_ALLOW"
+
 // Role Based Access Control (RBAC) provides service-level and method-level access control for a
 // service. Requests are allowed or denied based on the ``action`` and whether a matching policy is
 // found. For instance, if the action is ALLOW and a matching policy is found the request should be
@@ -84,6 +92,11 @@ RBAC_Action_LOG:   "LOG"
 	// Maps from policy name to policy. A match occurs when at least one policy matches the request.
 	// The policies are evaluated in lexicographic order of the policy name.
 	policies?: [string]: #Policy
+	// Audit logging options that include the condition for audit logging to happen
+	// and audit logger configurations.
+	//
+	// [#not-implemented-hide:]
+	audit_logging_options?: #RBAC_AuditLoggingOptions
 }
 
 // Policy specifies a role and the principals that are assigned/denied the role.
@@ -241,6 +254,20 @@ RBAC_Action_LOG:   "LOG"
 	//  get matched on the LOG action.
 	//
 	action?: #RBAC_Action
+}
+
+#RBAC_AuditLoggingOptions: {
+	"@type": "type.googleapis.com/envoy.config.rbac.v3.RBAC_AuditLoggingOptions"
+	// Condition for the audit logging to happen.
+	// If this condition is met, all the audit loggers configured here will be invoked.
+	//
+	// [#not-implemented-hide:]
+	audit_condition?: #RBAC_AuditLoggingOptions_AuditCondition
+	// Configurations for RBAC-based authorization audit loggers.
+	//
+	// [#not-implemented-hide:]
+	// [#extension-category: envoy.rbac.audit_loggers]
+	audit_loggers?: [...v32.#TypedExtensionConfig]
 }
 
 // Used in the ``and_rules`` and ``or_rules`` fields in the ``rule`` oneof. Depending on the context,
