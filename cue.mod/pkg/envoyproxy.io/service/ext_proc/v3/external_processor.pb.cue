@@ -65,7 +65,7 @@ CommonResponse_ResponseStatus_CONTINUE_AND_REPLACE: "CONTINUE_AND_REPLACE"
 
 // For every ProcessingRequest received by the server with the ``async_mode`` field
 // set to false, the server must send back exactly one ProcessingResponse message.
-// [#next-free-field: 10]
+// [#next-free-field: 11]
 #ProcessingResponse: {
 	"@type": "type.googleapis.com/envoy.service.ext_proc.v3.ProcessingResponse"
 	// The server must send back this message in response to a message with the
@@ -103,6 +103,20 @@ CommonResponse_ResponseStatus_CONTINUE_AND_REPLACE: "CONTINUE_AND_REPLACE"
 	// may use this to intelligently control how requests are processed
 	// based on the headers and other metadata that they see.
 	mode_override?: v3.#ProcessingMode
+	// When ext_proc server receives a request message, in case it needs more
+	// time to process the message, it sends back a ProcessingResponse message
+	// with a new timeout value. When Envoy receives this response message,
+	// it ignores other fields in the response, just stop the original timer,
+	// which has the timeout value specified in
+	// :ref:`message_timeout
+	// <envoy_v3_api_field_extensions.filters.http.ext_proc.v3.ExternalProcessor.message_timeout>`
+	// and start a new timer with this ``override_message_timeout`` value and keep the
+	// Envoy ext_proc filter state machine intact.
+	// Has to be >= 1ms and <=
+	// :ref:`max_message_timeout <envoy_v3_api_field_extensions.filters.http.ext_proc.v3.ExternalProcessor.max_message_timeout>`
+	// Such message can be sent at most once in a particular Envoy ext_proc filter processing state.
+	// To enable this API, one has to set ``max_message_timeout`` to a number >= 1ms.
+	override_message_timeout?: string
 }
 
 // This message is sent to the external server when the HTTP request and responses
