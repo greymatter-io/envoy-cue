@@ -6,7 +6,7 @@ import (
 	v32 "envoyproxy.io/type/matcher/v3"
 )
 
-// [#next-free-field: 18]
+// [#next-free-field: 19]
 #ExtAuthz: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz"
 	// gRPC service configuration (default timeout: 200ms).
@@ -134,6 +134,11 @@ import (
 	//  consequently the value of *Content-Length* of the authorization request reflects the size of
 	//  its payload size.
 	allowed_headers?: v32.#ListStringMatcher
+	// Specifies if the TLS session level details like SNI are sent to the external service.
+	//
+	// When this field is true, Envoy will include the SNI name used for TLSClientHello, if available, in the
+	// :ref:`tls_session<envoy_v3_api_field_service.auth.v3.AttributeContext.tls_session>`.
+	include_tls_session?: bool
 }
 
 // Configuration for buffering the request data.

@@ -21,7 +21,7 @@ import (
 // - field mask to send
 // - which return values from request_context are copied back
 // - which return values are copied into request_headers]
-// [#next-free-field: 12]
+// [#next-free-field: 13]
 #AttributeContext: {
 	"@type": "type.googleapis.com/envoy.service.auth.v3.AttributeContext"
 	// The source of a network activity, such as starting a TCP connection.
@@ -41,6 +41,10 @@ import (
 	context_extensions?: [string]: string
 	// Dynamic metadata associated with the request.
 	metadata_context?: v3.#Metadata
+	// TLS session details of the underlying connection.
+	// This is not populated by default and will be populated if ext_authz filter's
+	// :ref:`include_tls_session <config_http_filters_ext_authz>` is set to true.
+	tls_session?: #AttributeContext_TLSSession
 }
 
 // This message defines attributes for a node that handles a network request.
@@ -131,4 +135,11 @@ import (
 	// :ref:`pack_as_bytes <envoy_v3_api_field_extensions.filters.http.ext_authz.v3.BufferSettings.pack_as_bytes>`
 	// is set to true.
 	raw_body?: bytes
+}
+
+// This message defines attributes for the underlying TLS session.
+#AttributeContext_TLSSession: {
+	"@type": "type.googleapis.com/envoy.service.auth.v3.AttributeContext_TLSSession"
+	// SNI used for TLS session.
+	sni?: string
 }

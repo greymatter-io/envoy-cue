@@ -106,7 +106,6 @@ import (
 	// Setting this timeout will ensure that queries succeed or fail within the specified time frame
 	// and are then retried using the standard refresh rates. Defaults to 5s if not set.
 	dns_query_timeout?: string
-	// [#not-implemented-hide:]
 	// Configuration to flush the DNS cache to long term storage.
 	key_value_config?: v32.#KeyValueStoreConfig
 }
