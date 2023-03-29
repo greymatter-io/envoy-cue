@@ -49,7 +49,7 @@ HttpConnectionManager_PathWithEscapedSlashesAction_UNESCAPE_AND_FORWARD:        
 HttpConnectionManager_Tracing_OperationName_INGRESS: "INGRESS"
 HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 
-// [#next-free-field: 55]
+// [#next-free-field: 56]
 #HttpConnectionManager: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
 	// Supplies the type of codec that the connection manager should use.
@@ -208,6 +208,10 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// string.
 	// The interval must be at least 1 millisecond.
 	access_log_flush_interval?: string
+	// If set to true, HCM will flush an access log once when a new HTTP request is received, after request
+	// headers have been evaluated, before iterating through the HTTP filter chain.
+	// Details related to upstream cluster, such as upstream host, will not be available for this log.
+	flush_access_log_on_new_request?: bool
 	// If set to true, the connection manager will use the real remote address
 	// of the client connection when determining internal versus external origin and manipulating
 	// various headers. If set to false or absent, the connection manager will use the

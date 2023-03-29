@@ -57,7 +57,7 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 }
 
 // Defines fields that are shared by all Envoy access logs.
-// [#next-free-field: 29]
+// [#next-free-field: 33]
 #AccessLogCommon: {
 	"@type": "type.googleapis.com/envoy.data.accesslog.v3.AccessLogCommon"
 	// [#not-implemented-hide:]
@@ -168,6 +168,18 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	// failure reason from the transport socket. The format of this field depends on the configured downstream
 	// transport socket. Common TLS failures are in :ref:`TLS trouble shooting <arch_overview_ssl_trouble_shooting>`.
 	downstream_transport_failure_reason?: string
+	// For HTTP: Total number of bytes sent to the downstream by the http stream.
+	// For TCP: Total number of bytes sent to the downstream by the tcp proxy.
+	downstream_wire_bytes_sent?: uint64
+	// For HTTP: Total number of bytes received from the downstream by the http stream. Envoy over counts sizes of received HTTP/1.1 pipelined requests by adding up bytes of requests in the pipeline to the one currently being processed.
+	// For TCP: Total number of bytes received from the downstream by the tcp proxy.
+	downstream_wire_bytes_received?: uint64
+	// For HTTP: Total number of bytes sent to the upstream by the http stream. This value accumulates during upstream retries.
+	// For TCP: Total number of bytes sent to the upstream by the tcp proxy.
+	upstream_wire_bytes_sent?: uint64
+	// For HTTP: Total number of bytes received from the upstream by the http stream.
+	// For TCP: Total number of bytes sent to the upstream by the tcp proxy.
+	upstream_wire_bytes_received?: uint64
 }
 
 // Flags indicating occurrences during request/response processing.
@@ -255,7 +267,7 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	ja3_fingerprint?: string
 }
 
-// [#next-free-field: 14]
+// [#next-free-field: 16]
 #HTTPRequestProperties: {
 	"@type": "type.googleapis.com/envoy.data.accesslog.v3.HTTPRequestProperties"
 	// The request method (RFC 7231/2616).
@@ -295,9 +307,15 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	request_body_bytes?: uint64
 	// Map of additional headers that have been configured to be logged.
 	request_headers?: [string]: string
+	// Number of header bytes sent to the upstream by the http stream, including protocol overhead.
+	//
+	// This value accumulates during upstream retries.
+	upstream_header_bytes_sent?: uint64
+	// Number of header bytes received from the downstream by the http stream, including protocol overhead.
+	downstream_header_bytes_received?: uint64
 }
 
-// [#next-free-field: 7]
+// [#next-free-field: 9]
 #HTTPResponseProperties: {
 	"@type": "type.googleapis.com/envoy.data.accesslog.v3.HTTPResponseProperties"
 	// The HTTP response code returned by Envoy.
@@ -305,7 +323,7 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	// Size of the HTTP response headers in bytes.
 	//
 	// This value is captured from the OSI layer 7 perspective, i.e. it does not
-	// include overhead from framing or encoding at other networking layers.
+	// include protocol overhead or overhead from framing or encoding at other networking layers.
 	response_headers_bytes?: uint64
 	// Size of the HTTP response body in bytes.
 	//
@@ -318,6 +336,10 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	response_trailers?: [string]: string
 	// The HTTP response code details.
 	response_code_details?: string
+	// Number of header bytes received from the upstream by the http stream, including protocol overhead.
+	upstream_header_bytes_received?: uint64
+	// Number of header bytes sent to the downstream by the http stream, including protocol overhead.
+	downstream_header_bytes_sent?: uint64
 }
 
 #ResponseFlags_Unauthorized: {
