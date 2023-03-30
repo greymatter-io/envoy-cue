@@ -30,6 +30,7 @@ SubjectAltNameMatcher_SanType_IP_ADDRESS:           "IP_ADDRESS"
 CertificateValidationContext_TrustChainVerification_VERIFY_TRUST_CHAIN: "VERIFY_TRUST_CHAIN"
 CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_UNTRUSTED"
 
+// [#next-free-field: 6]
 #TlsParameters: {
 	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.TlsParameters"
 	// Minimum TLS protocol version. By default, it's ``TLSv1_2`` for both clients and servers.
@@ -105,6 +106,41 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	//   P-256
 	ecdh_curves?: [...string]
+	// If specified, the TLS connection will only support the specified signature algorithms.
+	// The list is ordered by preference.
+	// If not specified, the default signature algorithms defined by BoringSSL will be used.
+	//
+	// Default signature algorithms selected by BoringSSL (may be out of date):
+	//
+	// .. code-block:: none
+	//
+	//   ecdsa_secp256r1_sha256
+	//   rsa_pss_rsae_sha256
+	//   rsa_pkcs1_sha256
+	//   ecdsa_secp384r1_sha384
+	//   rsa_pss_rsae_sha384
+	//   rsa_pkcs1_sha384
+	//   rsa_pss_rsae_sha512
+	//   rsa_pkcs1_sha512
+	//   rsa_pkcs1_sha1
+	//
+	// Signature algorithms supported by BoringSSL (may be out of date):
+	//
+	// .. code-block:: none
+	//
+	//   rsa_pkcs1_sha256
+	//   rsa_pkcs1_sha384
+	//   rsa_pkcs1_sha512
+	//   ecdsa_secp256r1_sha256
+	//   ecdsa_secp384r1_sha384
+	//   ecdsa_secp521r1_sha512
+	//   rsa_pss_rsae_sha256
+	//   rsa_pss_rsae_sha384
+	//   rsa_pss_rsae_sha512
+	//   ed25519
+	//   rsa_pkcs1_sha1
+	//   ecdsa_sha1
+	signature_algorithms?: [...string]
 }
 
 // BoringSSL private key method configuration. The private key methods are used for external
