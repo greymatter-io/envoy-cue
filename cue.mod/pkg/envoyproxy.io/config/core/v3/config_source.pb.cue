@@ -207,3 +207,8 @@ ApiConfigSource_ApiType_AGGREGATED_DELTA_GRPC:                 "AGGREGATED_DELTA
 	// if they do not match any type URL in the set.
 	type_urls?: [...string]
 }
+
+// A placeholder proto for the registration for the REST subscription implementation.
+#RestSubscription: {
+	"@type": "type.googleapis.com/envoy.config.core.v3.RestSubscription"
+}
