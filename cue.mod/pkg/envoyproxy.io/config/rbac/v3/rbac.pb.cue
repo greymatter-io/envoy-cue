@@ -266,8 +266,18 @@ RBAC_AuditLoggingOptions_AuditCondition_ON_DENY_AND_ALLOW: "ON_DENY_AND_ALLOW"
 	// Configurations for RBAC-based authorization audit loggers.
 	//
 	// [#not-implemented-hide:]
+	logger_configs?: [...#RBAC_AuditLoggingOptions_AuditLoggerConfig]
+}
+
+// [#not-implemented-hide:]
+#RBAC_AuditLoggingOptions_AuditLoggerConfig: {
+	"@type": "type.googleapis.com/envoy.config.rbac.v3.RBAC_AuditLoggingOptions_AuditLoggerConfig"
+	// Typed logger configuration.
+	//
 	// [#extension-category: envoy.rbac.audit_loggers]
-	audit_loggers?: [...v32.#TypedExtensionConfig]
+	audit_logger?: v32.#TypedExtensionConfig
+	// If true, when the logger is not supported, the data plane will not NACK but simply ignore it.
+	is_optional?: bool
 }
 
 // Used in the ``and_rules`` and ``or_rules`` fields in the ``rule`` oneof. Depending on the context,
