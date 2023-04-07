@@ -4,6 +4,13 @@ import (
 	v3 "envoyproxy.io/config/core/v3"
 )
 
+// HistogramEmitMode is used to configure which metric types should be emitted for histograms.
+#HistogramEmitMode: "SUMMARY_AND_HISTOGRAM" | "SUMMARY" | "HISTOGRAM"
+
+HistogramEmitMode_SUMMARY_AND_HISTOGRAM: "SUMMARY_AND_HISTOGRAM"
+HistogramEmitMode_SUMMARY:               "SUMMARY"
+HistogramEmitMode_HISTOGRAM:             "HISTOGRAM"
+
 // Metrics Service is configured as a built-in ``envoy.stat_sinks.metrics_service`` :ref:`StatsSink
 // <envoy_v3_api_msg_config.metrics.v3.StatsSink>`. This opaque configuration will be used to create
 // Metrics Service.
@@ -19,6 +26,7 @@ import (
 //           transport_api_version: V3
 //
 // [#extension: envoy.stat_sinks.metrics_service]
+// [#next-free-field: 6]
 #MetricsServiceConfig: {
 	"@type": "type.googleapis.com/envoy.config.metrics.v3.MetricsServiceConfig"
 	// The upstream gRPC cluster that hosts the metrics service.
@@ -35,4 +43,6 @@ import (
 	// and the tag extracted name will be used instead of the full name, which may contain values used by the tag
 	// extractor or additional tags added during stats creation.
 	emit_tags_as_labels?: bool
+	// Specify which metrics types to emit for histograms. Defaults to SUMMARY_AND_HISTOGRAM.
+	histogram_emit_mode?: #HistogramEmitMode
 }
