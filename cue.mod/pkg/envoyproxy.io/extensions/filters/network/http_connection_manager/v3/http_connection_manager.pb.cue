@@ -49,7 +49,7 @@ HttpConnectionManager_PathWithEscapedSlashesAction_UNESCAPE_AND_FORWARD:        
 HttpConnectionManager_Tracing_OperationName_INGRESS: "INGRESS"
 HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 
-// [#next-free-field: 56]
+// [#next-free-field: 57]
 #HttpConnectionManager: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
 	// Supplies the type of codec that the connection manager should use.
@@ -200,18 +200,28 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// Configuration for :ref:`HTTP access logs <arch_overview_access_logs>`
 	// emitted by the connection manager.
 	access_log?: [...v31.#AccessLog]
-	// The interval to flush the above access logs. By default, the HCM will flush exactly one access log
-	// on stream close, when the HTTP request is complete. If this field is set, the HCM will flush access
-	// logs periodically at the specified interval. This is especially useful in the case of long-lived
-	// requests, such as CONNECT and Websockets. Final access logs can be detected via the
-	// `requestComplete()` method of `StreamInfo` in access log filters, or thru the `%DURATION%` substitution
-	// string.
-	// The interval must be at least 1 millisecond.
+	// .. attention::
+	// This field is deprecated in favor of
+	// :ref:`access_log_flush_interval
+	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.HcmAccessLogOptions.access_log_flush_interval>`.
+	// Note that if both this field and :ref:`access_log_flush_interval
+	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.HcmAccessLogOptions.access_log_flush_interval>`
+	// are specified, the former (deprecated field) is ignored.
+	//
+	// Deprecated: Do not use.
 	access_log_flush_interval?: string
-	// If set to true, HCM will flush an access log once when a new HTTP request is received, after request
-	// headers have been evaluated, before iterating through the HTTP filter chain.
-	// Details related to upstream cluster, such as upstream host, will not be available for this log.
+	// .. attention::
+	// This field is deprecated in favor of
+	// :ref:`flush_access_log_on_new_request
+	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.HcmAccessLogOptions.flush_access_log_on_new_request>`.
+	// Note that if both this field and :ref:`flush_access_log_on_new_request
+	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.HcmAccessLogOptions.flush_access_log_on_new_request>`
+	// are specified, the former (deprecated field) is ignored.
+	//
+	// Deprecated: Do not use.
 	flush_access_log_on_new_request?: bool
+	// Additional access log options for HTTP connection manager.
+	access_log_options?: #HttpConnectionManager_HcmAccessLogOptions
 	// If set to true, the connection manager will use the real remote address
 	// of the client connection when determining internal versus external origin and manipulating
 	// various headers. If set to false or absent, the connection manager will use the
@@ -795,6 +805,23 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// If ``literal_proxy_name`` is set, Proxy-Status headers will use this
 	// value as the name of the proxy.
 	literal_proxy_name?: string
+}
+
+#HttpConnectionManager_HcmAccessLogOptions: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager_HcmAccessLogOptions"
+	// The interval to flush the above access logs. By default, the HCM will flush exactly one access log
+	// on stream close, when the HTTP request is complete. If this field is set, the HCM will flush access
+	// logs periodically at the specified interval. This is especially useful in the case of long-lived
+	// requests, such as CONNECT and Websockets. Final access logs can be detected via the
+	// `requestComplete()` method of `StreamInfo` in access log filters, or thru the `%DURATION%` substitution
+	// string.
+	// The interval must be at least 1 millisecond.
+	access_log_flush_interval?: string
+	// If set to true, HCM will flush an access log when a new HTTP request is received, after request
+	// headers have been evaluated, before iterating through the HTTP filter chain.
+	// This log record, if enabled, does not depend on periodic log records or request completion log.
+	// Details related to upstream cluster, such as upstream host, will not be available for this log.
+	flush_access_log_on_new_request?: bool
 }
 
 // Specifies the mechanism for constructing "scope keys" based on HTTP request attributes. These

@@ -6,7 +6,7 @@ import (
 	v32 "envoyproxy.io/type/v3"
 )
 
-// [#next-free-field: 17]
+// [#next-free-field: 18]
 #TcpProxy: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy"
 	// The prefix to use when emitting :ref:`statistics
@@ -65,14 +65,28 @@ import (
 	// was established. If not set, there is no max duration. When max_downstream_connection_duration
 	// is reached the connection will be closed. Duration must be at least 1ms.
 	max_downstream_connection_duration?: string
-	// The interval to flush access log. The TCP proxy will flush only one access log when the connection
-	// is closed by default. If this field is set, the TCP proxy will flush access log periodically with
-	// the specified interval.
-	// The interval must be at least 1ms.
+	// .. attention::
+	// This field is deprecated in favor of
+	// :ref:`access_log_flush_interval
+	// <envoy_v3_api_field_extensions.filters.network.tcp_proxy.v3.TcpProxy.TcpAccessLogOptions.access_log_flush_interval>`.
+	// Note that if both this field and :ref:`access_log_flush_interval
+	// <envoy_v3_api_field_extensions.filters.network.tcp_proxy.v3.TcpProxy.TcpAccessLogOptions.access_log_flush_interval>`
+	// are specified, the former (deprecated field) is ignored.
+	//
+	// Deprecated: Do not use.
 	access_log_flush_interval?: string
-	// If set to true, access log will be flushed when the TCP proxy has successfully established a
-	// connection with the upstream. If the connection failed, the access log will not be flushed.
+	// .. attention::
+	// This field is deprecated in favor of
+	// :ref:`flush_access_log_on_connected
+	// <envoy_v3_api_field_extensions.filters.network.tcp_proxy.v3.TcpProxy.TcpAccessLogOptions.flush_access_log_on_connected>`.
+	// Note that if both this field and :ref:`flush_access_log_on_connected
+	// <envoy_v3_api_field_extensions.filters.network.tcp_proxy.v3.TcpProxy.TcpAccessLogOptions.flush_access_log_on_connected>`
+	// are specified, the former (deprecated field) is ignored.
+	//
+	// Deprecated: Do not use.
 	flush_access_log_on_connected?: bool
+	// Additional access log options for TCP Proxy.
+	access_log_options?: #TcpProxy_TcpAccessLogOptions
 }
 
 // Allows for specification of multiple upstream clusters along with weights
@@ -146,6 +160,18 @@ import (
 	// the downstream request will be closed with the error code detail NO_CLUSTER_FOUND.
 	// [#not-implemented-hide:]
 	timeout?: string
+}
+
+#TcpProxy_TcpAccessLogOptions: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.network.tcp_proxy.v3.TcpProxy_TcpAccessLogOptions"
+	// The interval to flush access log. The TCP proxy will flush only one access log when the connection
+	// is closed by default. If this field is set, the TCP proxy will flush access log periodically with
+	// the specified interval.
+	// The interval must be at least 1ms.
+	access_log_flush_interval?: string
+	// If set to true, access log will be flushed when the TCP proxy has successfully established a
+	// connection with the upstream. If the connection failed, the access log will not be flushed.
+	flush_access_log_on_connected?: bool
 }
 
 #TcpProxy_WeightedCluster_ClusterWeight: {

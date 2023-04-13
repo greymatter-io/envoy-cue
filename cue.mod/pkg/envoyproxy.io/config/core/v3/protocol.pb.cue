@@ -272,7 +272,7 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	connection_idle_interval?: string
 }
 
-// [#next-free-field: 16]
+// [#next-free-field: 17]
 #Http2ProtocolOptions: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.Http2ProtocolOptions"
 	// `Maximum table size <https://httpwg.org/specs/rfc7541.html#rfc.section.4.2>`_
@@ -415,6 +415,10 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// Send HTTP/2 PING frames to verify that the connection is still healthy. If the remote peer
 	// does not respond within the configured timeout, the connection will be aborted.
 	connection_keepalive?: #KeepaliveSettings
+	// [#not-implemented-hide:] Hiding so that the field can be removed after oghttp2 is rolled out.
+	// If set, force use of a particular HTTP/2 codec: oghttp2 if true, nghttp2 if false.
+	// If unset, HTTP/2 codec is selected based on envoy.reloadable_features.http2_use_oghttp2.
+	use_oghttp2_codec?: bool
 }
 
 // [#not-implemented-hide:]

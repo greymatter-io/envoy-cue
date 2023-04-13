@@ -62,11 +62,34 @@ ScaleTimersOverloadActionConfig_TimerType_TRANSPORT_SOCKET_CONNECT:        "TRAN
 	// DNS to ensure uniqueness.
 	name?: string
 	// A set of triggers for this action. The state of the action is the maximum
-	// state of all triggers, which can be scaling between 0 and 1 or saturated. Listeners
-	// are notified when the overload action changes state.
+	// state of all triggers, which can be scalar values between 0 and 1 or
+	// saturated. Listeners are notified when the overload action changes state.
+	// An overload manager action can only have one trigger for a given resource
+	// e.g. :ref:`Trigger.name
+	// <envoy_v3_api_field_config.overload.v3.Trigger.name>` must be unique
+	// in this list.
 	triggers?: [...#Trigger]
 	// Configuration for the action being instantiated.
 	typed_config?: any1.#Any
+}
+
+// A point within the connection or request lifecycle that provides context on
+// whether to shed load at that given stage for the current entity at the
+// point.
+#LoadShedPoint: {
+	"@type": "type.googleapis.com/envoy.config.overload.v3.LoadShedPoint"
+	// This is just a well-known string for the LoadShedPoint.
+	// Deployment specific LoadShedPoints e.g. within a custom extension should
+	// be prefixed by the company / deployment name to avoid colliding with any
+	// open source LoadShedPoints.
+	name?: string
+	// A set of triggers for this LoadShedPoint. The LoadShedPoint will use the
+	// the maximum state of all triggers, which can be scalar values between 0 and
+	// 1 or saturated. A LoadShedPoint can only have one trigger for a given
+	// resource e.g. :ref:`Trigger.name
+	// <envoy_v3_api_field_config.overload.v3.Trigger.name>` must be unique in
+	// this list.
+	triggers?: [...#Trigger]
 }
 
 // Configuration for which accounts the WatermarkBuffer Factories should
@@ -90,6 +113,7 @@ ScaleTimersOverloadActionConfig_TimerType_TRANSPORT_SOCKET_CONNECT:        "TRAN
 	minimum_account_to_track_power_of_two?: uint32
 }
 
+// [#next-free-field: 6]
 #OverloadManager: {
 	"@type": "type.googleapis.com/envoy.config.overload.v3.OverloadManager"
 	// The interval for refreshing resource usage.
@@ -98,6 +122,9 @@ ScaleTimersOverloadActionConfig_TimerType_TRANSPORT_SOCKET_CONNECT:        "TRAN
 	resource_monitors?: [...#ResourceMonitor]
 	// The set of overload actions.
 	actions?: [...#OverloadAction]
+	// [#not-implemented-hide:]
+	// The set of load shed points.
+	loadshed_points?: [...#LoadShedPoint]
 	// Configuration for buffer factory.
 	buffer_factory_config?: #BufferFactoryConfig
 }
