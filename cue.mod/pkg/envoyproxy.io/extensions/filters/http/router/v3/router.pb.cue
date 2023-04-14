@@ -5,7 +5,7 @@ import (
 	v31 "envoyproxy.io/extensions/filters/network/http_connection_manager/v3"
 )
 
-// [#next-free-field: 9]
+// [#next-free-field: 10]
 #Router: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.router.v3.Router"
 	// Whether the router generates dynamic cluster statistics. Defaults to
@@ -21,6 +21,8 @@ import (
 	// an upstream request. Presuming retries are configured, multiple upstream
 	// requests may be made for each downstream (inbound) request.
 	upstream_log?: [...v3.#AccessLog]
+	// Additional upstream access log options.
+	upstream_log_options?: #Router_UpstreamAccessLogOptions
 	// Do not add any additional ``x-envoy-`` headers to requests or responses. This
 	// only affects the :ref:`router filter generated x-envoy- headers
 	// <config_http_filters_router_headers_set>`, other Envoy filters and the HTTP
@@ -71,4 +73,14 @@ import (
 	// upstream filters will count as a final response if hedging is configured.
 	// [#extension-category: envoy.filters.http.upstream]
 	upstream_http_filters?: [...v31.#HttpFilter]
+}
+
+#Router_UpstreamAccessLogOptions: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.router.v3.Router_UpstreamAccessLogOptions"
+	// If set to true, an upstream access log will be recorded when an upstream stream is
+	// associated to an http request. Note: Each HTTP request received for an already established
+	// connection will result in an upstream access log record. This includes, for example,
+	// consecutive HTTP requests over the same connection or a request that is retried.
+	// In case a retry is applied, an upstream access log will be recorded for each retry.
+	flush_upstream_log_on_upstream_stream?: bool
 }
