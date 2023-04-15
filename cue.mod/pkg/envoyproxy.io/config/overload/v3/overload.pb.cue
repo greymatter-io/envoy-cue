@@ -122,7 +122,6 @@ ScaleTimersOverloadActionConfig_TimerType_TRANSPORT_SOCKET_CONNECT:        "TRAN
 	resource_monitors?: [...#ResourceMonitor]
 	// The set of overload actions.
 	actions?: [...#OverloadAction]
-	// [#not-implemented-hide:]
 	// The set of load shed points.
 	loadshed_points?: [...#LoadShedPoint]
 	// Configuration for buffer factory.

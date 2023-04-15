@@ -636,7 +636,7 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// Target percentage of requests managed by this HTTP connection manager that will be force
 	// traced if the :ref:`x-client-trace-id <config_http_conn_man_headers_x-client-trace-id>`
 	// header is set. This field is a direct analog for the runtime variable
-	// 'tracing.client_sampling' in the :ref:`HTTP Connection Manager
+	// 'tracing.client_enabled' in the :ref:`HTTP Connection Manager
 	// <config_http_conn_man_runtime>`.
 	// Default: 100%
 	client_sampling?: v33.#Percent

@@ -83,4 +83,10 @@ import (
 	// consecutive HTTP requests over the same connection or a request that is retried.
 	// In case a retry is applied, an upstream access log will be recorded for each retry.
 	flush_upstream_log_on_upstream_stream?: bool
+	// The interval to flush the upstream access logs. By default, the router will flush an upstream
+	// access log on stream close, when the HTTP request is complete. If this field is set, the router
+	// will flush access logs periodically at the specified interval. This is especially useful in the
+	// case of long-lived requests, such as CONNECT and Websockets.
+	// The interval must be at least 1 millisecond.
+	upstream_log_flush_interval?: string
 }
