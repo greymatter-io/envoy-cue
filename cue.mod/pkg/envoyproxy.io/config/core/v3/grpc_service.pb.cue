@@ -39,6 +39,11 @@ import (
 	// The ``:authority`` header in the grpc request. If this field is not set, the authority header value will be ``cluster_name``.
 	// Note that this authority does not override the SNI. The SNI is provided by the transport socket of the cluster.
 	authority?: string
+	// Indicates the retry policy for re-establishing the gRPC stream
+	// This field is optional. If max interval is not provided, it will be set to ten times the provided base interval.
+	// Currently only supported for xDS gRPC streams.
+	// If not set, xDS gRPC streams default base interval:500ms, maximum interval:30s will be applied.
+	retry_policy?: #RetryPolicy
 }
 
 // [#next-free-field: 9]
