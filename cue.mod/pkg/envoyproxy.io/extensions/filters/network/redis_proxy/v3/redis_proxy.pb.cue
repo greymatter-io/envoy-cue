@@ -228,6 +228,7 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	commands?: [...string]
 }
 
+// [#next-free-field: 6]
 #RedisProxy_PrefixRoutes_Route: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.redis_proxy.v3.RedisProxy_PrefixRoutes_Route"
 	// String prefix that must match the beginning of the keys. Envoy will always favor the
@@ -239,6 +240,9 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	cluster?: string
 	// Indicates that the route has a request mirroring policy.
 	request_mirror_policy?: [...#RedisProxy_PrefixRoutes_Route_RequestMirrorPolicy]
+	// Indicates how redis key should be formatted. To substitute redis key into the formatting
+	// expression, use %KEY% as a string replacement command.
+	key_formatter?: string
 }
 
 // The router is capable of shadowing traffic from one cluster to another. The current
