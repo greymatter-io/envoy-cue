@@ -10,8 +10,7 @@ import (
 	// The HTTP URI to fetch tokens from GCE Metadata Server(https://cloud.google.com/compute/docs/metadata/overview).
 	// The URL format is "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=[AUDIENCE]"
 	http_uri?: v3.#HttpUri
-	// Retry policy for fetching tokens.
-	// This field is optional. If it is not configured, the filter will be fail-closed (i.e., reject the requests).
+	// Retry policy for fetching tokens. This field is optional.
 	retry_policy?: v3.#RetryPolicy
 	// Token cache configuration. This field is optional.
 	cache_config?: #TokenCacheConfig
