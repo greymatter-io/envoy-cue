@@ -155,6 +155,8 @@ RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 	// :ref:`RouteAction.rate_limits<envoy_v3_api_field_config.route.v3.RouteAction.rate_limits>` fields instead.
 	// [#not-implemented-hide:]
 	rate_limits?: [...#RateLimitConfig]
+	// Overrides the domain. If not set, uses the filter-level domain instead.
+	domain?: string
 }
 
 // [#next-free-field: 10]
