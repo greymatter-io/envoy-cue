@@ -5,6 +5,19 @@ import (
 	v3 "envoyproxy.io/config/core/v3"
 )
 
+#AccessLogType: "NotSet" | "TcpUpstreamConnected" | "TcpPeriodic" | "TcpConnectionEnd" | "DownstreamStart" | "DownstreamPeriodic" | "DownstreamEnd" | "UpstreamPoolReady" | "UpstreamPeriodic" | "UpstreamEnd"
+
+AccessLogType_NotSet:               "NotSet"
+AccessLogType_TcpUpstreamConnected: "TcpUpstreamConnected"
+AccessLogType_TcpPeriodic:          "TcpPeriodic"
+AccessLogType_TcpConnectionEnd:     "TcpConnectionEnd"
+AccessLogType_DownstreamStart:      "DownstreamStart"
+AccessLogType_DownstreamPeriodic:   "DownstreamPeriodic"
+AccessLogType_DownstreamEnd:        "DownstreamEnd"
+AccessLogType_UpstreamPoolReady:    "UpstreamPoolReady"
+AccessLogType_UpstreamPeriodic:     "UpstreamPeriodic"
+AccessLogType_UpstreamEnd:          "UpstreamEnd"
+
 // HTTP version
 #HTTPAccessLogEntry_HTTPVersion: "PROTOCOL_UNSPECIFIED" | "HTTP10" | "HTTP11" | "HTTP2" | "HTTP3"
 
@@ -57,7 +70,7 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 }
 
 // Defines fields that are shared by all Envoy access logs.
-// [#next-free-field: 33]
+// [#next-free-field: 34]
 #AccessLogCommon: {
 	"@type": "type.googleapis.com/envoy.data.accesslog.v3.AccessLogCommon"
 	// [#not-implemented-hide:]
@@ -163,6 +176,13 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	// And if it is necessary, unique ID or identifier can be added to the log entry
 	// :ref:`stream_id <envoy_v3_api_field_data.accesslog.v3.AccessLogCommon.stream_id>` to
 	// correlate all these intermediate log entries and final log entry.
+	//
+	// .. attention::
+	//
+	//   This field is deprecated in favor of ``access_log_type`` for better indication of the
+	//   type of the access log record.
+	//
+	// Deprecated: Do not use.
 	intermediate_log_entry?: bool
 	// If downstream connection in listener failed due to transport socket (e.g. TLS handshake), provides the
 	// failure reason from the transport socket. The format of this field depends on the configured downstream
@@ -180,6 +200,13 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	// For HTTP: Total number of bytes received from the upstream by the http stream.
 	// For TCP: Total number of bytes sent to the upstream by the tcp proxy.
 	upstream_wire_bytes_received?: uint64
+	// The type of the access log, which indicates when the log was recorded.
+	// See :ref:`ACCESS_LOG_TYPE <config_access_log_format_access_log_type>` for the available values.
+	// In case the access log was recorded by a flow which does not correspond to one of the supported
+	// values, then the default value will be ``NotSet``.
+	// For more information about how access log behaves and when it is being recorded,
+	// please refer to :ref:`access logging <arch_overview_access_logs>`.
+	access_log_type?: #AccessLogType
 }
 
 // Flags indicating occurrences during request/response processing.
