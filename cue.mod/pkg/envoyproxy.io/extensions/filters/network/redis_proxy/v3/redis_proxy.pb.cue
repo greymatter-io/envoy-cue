@@ -139,7 +139,7 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 }
 
 // Redis connection pool settings.
-// [#next-free-field: 10]
+// [#next-free-field: 11]
 #RedisProxy_ConnPoolSettings: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.redis_proxy.v3.RedisProxy_ConnPoolSettings"
 	// Per-operation timeout in milliseconds. The timer starts when the first
@@ -201,6 +201,10 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	enable_command_stats?: bool
 	// Read policy. The default is to read from the primary.
 	read_policy?: #RedisProxy_ConnPoolSettings_ReadPolicy
+	// Ops or connection timeout triggers reconnection to redis server which could result in reconnection
+	// storm to busy redis server. This config is a protection to rate limit reconnection rate.
+	// If not set, there will be no rate limiting on the reconnection.
+	connection_rate_limit?: #RedisProxy_ConnectionRateLimit
 }
 
 #RedisProxy_PrefixRoutes: {
@@ -226,6 +230,14 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	// Commands fault is restricted to, if any. If not set, fault applies to all commands
 	// other than auth and ping (due to special handling of those commands in Envoy).
 	commands?: [...string]
+}
+
+// Configuration to limit reconnection rate to redis server to protect redis server
+// from client reconnection storm.
+#RedisProxy_ConnectionRateLimit: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.network.redis_proxy.v3.RedisProxy_ConnectionRateLimit"
+	// Reconnection rate per sec. Rate limiting is implemented with TokenBucket.
+	connection_rate_limit_per_sec?: uint32
 }
 
 // [#next-free-field: 6]

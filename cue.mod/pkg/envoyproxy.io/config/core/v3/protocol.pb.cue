@@ -185,7 +185,7 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	max_requests_per_connection?: uint32
 }
 
-// [#next-free-field: 10]
+// [#next-free-field: 11]
 #Http1ProtocolOptions: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.Http1ProtocolOptions"
 	// Handle HTTP requests with absolute URLs in the requests. These requests
@@ -246,6 +246,18 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// envoy.reloadable_features.http1_use_balsa_parser.
 	// See issue #21245.
 	use_balsa_parser?: bool
+	// [#not-implemented-hide:] Hiding so that field can be removed.
+	// If true, and BalsaParser is used (either `use_balsa_parser` above is true,
+	// or `envoy.reloadable_features.http1_use_balsa_parser` is true and
+	// `use_balsa_parser` is unset), then every non-empty method with only valid
+	// characters is accepted. Otherwise, methods not on the hard-coded list are
+	// rejected.
+	// Once UHV is enabled, this field should be removed, and BalsaParser should
+	// allow any method. UHV validates the method, rejecting empty string or
+	// invalid characters, and provides :ref:`restrict_http_methods
+	// <envoy_v3_api_field_extensions.http.header_validators.envoy_default.v3.HeaderValidatorConfig.restrict_http_methods>`
+	// to reject custom methods.
+	allow_custom_methods?: bool
 }
 
 #KeepaliveSettings: {
