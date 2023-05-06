@@ -5,7 +5,7 @@ import (
 	v31 "envoyproxy.io/config/common/mutation_rules/v3"
 )
 
-// [#next-free-field: 11]
+// [#next-free-field: 12]
 #ExternalProcessor: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.ExternalProcessor"
 	// Configuration for the gRPC service that the filter will communicate with.
@@ -70,6 +70,10 @@ import (
 	// :ref:`override_message_timeout <envoy_v3_api_field_service.ext_proc.v3.ProcessingResponse.override_message_timeout>`
 	// If not specified, by default it is 0, which will effectively disable the ``override_message_timeout`` API.
 	max_message_timeout?: string
+	// Prevents clearing the route-cache when the
+	// :ref:`clear_route_cache <envoy_v3_api_field_service.ext_proc.v3.CommonResponse.clear_route_cache>`
+	// field is set in an external processor response.
+	disable_clear_route_cache?: bool
 }
 
 // Extra settings that may be added to per-route configuration for a
