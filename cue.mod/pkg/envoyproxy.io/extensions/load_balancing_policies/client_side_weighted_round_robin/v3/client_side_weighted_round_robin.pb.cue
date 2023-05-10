@@ -39,9 +39,11 @@ package v3
 	// value, if we later start seeing fresh reports again, the
 	// blackout_period applies. Defaults to 3 minutes.
 	weight_expiration_period?: string
-	// How often endpoint weights are recalculated. Default is 1 second.
+	// How often endpoint weights are recalculated. Values less than 100ms are
+	// capped at 100ms. Default is 1 second.
 	weight_update_period?: string
 	// The multiplier used to adjust endpoint weights with the error rate
-	// calculated as eps/qps. Default is 1.0.
+	// calculated as eps/qps. Configuration is rejected if this value is negative.
+	// Default is 1.0.
 	error_utilization_penalty?: float32
 }
