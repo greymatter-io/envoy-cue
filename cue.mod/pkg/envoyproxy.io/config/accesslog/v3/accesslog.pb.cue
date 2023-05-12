@@ -6,6 +6,7 @@ import (
 	v31 "envoyproxy.io/type/v3"
 	v32 "envoyproxy.io/config/route/v3"
 	v33 "envoyproxy.io/type/matcher/v3"
+	v34 "envoyproxy.io/data/accesslog/v3"
 )
 
 #ComparisonFilter_Op: "EQ" | "GE" | "LE"
@@ -43,7 +44,7 @@ GrpcStatusFilter_Status_UNAUTHENTICATED:     "UNAUTHENTICATED"
 	typed_config?: any1.#Any
 }
 
-// [#next-free-field: 13]
+// [#next-free-field: 14]
 #AccessLogFilter: {
 	"@type": "type.googleapis.com/envoy.config.accesslog.v3.AccessLogFilter"
 	// Status code filter.
@@ -71,6 +72,8 @@ GrpcStatusFilter_Status_UNAUTHENTICATED:     "UNAUTHENTICATED"
 	extension_filter?: #ExtensionFilter
 	// Metadata Filter
 	metadata_filter?: #MetadataFilter
+	// Log Type Filter
+	log_type_filter?: #LogTypeFilter
 }
 
 // Filter on an integer comparison.
@@ -202,6 +205,16 @@ GrpcStatusFilter_Status_UNAUTHENTICATED:     "UNAUTHENTICATED"
 	// Default result if the key does not exist in dynamic metadata: if unset or
 	// true, then log; if false, then don't log.
 	match_if_key_not_found?: bool
+}
+
+// Filters based on access log type.
+#LogTypeFilter: {
+	"@type": "type.googleapis.com/envoy.config.accesslog.v3.LogTypeFilter"
+	// Logs only records which their type is one of the types defined in this field.
+	types?: [...v34.#AccessLogType]
+	// If this field is set to true, the filter will instead block all records
+	// with a access log type in types field, and allow all other records.
+	exclude?: bool
 }
 
 // Extension filter is statically registered at runtime.

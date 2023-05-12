@@ -859,7 +859,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// This is limited somewhat arbitrarily to 3 because preconnecting too aggressively can
 	// harm latency more than the preconnecting helps.
 	per_upstream_preconnect_ratio?: float64
-	// Indicates how many many streams (rounded up) can be anticipated across a cluster for each
+	// Indicates how many streams (rounded up) can be anticipated across a cluster for each
 	// stream, useful for low QPS services. This is currently supported for a subset of
 	// deterministic non-hash-based load-balancing algorithms (weighted round robin, random).
 	// Unlike ``per_upstream_preconnect_ratio`` this preconnects across the upstream instances in a
