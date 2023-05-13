@@ -198,10 +198,10 @@ RBAC_AuditLoggingOptions_AuditCondition_ON_DENY_AND_ALLOW: "ON_DENY_AND_ALLOW"
 	// A CIDR block that describes the downstream IP.
 	// This address will honor proxy protocol, but will not honor XFF.
 	//
-	// This field is deprecated; either use :ref:`direct_remote_ip
-	// <envoy_v3_api_field_config.rbac.v3.Principal.direct_remote_ip>` for the same
+	// This field is deprecated; either use :ref:`remote_ip
+	// <envoy_v3_api_field_config.rbac.v3.Principal.remote_ip>` for the same
 	// behavior, or use
-	// :ref:`remote_ip <envoy_v3_api_field_config.rbac.v3.Principal.remote_ip>`.
+	// :ref:`direct_remote_ip <envoy_v3_api_field_config.rbac.v3.Principal.direct_remote_ip>`.
 	//
 	// Deprecated: Do not use.
 	source_ip?: v32.#CidrRange

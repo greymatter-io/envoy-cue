@@ -44,12 +44,12 @@ import (
 	// for the list of supported attributes and their types.
 	response_attributes?: [...string]
 	// Specifies the timeout for each individual message sent on the stream and
-	// when the filter is running in synchronous mode. Whenever
-	// the proxy sends a message on the stream that requires a response, it will
-	// reset this timer, and will stop processing and return an error (subject
-	// to the processing mode) if the timer expires before a matching response
-	// is received. There is no timeout when the filter is running in asynchronous
-	// mode. Default is 200 milliseconds.
+	// when the filter is running in synchronous mode. Whenever the proxy sends
+	// a message on the stream that requires a response, it will reset this timer,
+	// and will stop processing and return an error (subject to the processing mode)
+	// if the timer expires before a matching response is received. There is no
+	// timeout when the filter is running in asynchronous mode. The
+	// ``message_timeout`` range is >= 0s and <= 3600s. Default is 200 milliseconds.
 	message_timeout?: string
 	// Optional additional prefix to use when emitting statistics. This allows to distinguish
 	// emitted statistics between configured *ext_proc* filters in an HTTP filter chain.
@@ -68,6 +68,7 @@ import (
 	mutation_rules?: v31.#HeaderMutationRules
 	// Specify the upper bound of
 	// :ref:`override_message_timeout <envoy_v3_api_field_service.ext_proc.v3.ProcessingResponse.override_message_timeout>`
+	// The ``max_message_timeout`` range is >= 0s and <= 3600s.
 	// If not specified, by default it is 0, which will effectively disable the ``override_message_timeout`` API.
 	max_message_timeout?: string
 	// Prevents clearing the route-cache when the
