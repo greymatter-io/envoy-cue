@@ -131,7 +131,7 @@ locality?: #Locality
 // by Envoy in management server RPCs.
 // This field is deprecated in favor of the user_agent_name and user_agent_version values.
 //
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in envoy/api/v2/core/base.proto.
 build_version?: string
 // Free-form string that identifies the entity requesting config.
 // E.g. "envoy" or "grpc"
@@ -295,7 +295,7 @@ remote?: #RemoteDataSource
 // The name of the transport socket to instantiate. The name must match a supported transport
 // socket implementation.
 name?: string
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in envoy/api/v2/core/base.proto.
 config?: _struct.#Struct
 typed_config?: any1.#Any
 }
