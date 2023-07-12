@@ -1,2 +1,2 @@
-module: "github.com/greymatter-io/envoy-cue"
+module: "envoyproxy.io/envoy-cue"
 
