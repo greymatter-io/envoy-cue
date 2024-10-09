@@ -1,0 +1,18 @@
+package v3
+
+import (
+	anypb "envoyproxy.io/deps/protobuf/types/known/anypb"
+)
+
+#CollectionEntry: {
+	"@type":       "type.googleapis.com/github.com.cncf.xds.go.xds.core.v3.CollectionEntry"
+	locator?:      #ResourceLocator
+	inline_entry?: #CollectionEntry_InlineEntry
+}
+
+#CollectionEntry_InlineEntry: {
+	"@type":   "type.googleapis.com/github.com.cncf.xds.go.xds.core.v3.CollectionEntry_InlineEntry"
+	name?:     string
+	version?:  string
+	resource?: anypb.#Any
+}
