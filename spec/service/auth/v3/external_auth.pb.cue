@@ -2,7 +2,6 @@ package v3
 
 import (
 	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
-	status "envoyproxy.io/envoy-cue/spec/deps/genproto/googleapis/rpc/status"
 	v3 "envoyproxy.io/envoy-cue/spec/type/v3"
 	v31 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )

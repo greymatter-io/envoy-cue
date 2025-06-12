@@ -306,7 +306,8 @@ import (
 	http_status?: v32.#HttpStatus
 	// HTTP response body used to deny for HTTP requests (gRPC excluded).
 	// If not set, an empty body is returned.
-	http_body?: [...byte]
+	// TODO is bytes the right type here?
+	http_body?: bytes
 	// Configure the deny response for gRPC requests over the rate limit.
 	// Allows to specify the `RPC status code
 	// <https://cloud.google.com/natural-language/docs/reference/rpc/google.rpc#google.rpc.Code>`_,
