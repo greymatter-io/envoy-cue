@@ -3,7 +3,6 @@ package v2
 import (
 	_type "envoyproxy.io/envoy-cue/spec/type"
 	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
-	status "envoyproxy.io/envoy-cue/spec/deps/genproto/googleapis/rpc/status"
 )
 
 #CheckRequest: {
