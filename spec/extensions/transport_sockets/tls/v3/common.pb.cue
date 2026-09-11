@@ -13,15 +13,22 @@ TlsParameters_TlsProtocol_TLSv1_1:  "TLSv1_1"
 TlsParameters_TlsProtocol_TLSv1_2:  "TLSv1_2"
 TlsParameters_TlsProtocol_TLSv1_3:  "TLSv1_3"
 
+#TlsParameters_CompliancePolicy: "FIPS_202205" | "CNSA2_202603" | "CNSA1_202603"
+
+TlsParameters_CompliancePolicy_FIPS_202205:  "FIPS_202205"
+TlsParameters_CompliancePolicy_CNSA2_202603: "CNSA2_202603"
+TlsParameters_CompliancePolicy_CNSA1_202603: "CNSA1_202603"
+
 // Indicates the choice of GeneralName as defined in section 4.2.1.5 of RFC 5280 to match
 // against.
-#SubjectAltNameMatcher_SanType: "SAN_TYPE_UNSPECIFIED" | "EMAIL" | "DNS" | "URI" | "IP_ADDRESS"
+#SubjectAltNameMatcher_SanType: "SAN_TYPE_UNSPECIFIED" | "EMAIL" | "DNS" | "URI" | "IP_ADDRESS" | "OTHER_NAME"
 
 SubjectAltNameMatcher_SanType_SAN_TYPE_UNSPECIFIED: "SAN_TYPE_UNSPECIFIED"
 SubjectAltNameMatcher_SanType_EMAIL:                "EMAIL"
 SubjectAltNameMatcher_SanType_DNS:                  "DNS"
 SubjectAltNameMatcher_SanType_URI:                  "URI"
 SubjectAltNameMatcher_SanType_IP_ADDRESS:           "IP_ADDRESS"
+SubjectAltNameMatcher_SanType_OTHER_NAME:           "OTHER_NAME"
 
 // Peer certificate verification mode.
 #CertificateValidationContext_TrustChainVerification: "VERIFY_TRUST_CHAIN" | "ACCEPT_UNTRUSTED"
@@ -29,18 +36,19 @@ SubjectAltNameMatcher_SanType_IP_ADDRESS:           "IP_ADDRESS"
 CertificateValidationContext_TrustChainVerification_VERIFY_TRUST_CHAIN: "VERIFY_TRUST_CHAIN"
 CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_UNTRUSTED"
 
+// [#next-free-field: 7]
 #TlsParameters: {
 	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.TlsParameters"
-	// Minimum TLS protocol version. By default, it's ``TLSv1_2`` for both clients and servers.
+	// Minimum TLS protocol version. By default, it's “TLSv1_2“ for both clients and servers.
 	//
 	// TLS protocol versions below TLSv1_2 require setting compatible ciphers with the
-	// ``cipher_suites`` setting as the default ciphers no longer include compatible ciphers.
+	// “cipher_suites“ setting as the default ciphers no longer include compatible ciphers.
 	//
 	// .. attention::
 	//
-	//   Using TLS protocol versions below TLSv1_2 has serious security considerations and risks.
+	//	Using TLS protocol versions below TLSv1_2 has serious security considerations and risks.
 	tls_minimum_protocol_version?: #TlsParameters_TlsProtocol
-	// Maximum TLS protocol version. By default, it's ``TLSv1_2`` for clients and ``TLSv1_3`` for
+	// Maximum TLS protocol version. By default, it's “TLSv1_2“ for clients and “TLSv1_3“ for
 	// servers.
 	tls_maximum_protocol_version?: #TlsParameters_TlsProtocol
 	// If specified, the TLS listener will only support the specified `cipher list
@@ -56,37 +64,37 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	// .. code-block:: none
 	//
-	//   [ECDHE-ECDSA-AES128-GCM-SHA256|ECDHE-ECDSA-CHACHA20-POLY1305]
-	//   [ECDHE-RSA-AES128-GCM-SHA256|ECDHE-RSA-CHACHA20-POLY1305]
-	//   ECDHE-ECDSA-AES256-GCM-SHA384
-	//   ECDHE-RSA-AES256-GCM-SHA384
+	//	[ECDHE-ECDSA-AES128-GCM-SHA256|ECDHE-ECDSA-CHACHA20-POLY1305]
+	//	[ECDHE-RSA-AES128-GCM-SHA256|ECDHE-RSA-CHACHA20-POLY1305]
+	//	ECDHE-ECDSA-AES256-GCM-SHA384
+	//	ECDHE-RSA-AES256-GCM-SHA384
 	//
 	// In builds using :ref:`BoringSSL FIPS <arch_overview_ssl_fips>`, the default server cipher list is:
 	//
 	// .. code-block:: none
 	//
-	//   ECDHE-ECDSA-AES128-GCM-SHA256
-	//   ECDHE-RSA-AES128-GCM-SHA256
-	//   ECDHE-ECDSA-AES256-GCM-SHA384
-	//   ECDHE-RSA-AES256-GCM-SHA384
+	//	ECDHE-ECDSA-AES128-GCM-SHA256
+	//	ECDHE-RSA-AES128-GCM-SHA256
+	//	ECDHE-ECDSA-AES256-GCM-SHA384
+	//	ECDHE-RSA-AES256-GCM-SHA384
 	//
 	// In non-FIPS builds, the default client cipher list is:
 	//
 	// .. code-block:: none
 	//
-	//   [ECDHE-ECDSA-AES128-GCM-SHA256|ECDHE-ECDSA-CHACHA20-POLY1305]
-	//   [ECDHE-RSA-AES128-GCM-SHA256|ECDHE-RSA-CHACHA20-POLY1305]
-	//   ECDHE-ECDSA-AES256-GCM-SHA384
-	//   ECDHE-RSA-AES256-GCM-SHA384
+	//	[ECDHE-ECDSA-AES128-GCM-SHA256|ECDHE-ECDSA-CHACHA20-POLY1305]
+	//	[ECDHE-RSA-AES128-GCM-SHA256|ECDHE-RSA-CHACHA20-POLY1305]
+	//	ECDHE-ECDSA-AES256-GCM-SHA384
+	//	ECDHE-RSA-AES256-GCM-SHA384
 	//
 	// In builds using :ref:`BoringSSL FIPS <arch_overview_ssl_fips>`, the default client cipher list is:
 	//
 	// .. code-block:: none
 	//
-	//   ECDHE-ECDSA-AES128-GCM-SHA256
-	//   ECDHE-RSA-AES128-GCM-SHA256
-	//   ECDHE-ECDSA-AES256-GCM-SHA384
-	//   ECDHE-RSA-AES256-GCM-SHA384
+	//	ECDHE-ECDSA-AES128-GCM-SHA256
+	//	ECDHE-RSA-AES128-GCM-SHA256
+	//	ECDHE-ECDSA-AES256-GCM-SHA384
+	//	ECDHE-RSA-AES256-GCM-SHA384
 	cipher_suites?: [...string]
 	// If specified, the TLS connection will only support the specified ECDH
 	// curves. If not specified, the default curves will be used.
@@ -95,15 +103,54 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	// .. code-block:: none
 	//
-	//   X25519
-	//   P-256
+	//	X25519
+	//	P-256
 	//
 	// In builds using :ref:`BoringSSL FIPS <arch_overview_ssl_fips>`, the default curve is:
 	//
 	// .. code-block:: none
 	//
-	//   P-256
+	//	P-256
 	ecdh_curves?: [...string]
+	// If specified, the TLS connection will only support the specified signature algorithms.
+	// The list is ordered by preference.
+	// If not specified, the default signature algorithms defined by BoringSSL will be used.
+	//
+	// Default signature algorithms selected by BoringSSL (may be out of date):
+	//
+	// .. code-block:: none
+	//
+	//	ecdsa_secp256r1_sha256
+	//	rsa_pss_rsae_sha256
+	//	rsa_pkcs1_sha256
+	//	ecdsa_secp384r1_sha384
+	//	rsa_pss_rsae_sha384
+	//	rsa_pkcs1_sha384
+	//	rsa_pss_rsae_sha512
+	//	rsa_pkcs1_sha512
+	//	rsa_pkcs1_sha1
+	//
+	// Signature algorithms supported by BoringSSL (may be out of date):
+	//
+	// .. code-block:: none
+	//
+	//	rsa_pkcs1_sha256
+	//	rsa_pkcs1_sha384
+	//	rsa_pkcs1_sha512
+	//	ecdsa_secp256r1_sha256
+	//	ecdsa_secp384r1_sha384
+	//	ecdsa_secp521r1_sha512
+	//	rsa_pss_rsae_sha256
+	//	rsa_pss_rsae_sha384
+	//	rsa_pss_rsae_sha512
+	//	ed25519
+	//	rsa_pkcs1_sha1
+	//	ecdsa_sha1
+	signature_algorithms?: [...string]
+	// Compliance policies configure various aspects of the TLS based on the given policy.
+	// The policies are applied last during configuration and may override the other TLS
+	// parameters, or any previous policy.
+	compliance_policies?: [...#TlsParameters_CompliancePolicy]
 }
 
 // BoringSSL private key method configuration. The private key methods are used for external
@@ -115,6 +162,10 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	// supported private key method provider type.
 	provider_name?: string
 	typed_config?:  _
+	// If the private key provider isn't available (eg. the required hardware capability doesn't existed),
+	// Envoy will fallback to the BoringSSL default implementation when the “fallback“ is true.
+	// The default value is “false“.
+	fallback?: bool
 }
 
 // [#next-free-field: 9]
@@ -122,56 +173,57 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.TlsCertificate"
 	// The TLS certificate chain.
 	//
-	// If ``certificate_chain`` is a filesystem path, a watch will be added to the
+	// If “certificate_chain“ is a filesystem path, a watch will be added to the
 	// parent directory for any file moves to support rotation. This currently
-	// only applies to dynamic secrets, when the ``TlsCertificate`` is delivered via
+	// only applies to dynamic secrets, when the “TlsCertificate“ is delivered via
 	// SDS.
 	certificate_chain?: v3.#DataSource
 	// The TLS private key.
 	//
-	// If ``private_key`` is a filesystem path, a watch will be added to the parent
+	// If “private_key“ is a filesystem path, a watch will be added to the parent
 	// directory for any file moves to support rotation. This currently only
-	// applies to dynamic secrets, when the ``TlsCertificate`` is delivered via SDS.
+	// applies to dynamic secrets, when the “TlsCertificate“ is delivered via SDS.
 	private_key?: v3.#DataSource
-	// ``Pkcs12`` data containing TLS certificate, chain, and private key.
+	// “Pkcs12“ data containing TLS certificate, chain, and private key.
 	//
-	// If ``pkcs12`` is a filesystem path, the file will be read, but no watch will
-	// be added to the parent directory, since ``pkcs12`` isn't used by SDS.
-	// This field is mutually exclusive with ``certificate_chain``, ``private_key`` and ``private_key_provider``.
-	// This can't be marked as ``oneof`` due to API compatibility reasons. Setting
+	// If “pkcs12“ is a filesystem path, the file will be read, but no watch will
+	// be added to the parent directory, since “pkcs12“ isn't used by SDS.
+	// This field is mutually exclusive with “certificate_chain“, “private_key“ and “private_key_provider“.
+	// This can't be marked as “oneof“ due to API compatibility reasons. Setting
 	// both :ref:`private_key <envoy_v3_api_field_extensions.transport_sockets.tls.v3.TlsCertificate.private_key>`,
 	// :ref:`certificate_chain <envoy_v3_api_field_extensions.transport_sockets.tls.v3.TlsCertificate.certificate_chain>`,
 	// or :ref:`private_key_provider <envoy_v3_api_field_extensions.transport_sockets.tls.v3.TlsCertificate.private_key_provider>`
 	// and :ref:`pkcs12 <envoy_v3_api_field_extensions.transport_sockets.tls.v3.TlsCertificate.pkcs12>`
 	// fields will result in an error. Use :ref:`password
 	// <envoy_v3_api_field_extensions.transport_sockets.tls.v3.TlsCertificate.password>`
-	// to specify the password to unprotect the ``PKCS12`` data, if necessary.
+	// to specify the password to unprotect the “PKCS12“ data, if necessary.
 	pkcs12?: v3.#DataSource
-	// If specified, updates of file-based ``certificate_chain`` and ``private_key``
+	// If specified, updates of file-based “certificate_chain“ and “private_key“
 	// sources will be triggered by this watch. The certificate/key pair will be
 	// read together and validated for atomic read consistency (i.e. no
 	// intervening modification occurred between cert/key read, verified by file
 	// hash comparisons). This allows explicit control over the path watched, by
 	// default the parent directories of the filesystem paths in
-	// ``certificate_chain`` and ``private_key`` are watched if this field is not
-	// specified. This only applies when a ``TlsCertificate`` is delivered by SDS
+	// “certificate_chain“ and “private_key“ are watched if this field is not
+	// specified. This only applies when a “TlsCertificate“ is delivered by SDS
 	// with references to filesystem paths. See the :ref:`SDS key rotation
 	// <sds_key_rotation>` documentation for further details.
 	watched_directory?: v3.#WatchedDirectory
 	// BoringSSL private key method provider. This is an alternative to :ref:`private_key
-	// <envoy_v3_api_field_extensions.transport_sockets.tls.v3.TlsCertificate.private_key>` field. This can't be
-	// marked as ``oneof`` due to API compatibility reasons. Setting both :ref:`private_key
-	// <envoy_v3_api_field_extensions.transport_sockets.tls.v3.TlsCertificate.private_key>` and
-	// :ref:`private_key_provider
-	// <envoy_v3_api_field_extensions.transport_sockets.tls.v3.TlsCertificate.private_key_provider>` fields will result in an
-	// error.
+	// <envoy_v3_api_field_extensions.transport_sockets.tls.v3.TlsCertificate.private_key>` field.
+	// When both :ref:`private_key <envoy_v3_api_field_extensions.transport_sockets.tls.v3.TlsCertificate.private_key>` and
+	// :ref:`private_key_provider <envoy_v3_api_field_extensions.transport_sockets.tls.v3.TlsCertificate.private_key_provider>` fields are set,
+	// “private_key_provider“ takes precedence.
+	// If “private_key_provider“ is unavailable and :ref:`fallback
+	// <envoy_v3_api_field_extensions.transport_sockets.tls.v3.PrivateKeyProvider.fallback>`
+	// is enabled, “private_key“ will be used.
 	private_key_provider?: #PrivateKeyProvider
 	// The password to decrypt the TLS private key. If this field is not set, it is assumed that the
 	// TLS private key is not password encrypted.
 	password?: v3.#DataSource
 	// The OCSP response to be stapled with this certificate during the handshake.
-	// The response must be DER-encoded and may only be  provided via ``filename`` or
-	// ``inline_bytes``. The response may pertain to only one certificate.
+	// The response must be DER-encoded and may only be  provided via “filename“ or
+	// “inline_bytes“. The response may pertain to only one certificate.
 	ocsp_staple?: v3.#DataSource
 	// [#not-implemented-hide:]
 	signed_certificate_timestamp?: [...v3.#DataSource]
@@ -190,18 +242,18 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	// or on different hosts.
 	//
 	// Each key must contain exactly 80 bytes of cryptographically-secure random data. For
-	// example, the output of ``openssl rand 80``.
+	// example, the output of “openssl rand 80“.
 	//
 	// .. attention::
 	//
-	//   Using this feature has serious security considerations and risks. Improper handling of keys
-	//   may result in loss of secrecy in connections, even if ciphers supporting perfect forward
-	//   secrecy are used. See https://www.imperialviolet.org/2013/06/27/botchingpfs.html for some
-	//   discussion. To minimize the risk, you must:
+	//	Using this feature has serious security considerations and risks. Improper handling of keys
+	//	may result in loss of secrecy in connections, even if ciphers supporting perfect forward
+	//	secrecy are used. See https://www.imperialviolet.org/2013/06/27/botchingpfs.html for some
+	//	discussion. To minimize the risk, you must:
 	//
-	//   * Keep the session ticket keys at least as secure as your TLS certificate private keys
-	//   * Rotate session ticket keys at least daily, and preferably hourly
-	//   * Always generate keys using a cryptographically-secure random data source
+	//	* Keep the session ticket keys at least as secure as your TLS certificate private keys
+	//	* Rotate session ticket keys at least daily, and preferably hourly
+	//	* Always generate keys using a cryptographically-secure random data source
 	keys?: [...v3.#DataSource]
 }
 
@@ -212,7 +264,7 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 // [#not-implemented-hide:]
 #CertificateProviderPluginInstance: {
 	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.CertificateProviderPluginInstance"
-	// Provider instance name. If not present, defaults to "default".
+	// Provider instance name.
 	//
 	// Instance names should generally be defined not in terms of the underlying provider
 	// implementation (e.g., "file_watcher") but rather in terms of the function of the
@@ -231,10 +283,31 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	// Specification of type of SAN. Note that the default enum value is an invalid choice.
 	san_type?: #SubjectAltNameMatcher_SanType
 	// Matcher for SAN value.
+	//
+	// If the :ref:`san_type <envoy_v3_api_field_extensions.transport_sockets.tls.v3.SubjectAltNameMatcher.san_type>`
+	// is :ref:`DNS <envoy_v3_api_enum_value_extensions.transport_sockets.tls.v3.SubjectAltNameMatcher.SanType.DNS>`
+	// and the matcher type is :ref:`exact <envoy_v3_api_field_type.matcher.v3.StringMatcher.exact>`, DNS wildcards are evaluated
+	// according to the rules in https://www.rfc-editor.org/rfc/rfc6125#section-6.4.3.
+	// For example, “*.example.com“ would match “test.example.com“ but not “example.com“ and not
+	// “a.b.example.com“.
+	//
+	// The string matching for OTHER_NAME SAN values depends on their ASN.1 type:
+	//
+	//   - OBJECT: Validated against its dotted numeric notation (e.g., "1.2.3.4")
+	//   - BOOLEAN: Validated against strings "true" or "false"
+	//   - INTEGER/ENUMERATED: Validated against a string containing the integer value
+	//   - NULL: Validated against an empty string
+	//   - Other types: Validated directly against the string value
 	matcher?: v31.#StringMatcher
+	// OID Value which is required if OTHER_NAME SAN type is used.
+	// For example, UPN OID is 1.3.6.1.4.1.311.20.2.3
+	// (Reference: http://oid-info.com/get/1.3.6.1.4.1.311.20.2.3).
+	//
+	// If set for SAN types other than OTHER_NAME, it will be ignored.
+	oid?: string
 }
 
-// [#next-free-field: 17]
+// [#next-free-field: 19]
 #CertificateValidationContext: {
 	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.CertificateValidationContext"
 	// TLS certificate data containing certificate authority certificates to use in verifying
@@ -256,33 +329,39 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	// that if a CRL is provided for any certificate authority in a trust chain, a CRL must be
 	// provided for all certificate authorities in that chain. Failure to do so will result in
 	// verification failure for both revoked and unrevoked certificates from that chain.
-	// The behavior of requiring all certificates to contain CRLs if any do can be altered by
+	// The behavior of requiring all certificates to contain CRLs can be altered by
 	// setting :ref:`only_verify_leaf_cert_crl <envoy_v3_api_field_extensions.transport_sockets.tls.v3.CertificateValidationContext.only_verify_leaf_cert_crl>`
 	// true. If set to true, only the final certificate in the chain undergoes CRL verification.
 	//
 	// See :ref:`the TLS overview <arch_overview_ssl_enabling_verification>` for a list of common
 	// system CA locations.
 	//
-	// If ``trusted_ca`` is a filesystem path, a watch will be added to the parent
+	// If “trusted_ca“ is a filesystem path, a watch will be added to the parent
 	// directory for any file moves to support rotation. This currently only
-	// applies to dynamic secrets, when the ``CertificateValidationContext`` is
+	// applies to dynamic secrets, when the “CertificateValidationContext“ is
 	// delivered via SDS.
 	//
-	// Only one of ``trusted_ca`` and ``ca_certificate_provider_instance`` may be specified.
+	// X509_V_FLAG_PARTIAL_CHAIN is set by default, so non-root/intermediate ca certificate in “trusted_ca“
+	// can be treated as trust anchor as well. It allows verification with building valid partial chain instead
+	// of a full chain.
 	//
-	// [#next-major-version: This field and watched_directory below should ideally be moved into a
-	// separate sub-message, since there's no point in specifying the latter field without this one.]
+	// If “ca_certificate_provider_instance“ is set, it takes precedence over “trusted_ca“.
 	trusted_ca?: v3.#DataSource
 	// Certificate provider instance for fetching TLS certificates.
 	//
-	// Only one of ``trusted_ca`` and ``ca_certificate_provider_instance`` may be specified.
+	// If set, takes precedence over “trusted_ca“.
 	// [#not-implemented-hide:]
 	ca_certificate_provider_instance?: #CertificateProviderPluginInstance
-	// If specified, updates of a file-based ``trusted_ca`` source will be triggered
+	// Use system root certs for validation.
+	// If present, system root certs are used only if neither of the “trusted_ca“
+	// or “ca_certificate_provider_instance“ fields are set.
+	// [#not-implemented-hide:]
+	system_root_certs?: #CertificateValidationContext_SystemRootCerts
+	// If specified, updates of a file-based “trusted_ca“ source will be triggered
 	// by this watch. This allows explicit control over the path watched, by
-	// default the parent directory of the filesystem path in ``trusted_ca`` is
+	// default the parent directory of the filesystem path in “trusted_ca“ is
 	// watched if this field is not specified. This only applies when a
-	// ``CertificateValidationContext`` is delivered by SDS with references to
+	// “CertificateValidationContext“ is delivered by SDS with references to
 	// filesystem paths. See the :ref:`SDS key rotation <sds_key_rotation>`
 	// documentation for further details.
 	watched_directory?: v3.#WatchedDirectory
@@ -295,11 +374,11 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	// .. code-block:: bash
 	//
-	//   $ openssl x509 -in path/to/client.crt -noout -pubkey
-	//     | openssl pkey -pubin -outform DER
-	//     | openssl dgst -sha256 -binary
-	//     | openssl enc -base64
-	//   NvqYIYSbgK2vCJpQhObf77vv+bQWtc5ek5RIOwPiC9A=
+	//	$ openssl x509 -in path/to/client.crt -noout -pubkey
+	//	  | openssl pkey -pubin -outform DER
+	//	  | openssl dgst -sha256 -binary
+	//	  | openssl enc -base64
+	//	NvqYIYSbgK2vCJpQhObf77vv+bQWtc5ek5RIOwPiC9A=
 	//
 	// This is the format used in HTTP Public Key Pinning.
 	//
@@ -312,10 +391,10 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	// .. attention::
 	//
-	//   This option is preferred over :ref:`verify_certificate_hash
-	//   <envoy_v3_api_field_extensions.transport_sockets.tls.v3.CertificateValidationContext.verify_certificate_hash>`,
-	//   because SPKI is tied to a private key, so it doesn't change when the certificate
-	//   is renewed using the same private key.
+	//	This option is preferred over :ref:`verify_certificate_hash
+	//	<envoy_v3_api_field_extensions.transport_sockets.tls.v3.CertificateValidationContext.verify_certificate_hash>`,
+	//	because SPKI is tied to a private key, so it doesn't change when the certificate
+	//	is renewed using the same private key.
 	verify_certificate_spki?: [...string]
 	// An optional list of hex-encoded SHA-256 hashes. If specified, Envoy will verify that
 	// the SHA-256 of the DER-encoded presented certificate matches one of the specified values.
@@ -324,16 +403,16 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	// .. code-block:: bash
 	//
-	//   $ openssl x509 -in path/to/client.crt -outform DER | openssl dgst -sha256 | cut -d" " -f2
-	//   df6ff72fe9116521268f6f2dd4966f51df479883fe7037b39f75916ac3049d1a
+	//	$ openssl x509 -in path/to/client.crt -outform DER | openssl dgst -sha256 | cut -d" " -f2
+	//	df6ff72fe9116521268f6f2dd4966f51df479883fe7037b39f75916ac3049d1a
 	//
 	// A long hex-encoded and colon-separated SHA-256 (a.k.a. "fingerprint") of the certificate
 	// can be generated with the following command:
 	//
 	// .. code-block:: bash
 	//
-	//   $ openssl x509 -in path/to/client.crt -noout -fingerprint -sha256 | cut -d"=" -f2
-	//   DF:6F:F7:2F:E9:11:65:21:26:8F:6F:2D:D4:96:6F:51:DF:47:98:83:FE:70:37:B3:9F:75:91:6A:C3:04:9D:1A
+	//	$ openssl x509 -in path/to/client.crt -noout -fingerprint -sha256 | cut -d"=" -f2
+	//	DF:6F:F7:2F:E9:11:65:21:26:8F:6F:2D:D4:96:6F:51:DF:47:98:83:FE:70:37:B3:9F:75:91:6A:C3:04:9D:1A
 	//
 	// Both of those formats are acceptable.
 	//
@@ -356,16 +435,16 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	// .. code-block:: yaml
 	//
-	//  match_typed_subject_alt_names:
-	//  - san_type: DNS
-	//    matcher:
-	//      exact: "api.example.com"
+	//	match_typed_subject_alt_names:
+	//	- san_type: DNS
+	//	  matcher:
+	//	    exact: "api.example.com"
 	//
 	// .. attention::
 	//
-	//   Subject Alternative Names are easily spoofable and verifying only them is insecure,
-	//   therefore this option must be used together with :ref:`trusted_ca
-	//   <envoy_v3_api_field_extensions.transport_sockets.tls.v3.CertificateValidationContext.trusted_ca>`.
+	//	Subject Alternative Names are easily spoofable and verifying only them is insecure,
+	//	therefore this option must be used together with :ref:`trusted_ca
+	//	<envoy_v3_api_field_extensions.transport_sockets.tls.v3.CertificateValidationContext.trusted_ca>`.
 	match_typed_subject_alt_names?: [...#SubjectAltNameMatcher]
 	// This field is deprecated in favor of
 	// :ref:`match_typed_subject_alt_names
@@ -374,7 +453,7 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	// <envoy_v3_api_field_extensions.transport_sockets.tls.v3.CertificateValidationContext.match_typed_subject_alt_names>`
 	// are specified, the former (deprecated field) is ignored.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/extensions/transport_sockets/tls/v3/common.proto.
 	match_subject_alt_names?: [...v31.#StringMatcher]
 	// [#not-implemented-hide:] Must present signed certificate time-stamp.
 	require_signed_certificate_timestamp?: bool
@@ -389,6 +468,11 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	// from that chain. This default behavior can be altered by setting
 	// :ref:`only_verify_leaf_cert_crl <envoy_v3_api_field_extensions.transport_sockets.tls.v3.CertificateValidationContext.only_verify_leaf_cert_crl>` to
 	// true.
+	//
+	// If “crl“ is a filesystem path, a watch will be added to the parent
+	// directory for any file moves to support rotation. This currently only
+	// applies to dynamic secrets, when the “CertificateValidationContext“ is
+	// delivered via SDS.
 	crl?: v3.#DataSource
 	// If specified, Envoy will not reject expired certificates.
 	allow_expired_certificate?: bool
@@ -403,10 +487,38 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	// If this option is set to true, only the certificate at the end of the
 	// certificate chain will be subject to validation by :ref:`CRL <envoy_v3_api_field_extensions.transport_sockets.tls.v3.CertificateValidationContext.crl>`.
 	only_verify_leaf_cert_crl?: bool
-	// Config for the max number of intermediate certificates in chain that are parsed during verification.
-	// This does not include the leaf certificate. If configured, and the certificate chain is longer than allowed, the certificates
-	// above the limit are ignored, and certificate validation will fail. The default limit is 100,
-	// though this can be system-dependent.
-	// https://www.openssl.org/docs/man1.1.1/man3/SSL_CTX_set_verify_depth.html
+	// Defines maximum depth of a certificate chain accepted in verification, the default limit is 100, though this can be system-dependent.
+	// This number does not include the leaf but includes the trust anchor, so a depth of 1 allows the leaf and one CA certificate. If a trusted issuer
+	// appears in the chain, but in a depth larger than configured, the certificate validation will fail.
+	// This matches the semantics of “SSL_CTX_set_verify_depth“ in OpenSSL 1.0.x and older versions of BoringSSL. It differs from “SSL_CTX_set_verify_depth“
+	// in OpenSSL 1.1.x and newer versions of BoringSSL in that the trust anchor is included.
+	// Trusted issues are specified by setting :ref:`trusted_ca <envoy_v3_api_field_extensions.transport_sockets.tls.v3.CertificateValidationContext.trusted_ca>`
 	max_verify_depth?: uint32
+	// If true, the server does not include the trusted-CA distinguished names in the
+	// TLS “CertificateRequest“ message. CAs from :ref:`trusted_ca
+	// <envoy_v3_api_field_extensions.transport_sockets.tls.v3.CertificateValidationContext.trusted_ca>`
+	// are still used to validate presented client certificates; only the wire
+	// advertisement changes.
+	//
+	// This is useful when the configured CA set is large enough that the
+	// “CertificateRequest“ would exceed client-side TLS record limits, or when
+	// clients mishandle the CA set in some way.
+	//
+	// .. attention::
+	//
+	//	When enabled, clients that rely on the advertised CA list to select among
+	//	multiple client certificates may now send no certificate or the wrong one;
+	//	validation will then fail with the standard TLS alert.
+	//
+	// This option only affects downstream (server) TLS connections where Envoy sends a
+	// “CertificateRequest“ to clients. It has no effect on upstream connections.
+	//
+	// Honored by the built-in validator and the SPIFFE validator. Validators that do
+	// not set a client CA list themselves (e.g., the dynamic-modules validator) are
+	// unaffected. Defaults to false.
+	suppress_client_ca_list?: bool
+}
+
+#CertificateValidationContext_SystemRootCerts: {
+	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.CertificateValidationContext_SystemRootCerts"
 }

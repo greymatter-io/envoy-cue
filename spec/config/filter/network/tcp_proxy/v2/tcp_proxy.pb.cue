@@ -28,8 +28,9 @@ import (
 	// to 0s, the timeout will be disabled.
 	//
 	// .. warning::
-	//   Disabling this timeout has a highly likelihood of yielding connection leaks due to lost TCP
-	//   FIN packets, etc.
+	//
+	//	Disabling this timeout has a highly likelihood of yielding connection leaks due to lost TCP
+	//	FIN packets, etc.
 	idle_timeout?: string
 	// [#not-implemented-hide:] The idle timeout for connections managed by the TCP proxy
 	// filter. The idle timeout is defined as the period in which there is no
@@ -45,7 +46,7 @@ import (
 	access_log?: [...v2.#AccessLog]
 	// [#not-implemented-hide:] Deprecated.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/filter/network/tcp_proxy/v2/tcp_proxy.proto.
 	deprecated_v1?: #TcpProxy_DeprecatedV1
 	// The maximum number of unsuccessful connection attempts that will be made before
 	// giving up. If the parameter is not specified, 1 connection attempt will be made.
@@ -64,7 +65,7 @@ import (
 // [#not-implemented-hide:] Deprecated.
 // TCP Proxy filter configuration using V1 format.
 //
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in envoy/config/filter/network/tcp_proxy/v2/tcp_proxy.proto.
 #TcpProxy_DeprecatedV1: {
 	"@type": "type.googleapis.com/envoy.config.filter.network.tcp_proxy.v2.TcpProxy_DeprecatedV1"
 	// The route table for the filter. All filter instances must have a route

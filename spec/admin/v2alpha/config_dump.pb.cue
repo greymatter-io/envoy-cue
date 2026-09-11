@@ -24,7 +24,7 @@ import (
 	// :ref:`/config_dump?mask={} <operations_admin_interface_config_dump_by_mask>`,
 	// or :ref:`/config_dump?resource={},mask={}
 	// <operations_admin_interface_config_dump_by_resource_and_mask>` for more information.
-	configs?: _
+	configs?: [...]
 }
 
 #UpdateFailureState: {
@@ -215,7 +215,7 @@ import (
 	// The name assigned to the scoped route configurations.
 	name?: string
 	// The scoped route configurations.
-	scoped_route_configs?: _
+	scoped_route_configs?: [...]
 	// The timestamp when the scoped route config set was last updated.
 	last_updated?: string
 }
@@ -229,7 +229,7 @@ import (
 	// the scoped routes configuration was loaded.
 	version_info?: string
 	// The scoped route configurations.
-	scoped_route_configs?: _
+	scoped_route_configs?: [...]
 	// The timestamp when the scoped route config set was last updated.
 	last_updated?: string
 }

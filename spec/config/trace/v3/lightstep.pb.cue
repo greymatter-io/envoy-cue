@@ -22,7 +22,7 @@ LightstepConfig_PropagationMode_TRACE_CONTEXT: "TRACE_CONTEXT"
 	// File containing the access token to the `LightStep
 	// <https://lightstep.com/>`_ API.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/trace/v3/lightstep.proto.
 	access_token_file?: string
 	// Access token to the `LightStep <https://lightstep.com/>`_ API.
 	access_token?: v3.#DataSource

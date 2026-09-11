@@ -76,16 +76,3 @@ RateLimitResponse_RateLimit_Unit_DAY:     "DAY"
 	// The limit remaining in the current time unit.
 	limit_remaining?: uint32
 }
-
-// RateLimitServiceClient is the client API for RateLimitService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-#RateLimitServiceClient: _
-
-// RateLimitServiceServer is the server API for RateLimitService service.
-#RateLimitServiceServer: _
-
-// UnimplementedRateLimitServiceServer can be embedded to have forward compatible implementations.
-#UnimplementedRateLimitServiceServer: {
-	"@type": "type.googleapis.com/envoy.service.ratelimit.v2.UnimplementedRateLimitServiceServer"
-}

@@ -1,11 +1,11 @@
 package v3
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 #TypedStruct: {
 	"@type":   "type.googleapis.com/github.com.cncf.xds.go.xds.type.v3.TypedStruct"
 	type_url?: string
-	value?:    _struct.#Struct
+	value?:    structpb.#Struct
 }

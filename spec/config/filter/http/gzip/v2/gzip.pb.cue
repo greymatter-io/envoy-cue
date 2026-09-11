@@ -26,9 +26,9 @@ Gzip_CompressionLevel_Enum_SPEED:   "SPEED"
 	// Minimum response length, in bytes, which will trigger compression. The default value is 30.
 	// .. attention:
 	//
-	//    **This field is deprecated**. Set the `compressor` field instead.
+	//	**This field is deprecated**. Set the `compressor` field instead.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/filter/http/gzip/v2/gzip.proto.
 	content_length?: uint32
 	// A value used for selecting the zlib compression level. This setting will affect speed and
 	// amount of compression applied to the content. "BEST" provides higher compression at the cost of
@@ -49,25 +49,25 @@ Gzip_CompressionLevel_Enum_SPEED:   "SPEED"
 	// "application/xhtml+xml", "image/svg+xml", "text/css", "text/html", "text/plain", "text/xml".
 	// .. attention:
 	//
-	//    **This field is deprecated**. Set the `compressor` field instead.
+	//	**This field is deprecated**. Set the `compressor` field instead.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/filter/http/gzip/v2/gzip.proto.
 	content_type?: [...string]
 	// If true, disables compression when the response contains an etag header. When it is false, the
 	// filter will preserve weak etags and remove the ones that require strong validation.
 	// .. attention:
 	//
-	//    **This field is deprecated**. Set the `compressor` field instead.
+	//	**This field is deprecated**. Set the `compressor` field instead.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/filter/http/gzip/v2/gzip.proto.
 	disable_on_etag_header?: bool
 	// If true, removes accept-encoding from the request headers before dispatching it to the upstream
 	// so that responses do not get compressed before reaching the filter.
 	// .. attention:
 	//
-	//    **This field is deprecated**. Set the `compressor` field instead.
+	//	**This field is deprecated**. Set the `compressor` field instead.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/filter/http/gzip/v2/gzip.proto.
 	remove_accept_encoding_header?: bool
 	// Value from 9 to 15 that represents the base two logarithmic of the compressor's window size.
 	// Larger window results in better compression at the expense of memory usage. The default is 12

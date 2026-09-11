@@ -5,7 +5,7 @@ package v3
 	"@type": "type.googleapis.com/envoy.type.matcher.v3.RegexMatcher"
 	// Google's RE2 regex engine.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/type/matcher/v3/regex.proto.
 	google_re2?: #RegexMatcher_GoogleRE2
 	// The regex match string. The string must be supported by the configured engine. The regex is matched
 	// against the full string, not as a partial match.
@@ -33,7 +33,7 @@ package v3
 	// defined by the chosen regular expression engine. Google's `RE2
 	// <https://github.com/google/re2>`_ regular expression engine uses a
 	// backslash followed by the capture group number to denote a numbered
-	// capture group. E.g., ``\1`` refers to capture group 1, and ``\2`` refers
+	// capture group. E.g., “\1“ refers to capture group 1, and “\2“ refers
 	// to capture group 2.
 	substitution?: string
 }
@@ -42,14 +42,14 @@ package v3
 // the documented `syntax <https://github.com/google/re2/wiki/Syntax>`_. The engine is designed
 // to complete execution in linear time as well as limit the amount of memory used.
 //
-// Envoy supports program size checking via runtime. The runtime keys ``re2.max_program_size.error_level``
-// and ``re2.max_program_size.warn_level`` can be set to integers as the maximum program size or
+// Envoy supports program size checking via runtime. The runtime keys “re2.max_program_size.error_level“
+// and “re2.max_program_size.warn_level“ can be set to integers as the maximum program size or
 // complexity that a compiled regex can have before an exception is thrown or a warning is
-// logged, respectively. ``re2.max_program_size.error_level`` defaults to 100, and
-// ``re2.max_program_size.warn_level`` has no default if unset (will not check/log a warning).
+// logged, respectively. “re2.max_program_size.error_level“ defaults to 100, and
+// “re2.max_program_size.warn_level“ has no default if unset (will not check/log a warning).
 //
-// Envoy emits two stats for tracking the program size of regexes: the histogram ``re2.program_size``,
-// which records the program size, and the counter ``re2.exceeded_warn_level``, which is incremented
+// Envoy emits two stats for tracking the program size of regexes: the histogram “re2.program_size“,
+// which records the program size, and the counter “re2.exceeded_warn_level“, which is incremented
 // each time the program size exceeds the warn level threshold.
 #RegexMatcher_GoogleRE2: {
 	"@type": "type.googleapis.com/envoy.type.matcher.v3.RegexMatcher_GoogleRE2"
@@ -63,10 +63,9 @@ package v3
 	//
 	// .. note::
 	//
-	//  Although this field is deprecated, the program size will still be checked against the
-	//  global ``re2.max_program_size.error_level`` runtime value.
+	//	Although this field is deprecated, the program size will still be checked against the
+	//	global ``re2.max_program_size.error_level`` runtime value.
 	//
-	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/type/matcher/v3/regex.proto.
 	max_program_size?: uint32
 }

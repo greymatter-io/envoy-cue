@@ -1,9 +1,9 @@
 package v2
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
 	_type "envoyproxy.io/envoy-cue/spec/type"
 	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 	v2 "envoyproxy.io/envoy-cue/spec/config/filter/accesslog/v2"
 	v21 "envoyproxy.io/envoy-cue/spec/api/v2"
 	v22 "envoyproxy.io/envoy-cue/spec/type/tracing/v2"
@@ -94,7 +94,7 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// <envoy_api_field_config.filter.network.http_connection_manager.v2.HttpConnectionManager.common_http_protocol_options>`
 	// instead.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/filter/network/http_connection_manager/v2/http_connection_manager.proto.
 	idle_timeout?: string
 	// The stream idle timeout for connections managed by the connection manager.
 	// If not specified, this defaults to 5 minutes. The default value was selected
@@ -169,14 +169,16 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// The default timeout is 1000 ms if this option is not specified.
 	//
 	// .. NOTE::
-	//    To be useful in avoiding the race condition described above, this timeout must be set
-	//    to *at least* <max round trip time expected between clients and Envoy>+<100ms to account for
-	//    a reasonable "worst" case processing time for a full iteration of Envoy's event loop>.
+	//
+	//	To be useful in avoiding the race condition described above, this timeout must be set
+	//	to *at least* <max round trip time expected between clients and Envoy>+<100ms to account for
+	//	a reasonable "worst" case processing time for a full iteration of Envoy's event loop>.
 	//
 	// .. WARNING::
-	//    A value of 0 will completely disable delayed close processing. When disabled, the downstream
-	//    connection's socket will be closed immediately after the write flush is completed or will
-	//    never close if the write flush does not complete.
+	//
+	//	A value of 0 will completely disable delayed close processing. When disabled, the downstream
+	//	connection's socket will be closed immediately after the write flush is completed or will
+	//	never close if the write flush does not complete.
 	delayed_close_timeout?: string
 	// Configuration for :ref:`HTTP access logs <arch_overview_access_logs>`
 	// emitted by the connection manager.
@@ -337,8 +339,8 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// The name of the filter to instantiate. The name must match a
 	// :ref:`supported filter <config_http_filters>`.
 	name?: string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/config/filter/network/http_connection_manager/v2/http_connection_manager.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }
 
@@ -356,24 +358,26 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// specified on the parent listener, then it is used instead of this field.
 	//
 	// .. attention::
-	//  This field has been deprecated in favor of `traffic_direction`.
 	//
-	// Deprecated: Do not use.
+	//	This field has been deprecated in favor of `traffic_direction`.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/filter/network/http_connection_manager/v2/http_connection_manager.proto.
 	operation_name?: #HttpConnectionManager_Tracing_OperationName
 	// A list of header names used to create tags for the active span. The header name is used to
 	// populate the tag name, and the header value is used to populate the tag value. The tag is
 	// created if the specified header name is present in the request's headers.
 	//
 	// .. attention::
-	//  This field has been deprecated in favor of :ref:`custom_tags
-	//  <envoy_api_field_config.filter.network.http_connection_manager.v2.HttpConnectionManager.tracing.custom_tags>`.
 	//
-	// Deprecated: Do not use.
+	//	This field has been deprecated in favor of :ref:`custom_tags
+	//	<envoy_api_field_config.filter.network.http_connection_manager.v2.HttpConnectionManager.tracing.custom_tags>`.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/filter/network/http_connection_manager/v2/http_connection_manager.proto.
 	request_headers_for_tags?: [...string]
 	// Target percentage of requests managed by this HTTP connection manager that will be force
 	// traced if the :ref:`x-client-trace-id <config_http_conn_man_headers_x-client-trace-id>`
 	// header is set. This field is a direct analog for the runtime variable
-	// 'tracing.client_sampling' in the :ref:`HTTP Connection Manager
+	// 'tracing.client_enabled' in the :ref:`HTTP Connection Manager
 	// <config_http_conn_man_runtime>`.
 	// Default: 100%
 	client_sampling?: _type.#Percent
@@ -403,14 +407,6 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	custom_tags?: [...v22.#CustomTag]
 	// Configuration for an external tracing provider.
 	// If not specified, no tracing will be performed.
-	//
-	// .. attention::
-	//   Please be aware that *envoy.tracers.opencensus* provider can only be configured once
-	//   in Envoy lifetime.
-	//   Any attempts to reconfigure it or to use different configurations for different HCM filters
-	//   will be rejected.
-	//   Such a constraint is inherent to OpenCensus itself. It cannot be overcome without changes
-	//   on OpenCensus side.
 	provider?: v23.#Tracing_Http
 }
 
@@ -447,13 +443,14 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 //
 // .. warning::
 //
-//    The current implementation of upgrade headers does not handle
-//    multi-valued upgrade headers. Support for multi-valued headers may be
-//    added in the future if needed.
+//	The current implementation of upgrade headers does not handle
+//	multi-valued upgrade headers. Support for multi-valued headers may be
+//	added in the future if needed.
 //
 // .. warning::
-//    The current implementation of upgrade headers does not work with HTTP/2
-//    upstreams.
+//
+//	The current implementation of upgrade headers does not work with HTTP/2
+//	upstreams.
 #HttpConnectionManager_UpgradeConfig: {
 	"@type": "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager_UpgradeConfig"
 	// The case-insensitive name of this upgrade, e.g. "websocket".
@@ -501,25 +498,25 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 //
 // .. code::
 //
-//              <0> <1>   <-- index
-//    X-Header: a=b;c=d
-//    |         || |
-//    |         || \----> <element_separator>
-//    |         ||
-//    |         |\----> <element.separator>
-//    |         |
-//    |         \----> <element.key>
-//    |
-//    \----> <name>
+//	          <0> <1>   <-- index
+//	X-Header: a=b;c=d
+//	|         || |
+//	|         || \----> <element_separator>
+//	|         ||
+//	|         |\----> <element.separator>
+//	|         |
+//	|         \----> <element.key>
+//	|
+//	\----> <name>
 //
-//    Each 'a=b' key-value pair constitutes an 'element' of the header field.
+//	Each 'a=b' key-value pair constitutes an 'element' of the header field.
 #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor: {
 	"@type": "type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor"
 	// The name of the header field to extract the value from.
 	//
 	// .. note::
 	//
-	//   If the header appears multiple times only the first value is used.
+	//	If the header appears multiple times only the first value is used.
 	name?: string
 	// The element separator (e.g., ';' separates 'a;b;c;d').
 	// Default: empty string. This causes the entirety of the header field to be extracted.

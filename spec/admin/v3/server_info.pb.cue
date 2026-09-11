@@ -29,7 +29,7 @@ CommandLineOptions_DrainStrategy_Immediate: "Immediate"
 
 // Proto representation of the value returned by /server_info, containing
 // server version/server status information.
-// [#next-free-field: 8]
+// [#next-free-field: 9]
 #ServerInfo: {
 	"@type": "type.googleapis.com/envoy.admin.v3.ServerInfo"
 	// Server version.
@@ -46,15 +46,21 @@ CommandLineOptions_DrainStrategy_Immediate: "Immediate"
 	command_line_options?: #CommandLineOptions
 	// Populated node identity of this server.
 	node?: v3.#Node
+	// Whether the server is currently initializing during a hot restart.
+	hot_restart_initializing?: bool
 }
 
-// [#next-free-field: 39]
+// [#next-free-field: 44]
 #CommandLineOptions: {
 	"@type": "type.googleapis.com/envoy.admin.v3.CommandLineOptions"
 	// See :option:`--base-id` for details.
 	base_id?: uint64
 	// See :option:`--use-dynamic-base-id` for details.
 	use_dynamic_base_id?: bool
+	// See :option:`--skip-hot-restart-on-no-parent` for details.
+	skip_hot_restart_on_no_parent?: bool
+	// See :option:`--skip-hot-restart-parent-stats` for details.
+	skip_hot_restart_parent_stats?: bool
 	// See :option:`--base-id-path` for details.
 	base_id_path?: string
 	// See :option:`--concurrency` for details.
@@ -69,6 +75,8 @@ CommandLineOptions_DrainStrategy_Immediate: "Immediate"
 	reject_unknown_dynamic_fields?: bool
 	// See :option:`--ignore-unknown-dynamic-fields` for details.
 	ignore_unknown_dynamic_fields?: bool
+	// See :option:`--skip-deprecated-logs` for details.
+	skip_deprecated_logs?: bool
 	// See :option:`--admin-address-path` for details.
 	admin_address_path?: string
 	// See :option:`--local-address-ip-version` for details.
@@ -91,6 +99,8 @@ CommandLineOptions_DrainStrategy_Immediate: "Immediate"
 	service_zone?: string
 	// See :option:`--file-flush-interval-msec` for details.
 	file_flush_interval?: string
+	// See :option:`--file-flush-min-size-kb` for details.
+	file_flush_min_size?: uint32
 	// See :option:`--drain-time-s` for details.
 	drain_time?: string
 	// See :option:`--drain-strategy` for details.
@@ -111,6 +121,8 @@ CommandLineOptions_DrainStrategy_Immediate: "Immediate"
 	disabled_extensions?: [...string]
 	// See :option:`--enable-fine-grain-logging` for details.
 	enable_fine_grain_logging?: bool
+	// See :option:`--log-stacktrace-single-entry` for details.
+	log_stacktrace_single_entry?: bool
 	// See :option:`--socket-path` for details.
 	socket_path?: string
 	// See :option:`--socket-mode` for details.

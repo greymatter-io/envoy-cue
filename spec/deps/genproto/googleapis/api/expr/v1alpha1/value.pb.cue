@@ -1,7 +1,6 @@
 package v1alpha1
 
 import (
-	anypb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/anypb"
 	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
@@ -28,7 +27,7 @@ import (
 	// An enum value.
 	enum_value?: #EnumValue
 	// The proto message backing an object value.
-	object_value?: anypb.#Any
+	object_value?: _
 	// Map value.
 	map_value?: #MapValue
 	// List value.

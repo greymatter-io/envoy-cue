@@ -7,8 +7,8 @@ package v3
 //
 // .. attention::
 //
-//   Use of this message type has been deprecated in favor of direct use of
-//   :ref:`Tracing.Http <envoy_v3_api_msg_config.trace.v3.Tracing.Http>`.
+//	Use of this message type has been deprecated in favor of direct use of
+//	:ref:`Tracing.Http <envoy_v3_api_msg_config.trace.v3.Tracing.Http>`.
 #Tracing: {
 	"@type": "type.googleapis.com/envoy.config.trace.v3.Tracing"
 	// Provides configuration for the HTTP tracer.

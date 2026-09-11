@@ -9,7 +9,7 @@ import (
 // gRPC Authorization API defined by
 // :ref:`CheckRequest <envoy_v3_api_msg_service.auth.v3.CheckRequest>`.
 // A failed check will cause this filter to close the TCP connection.
-// [#next-free-field: 8]
+// [#next-free-field: 12]
 #ExtAuthz: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.ext_authz.v3.ExtAuthz"
 	// The prefix to use when emitting statistics.
@@ -37,4 +37,36 @@ import (
 	// :ref:`destination<envoy_v3_api_field_service.auth.v3.AttributeContext.destination>`.
 	// The labels will be read from :ref:`metadata<envoy_v3_api_msg_config.core.v3.Node>` with the specified key.
 	bootstrap_metadata_labels_key?: string
+	// Specifies if the TLS session level details like SNI are sent to the external service.
+	//
+	// When this field is true, Envoy will include the SNI name used for TLSClientHello, if available, in the
+	// :ref:`tls_session<envoy_v3_api_field_service.auth.v3.AttributeContext.tls_session>`.
+	include_tls_session?: bool
+	// When set to “true“, the filter will send a TLS “access_denied(49)“ alert before closing
+	// the connection when authorization is denied. This provides better visibility to TLS clients
+	// about the reason for connection closure. This alert is only sent for TLS connections. The
+	// non-TLS connections will be closed without sending an alert.
+	//
+	// Defaults to “false“.
+	send_tls_alert_on_denial?: bool
+	// Specifies a list of metadata namespaces whose values, if present, will be passed to the
+	// ext_authz service. The :ref:`filter_metadata <envoy_v3_api_field_config.core.v3.Metadata.filter_metadata>`
+	// is passed as an opaque “protobuf::Struct“.
+	//
+	// For example, if the “proxy_protocol“ listener filter is used and populates TLV metadata,
+	// then the following will pass that metadata to the authorization server for making decisions
+	// based on proxy protocol information.
+	//
+	// .. code-block:: yaml
+	//
+	//	metadata_context_namespaces:
+	//	- envoy.filters.listener.proxy_protocol
+	metadata_context_namespaces?: [...string]
+	// Specifies a list of metadata namespaces whose values, if present, will be passed to the
+	// ext_authz service. :ref:`typed_filter_metadata <envoy_v3_api_field_config.core.v3.Metadata.typed_filter_metadata>`
+	// is passed as a “protobuf::Any“.
+	//
+	// This works similarly to “metadata_context_namespaces“ but allows Envoy and the ext_authz server to share
+	// the protobuf message definition in order to perform safe parsing.
+	typed_metadata_context_namespaces?: [...string]
 }

@@ -1,10 +1,10 @@
 package listener
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
 	_type "envoyproxy.io/envoy-cue/spec/type"
 	auth "envoyproxy.io/envoy-cue/spec/api/v2/auth"
 	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 #FilterChainMatch_ConnectionSourceType: "ANY" | "LOCAL" | "EXTERNAL"
@@ -18,8 +18,8 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL: "EXTERNAL"
 	// The name of the filter to instantiate. The name must match a
 	// :ref:`supported filter <config_network_filters>`.
 	name?: string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/listener/listener_components.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }
 
@@ -43,9 +43,9 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL: "EXTERNAL"
 //
 // For criteria that allow ranges or wildcards, the most specific value in any
 // of the configured filter chains that matches the incoming connection is going
-// to be used (e.g. for SNI ``www.example.com`` the most specific match would be
-// ``www.example.com``, then ``*.example.com``, then ``*.com``, then any filter
-// chain without ``server_names`` requirements).
+// to be used (e.g. for SNI “www.example.com“ the most specific match would be
+// “www.example.com“, then “*.example.com“, then “*.com“, then any filter
+// chain without “server_names“ requirements).
 //
 // [#comment: Implemented rules are kept in the preference order, with deprecated fields
 // listed at the end, because that's how we want to list them in the docs.
@@ -81,15 +81,15 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL: "EXTERNAL"
 	// a filter chain match. Those values will be compared against the server names of a new
 	// connection, when detected by one of the listener filters.
 	//
-	// The server name will be matched against all wildcard domains, i.e. ``www.example.com``
-	// will be first matched against ``www.example.com``, then ``*.example.com``, then ``*.com``.
+	// The server name will be matched against all wildcard domains, i.e. “www.example.com“
+	// will be first matched against “www.example.com“, then “*.example.com“, then “*.com“.
 	//
-	// Note that partial wildcards are not supported, and values like ``*w.example.com`` are invalid.
+	// Note that partial wildcards are not supported, and values like “*w.example.com“ are invalid.
 	//
 	// .. attention::
 	//
-	//   See the :ref:`FAQ entry <faq_how_to_setup_sni>` on how to configure SNI for more
-	//   information.
+	//	See the :ref:`FAQ entry <faq_how_to_setup_sni>` on how to configure SNI for more
+	//	information.
 	server_names?: [...string]
 	// If non-empty, a transport protocol to consider when determining a filter chain match.
 	// This value will be compared against the transport protocol of a new connection, when
@@ -97,9 +97,9 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL: "EXTERNAL"
 	//
 	// Suggested values include:
 	//
-	// * ``raw_buffer`` - default, used when no transport protocol is detected,
-	// * ``tls`` - set by :ref:`envoy.filters.listener.tls_inspector <config_listener_filters_tls_inspector>`
-	//   when TLS protocol is detected.
+	//   - “raw_buffer“ - default, used when no transport protocol is detected,
+	//   - “tls“ - set by :ref:`envoy.filters.listener.tls_inspector <config_listener_filters_tls_inspector>`
+	//     when TLS protocol is detected.
 	transport_protocol?: string
 	// If non-empty, a list of application protocols (e.g. ALPN for TLS protocol) to consider when
 	// determining a filter chain match. Those values will be compared against the application
@@ -107,19 +107,19 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL: "EXTERNAL"
 	//
 	// Suggested values include:
 	//
-	// * ``http/1.1`` - set by :ref:`envoy.filters.listener.tls_inspector
-	//   <config_listener_filters_tls_inspector>`,
-	// * ``h2`` - set by :ref:`envoy.filters.listener.tls_inspector <config_listener_filters_tls_inspector>`
+	//   - “http/1.1“ - set by :ref:`envoy.filters.listener.tls_inspector
+	//     <config_listener_filters_tls_inspector>`,
+	//   - “h2“ - set by :ref:`envoy.filters.listener.tls_inspector <config_listener_filters_tls_inspector>`
 	//
 	// .. attention::
 	//
-	//   Currently, only :ref:`TLS Inspector <config_listener_filters_tls_inspector>` provides
-	//   application protocol detection based on the requested
-	//   `ALPN <https://en.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation>`_ values.
+	//	Currently, only :ref:`TLS Inspector <config_listener_filters_tls_inspector>` provides
+	//	application protocol detection based on the requested
+	//	`ALPN <https://en.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation>`_ values.
 	//
-	//   However, the use of ALPN is pretty much limited to the HTTP/2 traffic on the Internet,
-	//   and matching on values other than ``h2`` is going to lead to a lot of false negatives,
-	//   unless all connecting clients are known to use ALPN.
+	//	However, the use of ALPN is pretty much limited to the HTTP/2 traffic on the Internet,
+	//	and matching on values other than ``h2`` is going to lead to a lot of false negatives,
+	//	unless all connecting clients are known to use ALPN.
 	application_protocols?: [...string]
 }
 
@@ -134,10 +134,10 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL: "EXTERNAL"
 	//
 	// .. attention::
 	//
-	//   **This field is deprecated**. Use `transport_socket` with name `tls` instead. If both are
-	//   set, `transport_socket` takes priority.
+	//	**This field is deprecated**. Use `transport_socket` with name `tls` instead. If both are
+	//	set, `transport_socket` takes priority.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/api/v2/listener/listener_components.proto.
 	tls_context?: auth.#DownstreamTlsContext
 	// A list of individual network filters that make up the filter chain for
 	// connections established with the listener. Order matters as the filters are
@@ -174,22 +174,22 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL: "EXTERNAL"
 //
 // .. code-block:: yaml
 //
-//  destination_port_range:
-//   start: 3306
-//   end: 3307
+//	destination_port_range:
+//	 start: 3306
+//	 end: 3307
 //
 // * Matches if the destination port is 3306 or 15000.
 //
 // .. code-block:: yaml
 //
-//  or_match:
-//    rules:
-//      - destination_port_range:
-//          start: 3306
-//          end: 3307
-//      - destination_port_range:
-//          start: 15000
-//          end: 15001
+//	or_match:
+//	  rules:
+//	    - destination_port_range:
+//	        start: 3306
+//	        end: 3307
+//	    - destination_port_range:
+//	        start: 15000
+//	        end: 15001
 //
 // [#next-free-field: 6]
 #ListenerFilterChainMatchPredicate: {
@@ -214,8 +214,8 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL: "EXTERNAL"
 	// The name of the filter to instantiate. The name must match a
 	// :ref:`supported filter <config_listener_filters>`.
 	name?: string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/listener/listener_components.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 	// Optional match predicate used to disable the filter. The filter is enabled when this field is empty.
 	// See :ref:`ListenerFilterChainMatchPredicate <envoy_api_msg_listener.ListenerFilterChainMatchPredicate>`

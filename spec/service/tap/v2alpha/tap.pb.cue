@@ -32,20 +32,3 @@ import (
 	// <envoy_api_field_service.tap.v2alpha.StreamingGrpcSink.tap_id>`.
 	tap_id?: string
 }
-
-// TapSinkServiceClient is the client API for TapSinkService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-#TapSinkServiceClient: _
-
-#TapSinkService_StreamTapsClient: _
-
-// TapSinkServiceServer is the server API for TapSinkService service.
-#TapSinkServiceServer: _
-
-// UnimplementedTapSinkServiceServer can be embedded to have forward compatible implementations.
-#UnimplementedTapSinkServiceServer: {
-	"@type": "type.googleapis.com/envoy.service.tap.v2alpha.UnimplementedTapSinkServiceServer"
-}
-
-#TapSinkService_StreamTapsServer: _

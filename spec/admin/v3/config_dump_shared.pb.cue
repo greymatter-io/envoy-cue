@@ -2,13 +2,15 @@ package v3
 
 // Resource status from the view of a xDS client, which tells the synchronization
 // status between the xDS client and the xDS server.
-#ClientResourceStatus: "UNKNOWN" | "REQUESTED" | "DOES_NOT_EXIST" | "ACKED" | "NACKED"
+#ClientResourceStatus: "UNKNOWN" | "REQUESTED" | "DOES_NOT_EXIST" | "ACKED" | "NACKED" | "RECEIVED_ERROR" | "TIMEOUT"
 
 ClientResourceStatus_UNKNOWN:        "UNKNOWN"
 ClientResourceStatus_REQUESTED:      "REQUESTED"
 ClientResourceStatus_DOES_NOT_EXIST: "DOES_NOT_EXIST"
 ClientResourceStatus_ACKED:          "ACKED"
 ClientResourceStatus_NACKED:         "NACKED"
+ClientResourceStatus_RECEIVED_ERROR: "RECEIVED_ERROR"
+ClientResourceStatus_TIMEOUT:        "TIMEOUT"
 
 #UpdateFailureState: {
 	"@type": "type.googleapis.com/envoy.admin.v3.UpdateFailureState"
@@ -96,6 +98,16 @@ ClientResourceStatus_NACKED:         "NACKED"
 	dynamic_endpoint_configs?: [...#EndpointsConfigDump_DynamicEndpointConfig]
 }
 
+// Envoy's ECDS service fills this message with all currently extension
+// configuration. Extension configuration information can be used to recreate
+// an Envoy ECDS listener and HTTP filters as static filters or by returning
+// them in ECDS response.
+#EcdsConfigDump: {
+	"@type": "type.googleapis.com/envoy.admin.v3.EcdsConfigDump"
+	// The ECDS filter configs.
+	ecds_filters?: [...#EcdsConfigDump_EcdsFilterConfig]
+}
+
 // Describes a statically loaded listener.
 #ListenersConfigDump_StaticListener: {
 	"@type": "type.googleapis.com/envoy.admin.v3.ListenersConfigDump_StaticListener"
@@ -138,7 +150,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// configuration dump, the draining listeners should generally be discarded.
 	draining_state?: #ListenersConfigDump_DynamicListenerState
 	// Set if the last update failed, cleared after the next successful update.
-	// The ``error_state`` field contains the rejected version of this particular
+	// The “error_state“ field contains the rejected version of this particular
 	// resource along with the reason and timestamp. For successfully updated or
 	// acknowledged resource, this field should be empty.
 	error_state?: #UpdateFailureState
@@ -170,7 +182,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// The timestamp when the Cluster was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.
-	// The ``error_state`` field contains the rejected version of this particular
+	// The “error_state“ field contains the rejected version of this particular
 	// resource along with the reason and timestamp. For successfully updated or
 	// acknowledged resource, this field should be empty.
 	// [#not-implemented-hide:]
@@ -200,7 +212,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// The timestamp when the Route was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.
-	// The ``error_state`` field contains the rejected version of this particular
+	// The “error_state“ field contains the rejected version of this particular
 	// resource along with the reason and timestamp. For successfully updated or
 	// acknowledged resource, this field should be empty.
 	// [#not-implemented-hide:]
@@ -215,7 +227,7 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// The name assigned to the scoped route configurations.
 	name?: string
 	// The scoped route configurations.
-	scoped_route_configs?: _
+	scoped_route_configs?: [...]
 	// The timestamp when the scoped route config set was last updated.
 	last_updated?: string
 }
@@ -230,11 +242,11 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// the scoped routes configuration was loaded.
 	version_info?: string
 	// The scoped route configurations.
-	scoped_route_configs?: _
+	scoped_route_configs?: [...]
 	// The timestamp when the scoped route config set was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.
-	// The ``error_state`` field contains the rejected version of this particular
+	// The “error_state“ field contains the rejected version of this particular
 	// resource along with the reason and timestamp. For successfully updated or
 	// acknowledged resource, this field should be empty.
 	// [#not-implemented-hide:]
@@ -264,9 +276,32 @@ ClientResourceStatus_NACKED:         "NACKED"
 	// [#not-implemented-hide:] The timestamp when the Endpoint was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.
-	// The ``error_state`` field contains the rejected version of this particular
+	// The “error_state“ field contains the rejected version of this particular
 	// resource along with the reason and timestamp. For successfully updated or
 	// acknowledged resource, this field should be empty.
+	// [#not-implemented-hide:]
+	error_state?: #UpdateFailureState
+	// The client status of this resource.
+	// [#not-implemented-hide:]
+	client_status?: #ClientResourceStatus
+}
+
+// [#next-free-field: 6]
+#EcdsConfigDump_EcdsFilterConfig: {
+	"@type": "type.googleapis.com/envoy.admin.v3.EcdsConfigDump_EcdsFilterConfig"
+	// This is the per-resource version information. This version is currently
+	// taken from the :ref:`version_info
+	// <envoy_v3_api_field_service.discovery.v3.DiscoveryResponse.version_info>`
+	// field at the time that the ECDS filter was loaded.
+	version_info?: string
+	// The ECDS filter config.
+	ecds_filter?: _
+	// The timestamp when the ECDS filter was last updated.
+	last_updated?: string
+	// Set if the last update failed, cleared after the next successful update.
+	// The “error_state“ field contains the rejected version of this
+	// particular resource along with the reason and timestamp. For successfully
+	// updated or acknowledged resource, this field should be empty.
 	// [#not-implemented-hide:]
 	error_state?: #UpdateFailureState
 	// The client status of this resource.

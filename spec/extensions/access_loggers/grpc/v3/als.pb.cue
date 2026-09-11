@@ -5,7 +5,7 @@ import (
 	v31 "envoyproxy.io/envoy-cue/spec/type/tracing/v3"
 )
 
-// Configuration for the built-in ``envoy.access_loggers.http_grpc``
+// Configuration for the built-in “envoy.access_loggers.http_grpc“
 // :ref:`AccessLog <envoy_v3_api_msg_config.accesslog.v3.AccessLog>`. This configuration will
 // populate :ref:`StreamAccessLogsMessage.http_logs
 // <envoy_v3_api_field_service.accesslog.v3.StreamAccessLogsMessage.http_logs>`.
@@ -24,8 +24,8 @@ import (
 	additional_response_trailers_to_log?: [...string]
 }
 
-// Configuration for the built-in ``envoy.access_loggers.tcp_grpc`` type. This configuration will
-// populate ``StreamAccessLogsMessage.tcp_logs``.
+// Configuration for the built-in “envoy.access_loggers.tcp_grpc“ type. This configuration will
+// populate “StreamAccessLogsMessage.tcp_logs“.
 // [#extension: envoy.access_loggers.tcp_grpc]
 #TcpGrpcAccessLogConfig: {
 	"@type":        "type.googleapis.com/envoy.extensions.access_loggers.grpc.v3.TcpGrpcAccessLogConfig"
@@ -55,7 +55,7 @@ import (
 	buffer_size_bytes?: uint32
 	// Additional filter state objects to log in :ref:`filter_state_objects
 	// <envoy_v3_api_field_data.accesslog.v3.AccessLogCommon.filter_state_objects>`.
-	// Logger will call ``FilterState::Object::serializeAsProto`` to serialize the filter state object.
+	// Logger will call “FilterState::Object::serializeAsProto“ to serialize the filter state object.
 	filter_state_objects_to_log?: [...string]
 	// Sets the retry policy when the establishment of a gRPC stream fails.
 	// If the stream succeeds at least once in establishing itself,

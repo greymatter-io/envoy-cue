@@ -2,9 +2,10 @@ package v3
 
 import (
 	v3 "envoyproxy.io/envoy-cue/spec/config/accesslog/v3"
+	v31 "envoyproxy.io/envoy-cue/spec/extensions/filters/network/http_connection_manager/v3"
 )
 
-// [#next-free-field: 8]
+// [#next-free-field: 11]
 #Router: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.router.v3.Router"
 	// Whether the router generates dynamic cluster statistics. Defaults to
@@ -14,16 +15,26 @@ import (
 	// useful in scenarios where other filters (auth, ratelimit, etc.) make
 	// outbound calls and have child spans rooted at the same ingress
 	// parent. Defaults to false.
+	//
+	// .. attention::
+	//
+	//	This field is deprecated by the
+	//	:ref:`spawn_upstream_span <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.Tracing.spawn_upstream_span>`.
+	//	Please use that ``spawn_upstream_span`` field to control the span creation.
+	//
+	// Deprecated: Marked as deprecated in envoy/extensions/filters/http/router/v3/router.proto.
 	start_child_span?: bool
 	// Configuration for HTTP upstream logs emitted by the router. Upstream logs
 	// are configured in the same way as access logs, but each log entry represents
 	// an upstream request. Presuming retries are configured, multiple upstream
 	// requests may be made for each downstream (inbound) request.
 	upstream_log?: [...v3.#AccessLog]
-	// Do not add any additional ``x-envoy-`` headers to requests or responses. This
+	// Additional upstream access log options.
+	upstream_log_options?: #Router_UpstreamAccessLogOptions
+	// Do not add any additional “x-envoy-“ headers to requests or responses. This
 	// only affects the :ref:`router filter generated x-envoy- headers
 	// <config_http_filters_router_headers_set>`, other Envoy filters and the HTTP
-	// connection manager may continue to set ``x-envoy-`` headers.
+	// connection manager may continue to set “x-envoy-“ headers.
 	suppress_envoy_headers?: bool
 	// Specifies a list of HTTP headers to strictly validate. Envoy will reject a
 	// request and respond with HTTP status 400 if the request contains an invalid
@@ -55,4 +66,41 @@ import (
 	// :ref:`gRPC stats filter<config_http_filters_grpc_stats>` documentation
 	// for more details.
 	suppress_grpc_request_failure_code_stats?: bool
+	// Optional HTTP filters for the upstream HTTP filter chain.
+	//
+	// .. note::
+	//
+	//	Upstream HTTP filters are currently in alpha.
+	//
+	// These filters will be applied for all requests that pass through the router.
+	// They will also be applied to shadowed requests.
+	// Upstream HTTP filters cannot change route or cluster.
+	// Upstream HTTP filters specified on the cluster will override these filters.
+	//
+	// If using upstream HTTP filters, please be aware that local errors sent by
+	// upstream HTTP filters will not trigger retries, and local errors sent by
+	// upstream HTTP filters will count as a final response if hedging is configured.
+	// [#extension-category: envoy.filters.http.upstream]
+	upstream_http_filters?: [...v31.#HttpFilter]
+	// If set to true, Envoy will reject “CONNECT“ requests that send data before
+	// receiving a “200“ response from the upstream. This early data behavior
+	// is common for latency reduction but can cause issues with some upstreams.
+	// Defaults to false to allow early data and be compatible with common behavior.
+	reject_connect_request_early_data?: bool
+}
+
+#Router_UpstreamAccessLogOptions: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.router.v3.Router_UpstreamAccessLogOptions"
+	// If set to true, an upstream access log will be recorded when an upstream stream is
+	// associated to an http request. Note: Each HTTP request received for an already established
+	// connection will result in an upstream access log record. This includes, for example,
+	// consecutive HTTP requests over the same connection or a request that is retried.
+	// In case a retry is applied, an upstream access log will be recorded for each retry.
+	flush_upstream_log_on_upstream_stream?: bool
+	// The interval to flush the upstream access logs. By default, the router will flush an upstream
+	// access log on stream close, when the HTTP request is complete. If this field is set, the router
+	// will flush access logs periodically at the specified interval. This is especially useful in the
+	// case of long-lived requests, such as CONNECT and Websockets.
+	// The interval must be at least 1 millisecond.
+	upstream_log_flush_interval?: string
 }

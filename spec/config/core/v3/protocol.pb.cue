@@ -2,6 +2,7 @@ package v3
 
 import (
 	v3 "envoyproxy.io/envoy-cue/spec/type/v3"
+	v31 "envoyproxy.io/envoy-cue/spec/type/matcher/v3"
 )
 
 // Action to take when Envoy receives client request with header names containing underscore
@@ -21,11 +22,14 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 }
 
 // Config for keepalive probes in a QUIC connection.
-// Note that QUIC keep-alive probing packets work differently from HTTP/2 keep-alive PINGs in a sense that the probing packet
-// itself doesn't timeout waiting for a probing response. Quic has a shorter idle timeout than TCP, so it doesn't rely on such probing to discover dead connections. If the peer fails to respond, the connection will idle timeout eventually. Thus, they are configured differently from :ref:`connection_keepalive <envoy_v3_api_field_config.core.v3.Http2ProtocolOptions.connection_keepalive>`.
+//
+// .. note::
+//
+//	QUIC keep-alive probing packets work differently from HTTP/2 keep-alive PINGs in a sense that the probing packet
+//	itself doesn't timeout waiting for a probing response. QUIC has a shorter idle timeout than TCP, so it doesn't rely on such probing to discover dead connections. If the peer fails to respond, the connection will idle timeout eventually. Thus, they are configured differently from :ref:`connection_keepalive <envoy_v3_api_field_config.core.v3.Http2ProtocolOptions.connection_keepalive>`.
 #QuicKeepAliveSettings: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.QuicKeepAliveSettings"
-	// The max interval for a connection to send keep-alive probing packets (with PING or PATH_RESPONSE). The value should be smaller than :ref:`connection idle_timeout <envoy_v3_api_field_config.listener.v3.QuicProtocolOptions.idle_timeout>` to prevent idle timeout while not less than 1s to avoid throttling the connection or flooding the peer with probes.
+	// The max interval for a connection to send keep-alive probing packets (with “PING“ or “PATH_RESPONSE“). The value should be smaller than :ref:`connection idle_timeout <envoy_v3_api_field_config.listener.v3.QuicProtocolOptions.idle_timeout>` to prevent idle timeout while not less than “1s“ to avoid throttling the connection or flooding the peer with probes.
 	//
 	// If :ref:`initial_interval <envoy_v3_api_field_config.core.v3.QuicKeepAliveSettings.initial_interval>` is absent or zero, a client connection will use this value to start probing.
 	//
@@ -36,43 +40,88 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	//
 	// The value should be smaller than :ref:`connection idle_timeout <envoy_v3_api_field_config.listener.v3.QuicProtocolOptions.idle_timeout>` to prevent idle timeout and smaller than max_interval to take effect.
 	//
-	// If absent or zero, disable keepalive probing for a server connection. For a client connection, if :ref:`max_interval <envoy_v3_api_field_config.core.v3.QuicKeepAliveSettings.max_interval>`  is also zero, do not keepalive, otherwise use max_interval or QUICHE default to probe all the time.
+	// If absent, disable keepalive probing for a server connection. For a client connection, if :ref:`max_interval <envoy_v3_api_field_config.core.v3.QuicKeepAliveSettings.max_interval>` is zero, do not keepalive, otherwise use max_interval or QUICHE default to probe all the time.
 	initial_interval?: string
 }
 
 // QUIC protocol options which apply to both downstream and upstream connections.
-// [#next-free-field: 6]
+// [#next-free-field: 14]
 #QuicProtocolOptions: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.QuicProtocolOptions"
-	// Maximum number of streams that the client can negotiate per connection. 100
+	// Maximum number of streams that the client can negotiate per connection. “100“
 	// if not specified.
 	max_concurrent_streams?: uint32
 	// `Initial stream-level flow-control receive window
 	// <https://tools.ietf.org/html/draft-ietf-quic-transport-34#section-4.1>`_ size. Valid values range from
-	// 1 to 16777216 (2^24, maximum supported by QUICHE) and defaults to 65536 (2^16).
+	// “1“ to “16777216“ (“2^24“, maximum supported by QUICHE) and defaults to “16777216“ (“16 * 1024 * 1024“).
 	//
-	// NOTE: 16384 (2^14) is the minimum window size supported in Google QUIC. If configured smaller than it, we will use 16384 instead.
-	// QUICHE IETF Quic implementation supports 1 bytes window. We only support increasing the default window size now, so it's also the minimum.
+	// .. note::
+	//
+	//	``16384`` (``2^14``) is the minimum window size supported in Google QUIC. If configured smaller than it, we will use
+	//	``16384`` instead. QUICHE IETF QUIC implementation supports ``1`` byte window. We only support increasing the default
+	//	window size now, so it's also the minimum.
 	//
 	// This field also acts as a soft limit on the number of bytes Envoy will buffer per-stream in the
 	// QUIC stream send and receive buffers. Once the buffer reaches this pointer, watermark callbacks will fire to
 	// stop the flow of data to the stream buffers.
 	initial_stream_window_size?: uint32
-	// Similar to ``initial_stream_window_size``, but for connection-level
-	// flow-control. Valid values rage from 1 to 25165824 (24MB, maximum supported by QUICHE) and defaults to 65536 (2^16).
-	// window. Currently, this has the same minimum/default as ``initial_stream_window_size``.
+	// Similar to “initial_stream_window_size“, but for connection-level
+	// flow-control. Valid values range from “1“ to “25165824“ (“24MB“, maximum supported by QUICHE) and defaults
+	// to “25165824“ (“24 * 1024 * 1024“).
 	//
-	// NOTE: 16384 (2^14) is the minimum window size supported in Google QUIC. We only support increasing the default
-	// window size now, so it's also the minimum.
+	// .. note::
+	//
+	//	``16384`` (``2^14``) is the minimum window size supported in Google QUIC. We only support increasing the default
+	//	window size now, so it's also the minimum.
 	initial_connection_window_size?: uint32
 	// The number of timeouts that can occur before port migration is triggered for QUIC clients.
-	// This defaults to 1. If set to 0, port migration will not occur on path degrading.
-	// Timeout here refers to QUIC internal path degrading timeout mechanism, such as PTO.
+	// This defaults to “4“. If set to “0“, port migration will not occur on path degrading.
+	// Timeout here refers to QUIC internal path degrading timeout mechanism, such as “PTO“.
 	// This has no effect on server sessions.
 	num_timeouts_to_trigger_port_migration?: uint32
-	// Probes the peer at the configured interval to solicit traffic, i.e. ACK or PATH_RESPONSE, from the peer to push back connection idle timeout.
-	// If absent, use the default keepalive behavior of which a client connection sends PINGs every 15s, and a server connection doesn't do anything.
+	// Probes the peer at the configured interval to solicit traffic, i.e. “ACK“ or “PATH_RESPONSE“, from the peer to push back connection idle timeout.
+	// If absent, use the default keepalive behavior of which a client connection sends “PING“s every “15s“, and a server connection doesn't do anything.
 	connection_keepalive?: #QuicKeepAliveSettings
+	// A comma-separated list of strings representing QUIC connection options defined in
+	// `QUICHE <https://github.com/google/quiche/blob/main/quiche/quic/core/crypto/crypto_protocol.h>`_ and to be sent by upstream connections.
+	connection_options?: string
+	// A comma-separated list of strings representing QUIC client connection options defined in
+	// `QUICHE <https://github.com/google/quiche/blob/main/quiche/quic/core/crypto/crypto_protocol.h>`_ and to be sent by upstream connections.
+	client_connection_options?: string
+	// The duration that a QUIC connection stays idle before it closes itself. If this field is not present, QUICHE
+	// default “600s“ will be applied.
+	// For internal corporate network, a long timeout is often fine.
+	// But for client facing network, “30s“ is usually a good choice.
+	// Do not add an upper bound here. A long idle timeout is useful for maintaining warm connections at non-front-line proxy for low QPS services.
+	idle_network_timeout?: string
+	// Maximum packet length for QUIC connections. It refers to the largest size of a QUIC packet that can be transmitted over the connection.
+	// If not specified, one of the `default values in QUICHE <https://github.com/google/quiche/blob/main/quiche/quic/core/quic_constants.h>`_ is used.
+	max_packet_length?: uint64
+	// A customized UDP socket and a QUIC packet writer using the socket for
+	// client connections. i.e. Mobile uses its own implementation to interact
+	// with platform socket APIs.
+	// If not present, the default platform-independent socket and writer will be used.
+	// [#extension-category: envoy.quic.client_packet_writer]
+	client_packet_writer?: #TypedExtensionConfig
+	// Enable QUIC `connection migration
+	// <https://datatracker.ietf.org/doc/html/rfc9000#name-connection-migration>`
+	// to a different network interface when the current network is degrading or
+	// has become bad.
+	// In order to use a different network interface other than the platform's default one,
+	// a customized :ref:`client_packet_writer <envoy_v3_api_field_config.core.v3.QuicProtocolOptions.client_packet_writer>` needs to be configured to
+	// create UDP sockets on non-default networks.
+	// Only takes effect when runtime key “envoy.reloadable_features.use_migration_in_quiche“ is true.
+	// If absent, the feature will be disabled.
+	// [#not-implemented-hide:]
+	connection_migration?: #QuicProtocolOptions_ConnectionMigrationSettings
+	// Timeout for a QUIC connection to schedule memory reduction callback when the network has been idle for a while.
+	// This value should be smaller than the idle timeout to take effect.
+	// If not specified, memory reduction is set to infinite by QUIC connection (disabled).
+	memory_reduction_timeout?: string
+	// If true, the QUIC connection will signal support for `SCONE <https://datatracker.ietf.org/doc/draft-ietf-scone-protocol/>`_ (Standard
+	// Communication with Network Elements) and process SCONE packets.
+	// If not present, the QUICHE default behavior will be used.
+	enable_scone?: bool
 }
 
 #UpstreamHttpProtocolOptions: {
@@ -81,19 +130,28 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// upstream connections based on the downstream HTTP host/authority header or any other arbitrary
 	// header when :ref:`override_auto_sni_header <envoy_v3_api_field_config.core.v3.UpstreamHttpProtocolOptions.override_auto_sni_header>`
 	// is set, as seen by the :ref:`router filter <config_http_filters_router>`.
+	// Does nothing if a filter before the http router filter sets the corresponding metadata.
+	//
+	// See :ref:`SNI configuration <start_quick_start_securing_sni_client>` for details on how this
+	// interacts with other validation options.
 	auto_sni?: bool
 	// Automatic validate upstream presented certificate for new upstream connections based on the
 	// downstream HTTP host/authority header or any other arbitrary header when :ref:`override_auto_sni_header <envoy_v3_api_field_config.core.v3.UpstreamHttpProtocolOptions.override_auto_sni_header>`
 	// is set, as seen by the :ref:`router filter <config_http_filters_router>`.
-	// This field is intended to be set with ``auto_sni`` field.
+	// This field is intended to be set with “auto_sni“ field.
+	// Does nothing if a filter before the http router filter sets the corresponding metadata.
+	//
+	// See :ref:`validation configuration <start_quick_start_securing_validation>` for how this interacts with
+	// other validation options.
 	auto_san_validation?: bool
 	// An optional alternative to the host/authority header to be used for setting the SNI value.
 	// It should be a valid downstream HTTP header, as seen by the
 	// :ref:`router filter <config_http_filters_router>`.
 	// If unset, host/authority header will be used for populating the SNI. If the specified header
 	// is not found or the value is empty, host/authority header will be used instead.
-	// This field is intended to be set with ``auto_sni`` and/or ``auto_san_validation`` fields.
+	// This field is intended to be set with “auto_sni“ and/or “auto_san_validation“ fields.
 	// If none of these fields are set then setting this would be a no-op.
+	// Does nothing if a filter before the http router filter sets the corresponding metadata.
 	override_auto_sni_header?: string
 }
 
@@ -110,13 +168,13 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// referenced from different configuration components. Configuration will fail to load if this is
 	// not the case.
 	name?: string
-	// The maximum number of entries that the cache will hold. If not specified defaults to 1024.
+	// The maximum number of entries that the cache will hold. If not specified defaults to “1024“.
 	//
-	// .. note:
+	// .. note::
 	//
-	//   The implementation is approximate and enforced independently on each worker thread, thus
-	//   it is possible for the maximum entries in the cache to go slightly above the configured
-	//   value depending on timing. This is similar to how other circuit breakers work.
+	//	The implementation is approximate and enforced independently on each worker thread, thus
+	//	it is possible for the maximum entries in the cache to go slightly above the configured
+	//	value depending on timing. This is similar to how other circuit breakers work.
 	max_entries?: uint32
 	// Allows configuring a persistent
 	// :ref:`key value store <envoy_v3_api_msg_config.common.key_value.v3.KeyValueStoreConfig>` to flush
@@ -127,10 +185,10 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// Allows pre-populating the cache with entries, as described above.
 	prepopulated_entries?: [...#AlternateProtocolsCacheOptions_AlternateProtocolsCacheEntry]
 	// Optional list of hostnames suffixes for which Alt-Svc entries can be shared. For example, if
-	// this list contained the value ``.c.example.com``, then an Alt-Svc entry for ``foo.c.example.com``
-	// could be shared with ``bar.c.example.com`` but would not be shared with ``baz.example.com``. On
-	// the other hand, if the list contained the value ``.example.com`` then all three hosts could share
-	// Alt-Svc entries. Each entry must start with ``.``.  If a hostname matches multiple suffixes, the
+	// this list contained the value “.c.example.com“, then an Alt-Svc entry for “foo.c.example.com“
+	// could be shared with “bar.c.example.com“ but would not be shared with “baz.example.com“. On
+	// the other hand, if the list contained the value “.example.com“ then all three hosts could share
+	// Alt-Svc entries. Each entry must start with “.“. If a hostname matches multiple suffixes, the
 	// first listed suffix will be used.
 	//
 	// Since lookup in this list is O(n), it is recommended that the number of suffixes be limited.
@@ -138,7 +196,7 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	canonical_suffixes?: [...string]
 }
 
-// [#next-free-field: 7]
+// [#next-free-field: 9]
 #HttpProtocolOptions: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.HttpProtocolOptions"
 	// The idle timeout for connections. The idle timeout is defined as the
@@ -147,82 +205,133 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// downstream connection a drain sequence will occur prior to closing the connection, see
 	// :ref:`drain_timeout
 	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.drain_timeout>`.
-	// Note that request based timeouts mean that HTTP/2 PINGs will not keep the connection alive.
-	// If not specified, this defaults to 1 hour. To disable idle timeouts explicitly set this to 0.
+	//
+	// .. note::
+	//
+	//	Request based timeouts mean that HTTP/2 PINGs will not keep the connection alive.
+	//
+	// If not specified, this defaults to “1 hour“. To disable idle timeouts explicitly set this to “0“.
 	//
 	// .. warning::
-	//   Disabling this timeout has a highly likelihood of yielding connection leaks due to lost TCP
-	//   FIN packets, etc.
+	//
+	//	Disabling this timeout has a highly likelihood of yielding connection leaks due to lost TCP
+	//	FIN packets, etc.
 	//
 	// If the :ref:`overload action <config_overload_manager_overload_actions>` "envoy.overload_actions.reduce_timeouts"
 	// is configured, this timeout is scaled for downstream connections according to the value for
 	// :ref:`HTTP_DOWNSTREAM_CONNECTION_IDLE <envoy_v3_api_enum_value_config.overload.v3.ScaleTimersOverloadActionConfig.TimerType.HTTP_DOWNSTREAM_CONNECTION_IDLE>`.
 	idle_timeout?: string
 	// The maximum duration of a connection. The duration is defined as a period since a connection
-	// was established. If not set, there is no max duration. When max_connection_duration is reached
-	// and if there are no active streams, the connection will be closed. If the connection is a
-	// downstream connection and there are any active streams, the drain sequence will kick-in,
-	// and the connection will be force-closed after the drain period. See :ref:`drain_timeout
+	// was established. If not set, there is no max duration. When max_connection_duration is reached,
+	// the drain sequence will kick-in. The connection will be closed after the drain timeout period
+	// if there are no active streams. See :ref:`drain_timeout
 	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.drain_timeout>`.
 	max_connection_duration?: string
-	// The maximum number of headers. If unconfigured, the default
-	// maximum number of request headers allowed is 100. Requests that exceed this limit will receive
-	// a 431 response for HTTP/1.x and cause a stream reset for HTTP/2.
+	// Percentage-based jitter for “max_connection_duration“. If set, the actual connection duration
+	// limit is extended by a random duration up to “max_connection_duration * jitter / 100“.
+	// This staggers connection teardowns across time and prevents a thundering-herd of reconnects
+	// when many connections are established at roughly the same time.
+	// This field is ignored if “max_connection_duration“ is not set. If not set, no jitter is added.
+	//
+	// .. note::
+	//
+	//	This field is currently only honored for downstream connections by the HTTP connection
+	//	manager. It is not yet supported for upstream cluster connections.
+	//
+	// This is analogous to
+	// :ref:`max_downstream_connection_duration_jitter_percentage
+	// <envoy_v3_api_field_extensions.filters.network.tcp_proxy.v3.TcpProxy.max_downstream_connection_duration_jitter_percentage>`
+	// in the TCP proxy filter.
+	max_connection_duration_jitter?: v3.#Percent
+	// The maximum number of headers (request headers if configured on HttpConnectionManager,
+	// response headers when configured on a cluster).
+	// If unconfigured, the default maximum number of headers allowed is “100“.
+	// The default value for requests can be overridden by setting runtime key “envoy.reloadable_features.max_request_headers_count“.
+	// The default value for responses can be overridden by setting runtime key “envoy.reloadable_features.max_response_headers_count“.
+	// Downstream requests that exceed this limit will receive a “HTTP 431“ response for HTTP/1.x and cause a stream
+	// reset for HTTP/2.
+	// Upstream responses that exceed this limit will result in a “HTTP 502“ response.
 	max_headers_count?: uint32
+	// The maximum size of response headers.
+	// If unconfigured, the default is “60 KiB“, except for HTTP/1 response headers which have a default
+	// of “80 KiB“.
+	// The default value can be overridden by setting runtime key “envoy.reloadable_features.max_response_headers_size_kb“.
+	// Responses that exceed this limit will result in a “HTTP 503“ response.
+	// In Envoy, this setting is only valid when configured on an upstream cluster, not on the
+	// :ref:`HTTP Connection Manager
+	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.common_http_protocol_options>`.
+	//
+	// .. note::
+	//
+	//	Currently some protocol codecs impose limits on the maximum size of a single header.
+	//
+	//	* HTTP/2 (when using nghttp2) limits a single header to around 100 KB by default. This can be
+	//	  adjusted via :ref:`max_header_field_size_kb
+	//	  <envoy_v3_api_field_config.core.v3.Http2ProtocolOptions.max_header_field_size_kb>`.
+	//	* HTTP/3 limits a single header to around 1024 KB.
+	max_response_headers_kb?: uint32
 	// Total duration to keep alive an HTTP request/response stream. If the time limit is reached the stream will be
 	// reset independent of any other timeouts. If not specified, this value is not set.
 	max_stream_duration?: string
 	// Action to take when a client request with a header name containing underscore characters is received.
-	// If this setting is not specified, the value defaults to ALLOW.
-	// Note: upstream responses are not affected by this setting.
-	// Note: this only affects client headers. It does not affect headers added
-	// by Envoy filters and does not have any impact if added to cluster config.
+	// If this setting is not specified, the value defaults to “ALLOW“.
+	//
+	// .. note::
+	//
+	//	Upstream responses are not affected by this setting.
+	//
+	// .. note::
+	//
+	//	This only affects client headers. It does not affect headers added by Envoy filters and does not have any
+	//	impact if added to cluster config.
 	headers_with_underscores_action?: #HttpProtocolOptions_HeadersWithUnderscoresAction
 	// Optional maximum requests for both upstream and downstream connections.
 	// If not specified, there is no limit.
-	// Setting this parameter to 1 will effectively disable keep alive.
+	// Setting this parameter to “1“ will effectively disable keep alive.
 	// For HTTP/2 and HTTP/3, due to concurrent stream processing, the limit is approximate.
 	max_requests_per_connection?: uint32
 }
 
-// [#next-free-field: 9]
+// [#next-free-field: 12]
 #Http1ProtocolOptions: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.Http1ProtocolOptions"
 	// Handle HTTP requests with absolute URLs in the requests. These requests
 	// are generally sent by clients to forward/explicit proxies. This allows clients to configure
 	// envoy as their HTTP proxy. In Unix, for example, this is typically done by setting the
-	// ``http_proxy`` environment variable.
+	// “http_proxy“ environment variable.
 	allow_absolute_url?: bool
-	// Handle incoming HTTP/1.0 and HTTP 0.9 requests.
+	// Handle incoming HTTP/1.0 and HTTP/0.9 requests.
 	// This is off by default, and not fully standards compliant. There is support for pre-HTTP/1.1
 	// style connect logic, dechunking, and handling lack of client host iff
-	// ``default_host_for_http_10`` is configured.
+	// “default_host_for_http_10“ is configured.
 	accept_http_10?: bool
-	// A default host for HTTP/1.0 requests. This is highly suggested if ``accept_http_10`` is true as
+	// A default host for HTTP/1.0 requests. This is highly suggested if “accept_http_10“ is true as
 	// Envoy does not otherwise support HTTP/1.0 without a Host header.
-	// This is a no-op if ``accept_http_10`` is not true.
+	// This is a no-op if “accept_http_10“ is not true.
 	default_host_for_http_10?: string
-	// Describes how the keys for response headers should be formatted. By default, all header keys
-	// are lower cased.
+	// Describes how the keys for headers encoded by the HTTP/1 codec should be formatted. By
+	// default, all header keys are lower cased.
 	header_key_format?: #Http1ProtocolOptions_HeaderKeyFormat
 	// Enables trailers for HTTP/1. By default the HTTP/1 codec drops proxied trailers.
 	//
 	// .. attention::
 	//
-	//   Note that this only happens when Envoy is chunk encoding which occurs when:
-	//   - The request is HTTP/1.1.
-	//   - Is neither a HEAD only request nor a HTTP Upgrade.
-	//   - Not a response to a HEAD request.
-	//   - The content length header is not present.
+	//	This only happens when Envoy is chunk encoding which occurs when:
+	//	- The request is HTTP/1.1.
+	//	- Is neither a ``HEAD`` only request nor a HTTP Upgrade.
+	//	- Not a response to a ``HEAD`` request.
+	//	- The ``Content-Length`` header is not present.
 	enable_trailers?: bool
-	// Allows Envoy to process requests/responses with both ``Content-Length`` and ``Transfer-Encoding``
+	// Allows Envoy to process requests/responses with both “Content-Length“ and “Transfer-Encoding“
 	// headers set. By default such messages are rejected, but if option is enabled - Envoy will
-	// remove Content-Length header and process message.
+	// remove “Content-Length“ header and process message.
 	// See `RFC7230, sec. 3.3.3 <https://tools.ietf.org/html/rfc7230#section-3.3.3>`_ for details.
 	//
 	// .. attention::
-	//   Enabling this option might lead to request smuggling vulnerability, especially if traffic
-	//   is proxied via multiple layers of proxies.
+	//
+	//	Enabling this option might lead to request smuggling vulnerability, especially if traffic
+	//	is proxied via multiple layers of proxies.
+	//
 	// [#comment:TODO: This field is ignored when the
 	// :ref:`header validation configuration <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.typed_header_validation_config>`
 	// is present.]
@@ -240,6 +349,33 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// (inferred if not present), host (from the host/:authority header) and path
 	// (from first line or :path header).
 	send_fully_qualified_url?: bool
+	// [#not-implemented-hide:] Hiding so that field can be removed after BalsaParser is rolled out.
+	// If set, force HTTP/1 parser: BalsaParser if true, http-parser if false.
+	// If unset, HTTP/1 parser is selected based on
+	// envoy.reloadable_features.http1_use_balsa_parser.
+	// See issue #21245.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/core/v3/protocol.proto.
+	use_balsa_parser?: bool
+	// [#not-implemented-hide:] Hiding so that field can be removed.
+	// If true, and BalsaParser is used (either `use_balsa_parser` above is true,
+	// or `envoy.reloadable_features.http1_use_balsa_parser` is true and
+	// `use_balsa_parser` is unset), then every non-empty method with only valid
+	// characters is accepted. Otherwise, methods not on the hard-coded list are
+	// rejected.
+	// Once UHV is enabled, this field should be removed, and BalsaParser should
+	// allow any method. UHV validates the method, rejecting empty string or
+	// invalid characters, and provides :ref:`restrict_http_methods
+	// <envoy_v3_api_field_extensions.http.header_validators.envoy_default.v3.HeaderValidatorConfig.restrict_http_methods>`
+	// to reject custom methods.
+	allow_custom_methods?: bool
+	// Ignore HTTP/1.1 upgrade values matching any of the supplied matchers.
+	//
+	// .. note::
+	//
+	//	``h2c`` upgrades are always removed for backwards compatibility, regardless of the
+	//	value in this setting.
+	ignore_http_11_upgrade?: [...v31.#StringMatcher]
 }
 
 #KeepaliveSettings: {
@@ -248,13 +384,16 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// If this is zero, interval PINGs will not be sent.
 	interval?: string
 	// How long to wait for a response to a keepalive PING. If a response is not received within this
-	// time period, the connection will be aborted. Note that in order to prevent the influence of
-	// Head-of-line (HOL) blocking the timeout period is extended when *any* frame is received on
-	// the connection, under the assumption that if a frame is received the connection is healthy.
+	// time period, the connection will be aborted.
+	//
+	// .. note::
+	//
+	//	In order to prevent the influence of Head-of-line (HOL) blocking the timeout period is extended when *any* frame is received on
+	//	the connection, under the assumption that if a frame is received the connection is healthy.
 	timeout?: string
 	// A random jitter amount as a percentage of interval that will be added to each interval.
 	// A value of zero means there will be no jitter.
-	// The default value is 15%.
+	// The default value is “15%“.
 	interval_jitter?: v3.#Percent
 	// If the connection has been idle for this duration, send a HTTP/2 ping ahead
 	// of new stream creation, to quickly detect dead connections.
@@ -266,17 +405,17 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	connection_idle_interval?: string
 }
 
-// [#next-free-field: 16]
+// [#next-free-field: 23]
 #Http2ProtocolOptions: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.Http2ProtocolOptions"
 	// `Maximum table size <https://httpwg.org/specs/rfc7541.html#rfc.section.4.2>`_
 	// (in octets) that the encoder is permitted to use for the dynamic HPACK table. Valid values
-	// range from 0 to 4294967295 (2^32 - 1) and defaults to 4096. 0 effectively disables header
+	// range from “0“ to “4294967295“ (“2^32 - 1“) and defaults to “4096“. “0“ effectively disables header
 	// compression.
 	hpack_table_size?: uint32
 	// `Maximum concurrent streams <https://httpwg.org/specs/rfc7540.html#rfc.section.5.1.2>`_
-	// allowed for peer on one HTTP/2 connection. Valid values range from 1 to 2147483647 (2^31 - 1)
-	// and defaults to 2147483647.
+	// allowed for peer on one HTTP/2 connection. Valid values range from “1“ to “2147483647“ (“2^31 - 1“)
+	// and defaults to “1024“ for safety and should be sufficient for most use cases.
 	//
 	// For upstream connections, this also limits how many streams Envoy will initiate concurrently
 	// on a single connection. If the limit is reached, Envoy may queue requests or establish
@@ -287,73 +426,75 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// not the per-connection negotiated limits.
 	max_concurrent_streams?: uint32
 	// `Initial stream-level flow-control window
-	// <https://httpwg.org/specs/rfc7540.html#rfc.section.6.9.2>`_ size. Valid values range from 65535
-	// (2^16 - 1, HTTP/2 default) to 2147483647 (2^31 - 1, HTTP/2 maximum) and defaults to 268435456
-	// (256 * 1024 * 1024).
+	// <https://httpwg.org/specs/rfc7540.html#rfc.section.6.9.2>`_ size. Valid values range from “65535“
+	// (“2^16 - 1“, HTTP/2 default) to “2147483647“ (“2^31 - 1“, HTTP/2 maximum) and defaults to
+	// “16MiB“ (“16 * 1024 * 1024“).
 	//
-	// NOTE: 65535 is the initial window size from HTTP/2 spec. We only support increasing the default
-	// window size now, so it's also the minimum.
+	// .. note::
+	//
+	//	``65535`` is the initial window size from HTTP/2 spec. We only support increasing the default window size now,
+	//	so it's also the minimum.
 	//
 	// This field also acts as a soft limit on the number of bytes Envoy will buffer per-stream in the
 	// HTTP/2 codec buffers. Once the buffer reaches this pointer, watermark callbacks will fire to
 	// stop the flow of data to the codec buffers.
 	initial_stream_window_size?: uint32
-	// Similar to ``initial_stream_window_size``, but for connection-level flow-control
-	// window. Currently, this has the same minimum/maximum/default as ``initial_stream_window_size``.
+	// Similar to “initial_stream_window_size“, but for connection-level flow-control
+	// window. The default is “24MiB“ (“24 * 1024 * 1024“).
 	initial_connection_window_size?: uint32
 	// Allows proxying Websocket and other upgrades over H2 connect.
 	allow_connect?: bool
-	// [#not-implemented-hide:] Hiding until envoy has full metadata support.
+	// [#not-implemented-hide:] Hiding until Envoy has full metadata support.
 	// Still under implementation. DO NOT USE.
 	//
-	// Allows metadata. See [metadata
+	// Allows sending and receiving HTTP/2 METADATA frames. See [metadata
 	// docs](https://github.com/envoyproxy/envoy/blob/main/source/docs/h2_metadata.md) for more
 	// information.
 	allow_metadata?: bool
 	// Limit the number of pending outbound downstream frames of all types (frames that are waiting to
 	// be written into the socket). Exceeding this limit triggers flood mitigation and connection is
-	// terminated. The ``http2.outbound_flood`` stat tracks the number of terminated connections due
-	// to flood mitigation. The default limit is 10000.
+	// terminated. The “http2.outbound_flood“ stat tracks the number of terminated connections due
+	// to flood mitigation. The default limit is “10000“.
 	max_outbound_frames?: uint32
-	// Limit the number of pending outbound downstream frames of types PING, SETTINGS and RST_STREAM,
+	// Limit the number of pending outbound downstream frames of types “PING“, “SETTINGS“ and “RST_STREAM“,
 	// preventing high memory utilization when receiving continuous stream of these frames. Exceeding
 	// this limit triggers flood mitigation and connection is terminated. The
-	// ``http2.outbound_control_flood`` stat tracks the number of terminated connections due to flood
-	// mitigation. The default limit is 1000.
+	// “http2.outbound_control_flood“ stat tracks the number of terminated connections due to flood
+	// mitigation. The default limit is “1000“.
 	max_outbound_control_frames?: uint32
-	// Limit the number of consecutive inbound frames of types HEADERS, CONTINUATION and DATA with an
+	// Limit the number of consecutive inbound frames of types “HEADERS“, “CONTINUATION“ and “DATA“ with an
 	// empty payload and no end stream flag. Those frames have no legitimate use and are abusive, but
-	// might be a result of a broken HTTP/2 implementation. The `http2.inbound_empty_frames_flood``
+	// might be a result of a broken HTTP/2 implementation. The “http2.inbound_empty_frames_flood“
 	// stat tracks the number of connections terminated due to flood mitigation.
-	// Setting this to 0 will terminate connection upon receiving first frame with an empty payload
-	// and no end stream flag. The default limit is 1.
+	// Setting this to “0“ will terminate connection upon receiving first frame with an empty payload
+	// and no end stream flag. The default limit is “1“.
 	max_consecutive_inbound_frames_with_empty_payload?: uint32
-	// Limit the number of inbound PRIORITY frames allowed per each opened stream. If the number
-	// of PRIORITY frames received over the lifetime of connection exceeds the value calculated
+	// Limit the number of inbound “PRIORITY“ frames allowed per each opened stream. If the number
+	// of “PRIORITY“ frames received over the lifetime of connection exceeds the value calculated
 	// using this formula::
 	//
-	//   ``max_inbound_priority_frames_per_stream`` * (1 + ``opened_streams``)
+	//	``max_inbound_priority_frames_per_stream`` * (1 + ``opened_streams``)
 	//
-	// the connection is terminated. For downstream connections the ``opened_streams`` is incremented when
+	// the connection is terminated. For downstream connections the “opened_streams“ is incremented when
 	// Envoy receives complete response headers from the upstream server. For upstream connection the
-	// ``opened_streams`` is incremented when Envoy send the HEADERS frame for a new stream. The
-	// ``http2.inbound_priority_frames_flood`` stat tracks
-	// the number of connections terminated due to flood mitigation. The default limit is 100.
+	// “opened_streams“ is incremented when Envoy sends the “HEADERS“ frame for a new stream. The
+	// “http2.inbound_priority_frames_flood“ stat tracks
+	// the number of connections terminated due to flood mitigation. The default limit is “100“.
 	max_inbound_priority_frames_per_stream?: uint32
-	// Limit the number of inbound WINDOW_UPDATE frames allowed per DATA frame sent. If the number
-	// of WINDOW_UPDATE frames received over the lifetime of connection exceeds the value calculated
+	// Limit the number of inbound “WINDOW_UPDATE“ frames allowed per “DATA“ frame sent. If the number
+	// of “WINDOW_UPDATE“ frames received over the lifetime of connection exceeds the value calculated
 	// using this formula::
 	//
-	//   5 + 2 * (``opened_streams`` +
-	//            ``max_inbound_window_update_frames_per_data_frame_sent`` * ``outbound_data_frames``)
+	//	``5 + 2 * (opened_streams +
+	//	         max_inbound_window_update_frames_per_data_frame_sent * outbound_data_frames)``
 	//
-	// the connection is terminated. For downstream connections the ``opened_streams`` is incremented when
+	// the connection is terminated. For downstream connections the “opened_streams“ is incremented when
 	// Envoy receives complete response headers from the upstream server. For upstream connections the
-	// ``opened_streams`` is incremented when Envoy sends the HEADERS frame for a new stream. The
-	// ``http2.inbound_priority_frames_flood`` stat tracks the number of connections terminated due to
-	// flood mitigation. The default max_inbound_window_update_frames_per_data_frame_sent value is 10.
-	// Setting this to 1 should be enough to support HTTP/2 implementations with basic flow control,
-	// but more complex implementations that try to estimate available bandwidth require at least 2.
+	// “opened_streams“ is incremented when Envoy sends the “HEADERS“ frame for a new stream. The
+	// “http2.inbound_window_update_frames_flood“ stat tracks the number of connections terminated due to
+	// flood mitigation. The default “max_inbound_window_update_frames_per_data_frame_sent“ value is “10“.
+	// Setting this to “1“ should be enough to support HTTP/2 implementations with basic flow control,
+	// but more complex implementations that try to estimate available bandwidth require at least “2“.
 	max_inbound_window_update_frames_per_data_frame_sent?: uint32
 	// Allows invalid HTTP messaging and headers. When this option is disabled (default), then
 	// the whole HTTP/2 connection is terminated upon receiving invalid HEADERS frame. However,
@@ -368,7 +509,7 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	//
 	// See `RFC7540, sec. 8.1 <https://tools.ietf.org/html/rfc7540#section-8.1>`_ for details.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/core/v3/protocol.proto.
 	stream_error_on_invalid_http_messaging?: bool
 	// Allows invalid HTTP messaging and headers. When this option is disabled (default), then
 	// the whole HTTP/2 connection is terminated upon receiving invalid HEADERS frame. However,
@@ -388,16 +529,18 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// 2. SETTINGS_ENABLE_CONNECT_PROTOCOL (0x8) is only configurable through the named field
 	// 'allow_connect'.
 	//
-	// Note that custom parameters specified through this field can not also be set in the
-	// corresponding named parameters:
+	// .. note::
+	//
+	//	Custom parameters specified through this field can not also be set in the
+	//	corresponding named parameters:
 	//
 	// .. code-block:: text
 	//
-	//   ID    Field Name
-	//   ----------------
-	//   0x1   hpack_table_size
-	//   0x3   max_concurrent_streams
-	//   0x4   initial_stream_window_size
+	//	ID    Field Name
+	//	----------------
+	//	0x1   hpack_table_size
+	//	0x3   max_concurrent_streams
+	//	0x4   initial_stream_window_size
 	//
 	// Collisions will trigger config validation failure on load/update. Likewise, inconsistencies
 	// between custom parameters with the same identifier will trigger a failure.
@@ -409,6 +552,74 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// Send HTTP/2 PING frames to verify that the connection is still healthy. If the remote peer
 	// does not respond within the configured timeout, the connection will be aborted.
 	connection_keepalive?: #KeepaliveSettings
+	// [#not-implemented-hide:] Hiding so that the field can be removed after oghttp2 is rolled out.
+	// If set, force use of a particular HTTP/2 codec: oghttp2 if true, nghttp2 if false.
+	// If unset, HTTP/2 codec is selected based on envoy.reloadable_features.http2_use_oghttp2.
+	use_oghttp2_codec?: bool
+	// Configure the maximum amount of metadata than can be handled per stream. Defaults to “1 MB“.
+	max_metadata_size?: uint64
+	// Controls whether to encode headers using huffman encoding.
+	// This can be useful in cases where the cpu spent encoding the headers isn't
+	// worth the network bandwidth saved e.g. for localhost.
+	// If unset, uses the data plane's default value.
+	enable_huffman_encoding?: bool
+	// Configures the maximum wire-encoded size in KB of an individual header field (name or value)
+	// that the “nghttp2“ HPACK inflater will accept. This limit applies to the HPACK-compressed
+	// length on the wire, not the decoded length. If not specified, defaults to “64“ KB
+	// which is the “nghttp2“ default.
+	//
+	// This limit applies to headers received by the codec. When configured on the downstream
+	// HTTP Connection Manager, it limits individual request header fields. When configured on an
+	// upstream cluster, it limits individual response header fields.
+	//
+	// Due to Huffman encoding, the decoded header size that passes a given wire limit depends
+	// on the compression ratio of the content. For example, at the default “64“ KB wire
+	// limit, highly compressible header values can be approximately “100“ KB when decoded.
+	// Increasing this limit allows accepting larger individual headers at the cost of increased
+	// memory usage during HPACK decompression.
+	//
+	// This option only applies when using “nghttp2“. It is a no-op for “oghttp2“. The configured
+	// value of this field sets the per-header field size limit, which must not exceed the
+	// applicable aggregate total header size limit. Since a single header field cannot be larger
+	// than the total size allowed for all headers combined, this value is validated against
+	// :ref:`max_request_headers_kb <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.max_request_headers_kb>`
+	// when configured on the downstream HTTP Connection Manager, and against
+	// :ref:`max_response_headers_kb <envoy_v3_api_field_config.core.v3.HttpProtocolOptions.max_response_headers_kb>`
+	// when configured on an upstream cluster.
+	//
+	// Since “Http2ProtocolOptions“ is configured independently for downstream and upstream,
+	// different per-header field limits can be set for each direction without requiring separate
+	// request and response fields.
+	//
+	// .. note::
+	//
+	//	When increasing this limit, ensure that upstream services and other proxies in the request
+	//	path can also handle the larger individual header sizes. Mismatched limits may result in
+	//	request failures.
+	max_header_field_size_kb?: uint32
+	// Whether to disallow obsolete text for oghttp2 in header field values.
+	// If not set, it defaults to false.
+	// From RFC 9110, https://www.rfc-editor.org/rfc/rfc9110.html#section-5.5:
+	// obs-text = %x80-FF
+	disallow_obs_text?: bool
+	// Configures the initial token count for the RST_STREAM rate limiter used by the “nghttp2“
+	// server-side connection. This uses a token-bucket algorithm where each received RST_STREAM
+	// frame consumes one token, and tokens are replenished at :ref:`stream_reset_rate
+	// <envoy_v3_api_field_config.core.v3.Http2ProtocolOptions.stream_reset_rate>` per second.
+	// When no tokens remain, “nghttp2“ sends GOAWAY with “INTERNAL_ERROR“ to close the
+	// connection, protecting against CVE-2023-44487 (HTTP/2 Rapid Reset). Defaults to “1000“.
+	//
+	// This option only applies when using “nghttp2“ as a server. It has no effect on “oghttp2“
+	// or on client-side connections.
+	stream_reset_burst?: uint64
+	// Configures the token replenishment rate (tokens per second) for the RST_STREAM rate limiter
+	// used by the “nghttp2“ server-side connection. See :ref:`stream_reset_burst
+	// <envoy_v3_api_field_config.core.v3.Http2ProtocolOptions.stream_reset_burst>` for details.
+	// Defaults to “33“.
+	//
+	// This option only applies when using “nghttp2“ as a server. It has no effect on “oghttp2“
+	// or on client-side connections.
+	stream_reset_rate?: uint64
 }
 
 // [#not-implemented-hide:]
@@ -418,7 +629,7 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 }
 
 // A message which allows using HTTP/3.
-// [#next-free-field: 6]
+// [#next-free-field: 10]
 #Http3ProtocolOptions: {
 	"@type":                "type.googleapis.com/envoy.config.core.v3.Http3ProtocolOptions"
 	quic_protocol_options?: #QuicProtocolOptions
@@ -434,15 +645,78 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// <https://datatracker.ietf.org/doc/html/rfc8441>`_
 	// and settings `proposed for HTTP/3
 	// <https://datatracker.ietf.org/doc/draft-ietf-httpbis-h3-websockets/>`_
-	// Note that HTTP/3 CONNECT is not yet an RFC.
+	//
+	// .. note::
+	//
+	//	HTTP/3 CONNECT is not yet an RFC.
 	allow_extended_connect?: bool
+	// [#not-implemented-hide:] Hiding until Envoy has full metadata support.
+	// Still under implementation. DO NOT USE.
+	//
+	// Allows sending and receiving HTTP/3 METADATA frames. See [metadata
+	// docs](https://github.com/envoyproxy/envoy/blob/main/source/docs/h2_metadata.md) for more
+	// information.
+	allow_metadata?: bool
+	// [#not-implemented-hide:] Hiding until Envoy has full HTTP/3 upstream support.
+	// Still under implementation. DO NOT USE.
+	//
+	// Disables QPACK compression related features for HTTP/3 including:
+	// No huffman encoding, zero dynamic table capacity and no cookie crumbling.
+	// This can be useful for trading off CPU vs bandwidth when an upstream HTTP/3 connection multiplexes multiple downstream connections.
+	disable_qpack?: bool
+	// Disables connection level flow control for HTTP/3 streams. This is useful in situations where the streams share the same connection
+	// but originate from different end-clients, so that each stream can make progress independently at non-front-line proxies.
+	disable_connection_flow_control_for_streams?: bool
+	// Whether to disallow obsolete text in header field values.
+	// If not set, it defaults to true for alignment with current behavior.
+	// As defined in RFC 9110, https://www.rfc-editor.org/rfc/rfc9110.html#section-5.5:
+	// an obs-text character is a character in the range %x80-FF
+	disallow_obs_text?: bool
 }
 
 // A message to control transformations to the :scheme header
 #SchemeHeaderTransformation: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.SchemeHeaderTransformation"
 	// Overwrite any Scheme header with the contents of this string.
+	// If set, takes precedence over “match_upstream“.
 	scheme_to_overwrite?: string
+	// Set the Scheme header to match the upstream transport protocol. For example, should a
+	// request be sent to the upstream over TLS, the scheme header will be set to “"https"“. Should the
+	// request be sent over plaintext, the scheme header will be set to “"http"“.
+	// If “scheme_to_overwrite“ is set, this field is not used.
+	match_upstream?: bool
+}
+
+// Config for QUIC connection migration across network interfaces, i.e. cellular to WIFI, upon
+// network change events from the platform, i.e. the current network gets
+// disconnected, or upon the QUIC detecting a bad connection. After migration, the
+// connection may be on a different network other than the default network
+// picked by the platform. Both iOS and Android will use a default network to interact with the internet, usually prefer unmetered network (WIFI)
+// over metered ones (cellular). And users can specify which network to be used as the default. A connection on non-default network is only allowed to
+// serve new requests for a certain period of time before being drained, and
+// meanwhile, QUIC will try to migrate to the default network if possible.
+#QuicProtocolOptions_ConnectionMigrationSettings: {
+	"@type": "type.googleapis.com/envoy.config.core.v3.QuicProtocolOptions_ConnectionMigrationSettings"
+	// Config whether and how to migrate idle connections.
+	// If absent, idle connections will not be migrated but be closed upon
+	// migration signals.
+	migrate_idle_connections?: #QuicProtocolOptions_ConnectionMigrationSettings_MigrateIdleConnectionSettings
+	// After migrating to a non-default network interface, the connection will
+	// only be allowed to stay on that network for up to this period of time before
+	// being drained unless it migrates to the default network or that network
+	// gets picked as the default by the device by then.
+	// Default to 128s.
+	max_time_on_non_default_network?: string
+}
+
+// Config for options to migrate idle connections which aren't serving any requests.
+#QuicProtocolOptions_ConnectionMigrationSettings_MigrateIdleConnectionSettings: {
+	"@type": "type.googleapis.com/envoy.config.core.v3.QuicProtocolOptions_ConnectionMigrationSettings_MigrateIdleConnectionSettings"
+	// If idle connections are allowed to be migrated, only migrate the connection
+	// if it hasn't been idle for longer than this idle period. Otherwise, the
+	// connection will be closed instead.
+	// Default to 30s.
+	max_idle_time_before_migration?: string
 }
 
 // Allows pre-populating the cache with HTTP/3 alternate protocols entries with a 7 day lifetime.
@@ -467,9 +741,12 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	"@type": "type.googleapis.com/envoy.config.core.v3.Http1ProtocolOptions_HeaderKeyFormat"
 	// Formats the header by proper casing words: the first character and any character following
 	// a special character will be capitalized if it's an alpha character. For example,
-	// "content-type" becomes "Content-Type", and "foo$b#$are" becomes "Foo$B#$Are".
-	// Note that while this results in most headers following conventional casing, certain headers
-	// are not covered. For example, the "TE" header will be formatted as "Te".
+	// “"content-type"“ becomes “"Content-Type"“, and “"foo$b#$are"“ becomes “"Foo$B#$Are"“.
+	//
+	// .. note::
+	//
+	//	While this results in most headers following conventional casing, certain headers
+	//	are not covered. For example, the ``"TE"`` header will be formatted as ``"Te"``.
 	proper_case_words?: #Http1ProtocolOptions_HeaderKeyFormat_ProperCaseWords
 	// Configuration for stateful formatter extensions that allow using received headers to
 	// affect the output of encoding headers. E.g., preserving case during proxying.

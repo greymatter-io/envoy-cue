@@ -15,7 +15,7 @@ FaultDelay_FaultDelayType_FIXED: "FIXED"
 	"@type": "type.googleapis.com/envoy.config.filter.fault.v2.FaultDelay"
 	// Unused and deprecated. Will be removed in the next release.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/filter/fault/v2/fault.proto.
 	type?: #FaultDelay_FaultDelayType
 	// Add a fixed delay before forwarding the operation upstream. See
 	// https://developers.google.com/protocol-buffers/docs/proto3#json for

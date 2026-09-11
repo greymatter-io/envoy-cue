@@ -23,7 +23,6 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL:            "EXTERNAL"
 	// Configuration source specifier for an extension configuration discovery
 	// service. In case of a failure and without the default configuration, the
 	// listener closes the connections.
-	// [#not-implemented-hide:]
 	config_discovery?: v3.#ExtensionConfigSource
 }
 
@@ -36,23 +35,23 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL:            "EXTERNAL"
 //
 // The following order applies:
 //
-// 1. Destination port.
-// 2. Destination IP address.
-// 3. Server name (e.g. SNI for TLS protocol),
-// 4. Transport protocol.
-// 5. Application protocols (e.g. ALPN for TLS protocol).
-// 6. Directly connected source IP address (this will only be different from the source IP address
-//    when using a listener filter that overrides the source address, such as the :ref:`Proxy Protocol
-//    listener filter <config_listener_filters_proxy_protocol>`).
-// 7. Source type (e.g. any, local or external network).
-// 8. Source IP address.
-// 9. Source port.
+//  1. Destination port.
+//  2. Destination IP address.
+//  3. Server name (e.g. SNI for TLS protocol),
+//  4. Transport protocol.
+//  5. Application protocols (e.g. ALPN for TLS protocol).
+//  6. Directly connected source IP address (this will only be different from the source IP address
+//     when using a listener filter that overrides the source address, such as the :ref:`Proxy Protocol
+//     listener filter <config_listener_filters_proxy_protocol>`).
+//  7. Source type (e.g. any, local or external network).
+//  8. Source IP address.
+//  9. Source port.
 //
 // For criteria that allow ranges or wildcards, the most specific value in any
 // of the configured filter chains that matches the incoming connection is going
-// to be used (e.g. for SNI ``www.example.com`` the most specific match would be
-// ``www.example.com``, then ``*.example.com``, then ``*.com``, then any filter
-// chain without ``server_names`` requirements).
+// to be used (e.g. for SNI “www.example.com“ the most specific match would be
+// “www.example.com“, then “*.example.com“, then “*.com“, then any filter
+// chain without “server_names“ requirements).
 //
 // A different way to reason about the filter chain matches:
 // Suppose there exists N filter chains. Prune the filter chain set using the above 8 steps.
@@ -104,15 +103,16 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL:            "EXTERNAL"
 	// a filter chain match. Those values will be compared against the server names of a new
 	// connection, when detected by one of the listener filters.
 	//
-	// The server name will be matched against all wildcard domains, i.e. ``www.example.com``
-	// will be first matched against ``www.example.com``, then ``*.example.com``, then ``*.com``.
+	// The server name will be matched against all wildcard domains, i.e. “www.example.com“
+	// will be first matched against “www.example.com“, then “*.example.com“, then “*.com“.
 	//
-	// Note that partial wildcards are not supported, and values like ``*w.example.com`` are invalid.
+	// Note that partial wildcards are not supported, and values like “*w.example.com“ are invalid.
+	// The value “*“ is also not supported, and “server_names“ should be omitted instead.
 	//
 	// .. attention::
 	//
-	//   See the :ref:`FAQ entry <faq_how_to_setup_sni>` on how to configure SNI for more
-	//   information.
+	//	See the :ref:`FAQ entry <faq_how_to_setup_sni>` on how to configure SNI for more
+	//	information.
 	server_names?: [...string]
 	// If non-empty, a transport protocol to consider when determining a filter chain match.
 	// This value will be compared against the transport protocol of a new connection, when
@@ -120,9 +120,9 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL:            "EXTERNAL"
 	//
 	// Suggested values include:
 	//
-	// * ``raw_buffer`` - default, used when no transport protocol is detected,
-	// * ``tls`` - set by :ref:`envoy.filters.listener.tls_inspector <config_listener_filters_tls_inspector>`
-	//   when TLS protocol is detected.
+	//   - “raw_buffer“ - default, used when no transport protocol is detected,
+	//   - “tls“ - set by :ref:`envoy.filters.listener.tls_inspector <config_listener_filters_tls_inspector>`
+	//     when TLS protocol is detected.
 	transport_protocol?: string
 	// If non-empty, a list of application protocols (e.g. ALPN for TLS protocol) to consider when
 	// determining a filter chain match. Those values will be compared against the application
@@ -130,19 +130,19 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL:            "EXTERNAL"
 	//
 	// Suggested values include:
 	//
-	// * ``http/1.1`` - set by :ref:`envoy.filters.listener.tls_inspector
-	//   <config_listener_filters_tls_inspector>`,
-	// * ``h2`` - set by :ref:`envoy.filters.listener.tls_inspector <config_listener_filters_tls_inspector>`
+	//   - “http/1.1“ - set by :ref:`envoy.filters.listener.tls_inspector
+	//     <config_listener_filters_tls_inspector>`,
+	//   - “h2“ - set by :ref:`envoy.filters.listener.tls_inspector <config_listener_filters_tls_inspector>`
 	//
 	// .. attention::
 	//
-	//   Currently, only :ref:`TLS Inspector <config_listener_filters_tls_inspector>` provides
-	//   application protocol detection based on the requested
-	//   `ALPN <https://en.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation>`_ values.
+	//	Currently, only :ref:`TLS Inspector <config_listener_filters_tls_inspector>` provides
+	//	application protocol detection based on the requested
+	//	`ALPN <https://en.wikipedia.org/wiki/Application-Layer_Protocol_Negotiation>`_ values.
 	//
-	//   However, the use of ALPN is pretty much limited to the HTTP/2 traffic on the Internet,
-	//   and matching on values other than ``h2`` is going to lead to a lot of false negatives,
-	//   unless all connecting clients are known to use ALPN.
+	//	However, the use of ALPN is pretty much limited to the HTTP/2 traffic on the Internet,
+	//	and matching on values other than ``h2`` is going to lead to a lot of false negatives,
+	//	unless all connecting clients are known to use ALPN.
 	application_protocols?: [...string]
 }
 
@@ -175,13 +175,13 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL:            "EXTERNAL"
 	// :ref:`PROXY protocol listener filter <config_listener_filters_proxy_protocol>`
 	// explicitly instead.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/listener/v3/listener_components.proto.
 	use_proxy_proto?: bool
-	// [#not-implemented-hide:] filter chain metadata.
+	// Filter chain metadata.
 	metadata?: v3.#Metadata
 	// Optional custom transport socket implementation to use for downstream connections.
-	// To setup TLS, set a transport socket with name ``envoy.transport_sockets.tls`` and
-	// :ref:`DownstreamTlsContext <envoy_v3_api_msg_extensions.transport_sockets.tls.v3.DownstreamTlsContext>` in the ``typed_config``.
+	// To setup TLS, set a transport socket with name “envoy.transport_sockets.tls“ and
+	// :ref:`DownstreamTlsContext <envoy_v3_api_msg_extensions.transport_sockets.tls.v3.DownstreamTlsContext>` in the “typed_config“.
 	// If no transport socket configuration is specified, new connections
 	// will be set up with plaintext.
 	// [#extension-category: envoy.transport_sockets.downstream]
@@ -191,14 +191,13 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL:            "EXTERNAL"
 	// establishment, the connection is summarily closed.
 	transport_socket_connect_timeout?: string
 	// The unique name (or empty) by which this filter chain is known.
-	// Note: :ref:`filter_chain_matcher
-	// <envoy_v3_api_field_config.listener.v3.Listener.filter_chain_matcher>`
-	// requires that filter chains are uniquely named within a listener.
+	//
+	// .. note::
+	//
+	//	:ref:`filter_chain_matcher
+	//	<envoy_v3_api_field_config.listener.v3.Listener.filter_chain_matcher>`
+	//	requires that filter chains are uniquely named within a listener.
 	name?: string
-	// [#not-implemented-hide:] The configuration to specify whether the filter chain will be built on-demand.
-	// If this field is not empty, the filter chain will be built on-demand.
-	// Otherwise, the filter chain will be built normally and block listener warming.
-	on_demand_configuration?: #FilterChain_OnDemandConfiguration
 }
 
 // Listener filter chain match configuration. This is a recursive structure which allows complex
@@ -210,22 +209,22 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL:            "EXTERNAL"
 //
 // .. code-block:: yaml
 //
-//  destination_port_range:
-//   start: 3306
-//   end: 3307
+//	destination_port_range:
+//	 start: 3306
+//	 end: 3307
 //
 // * Matches if the destination port is 3306 or 15000.
 //
 // .. code-block:: yaml
 //
-//  or_match:
-//    rules:
-//      - destination_port_range:
-//          start: 3306
-//          end: 3307
-//      - destination_port_range:
-//          start: 15000
-//          end: 15001
+//	or_match:
+//	  rules:
+//	    - destination_port_range:
+//	        start: 3306
+//	        end: 3307
+//	    - destination_port_range:
+//	        start: 15000
+//	        end: 15001
 //
 // [#next-free-field: 6]
 #ListenerFilterChainMatchPredicate: {
@@ -262,22 +261,6 @@ FilterChainMatch_ConnectionSourceType_EXTERNAL:            "EXTERNAL"
 	// See :ref:`ListenerFilterChainMatchPredicate <envoy_v3_api_msg_config.listener.v3.ListenerFilterChainMatchPredicate>`
 	// for further examples.
 	filter_disabled?: #ListenerFilterChainMatchPredicate
-}
-
-// The configuration for on-demand filter chain. If this field is not empty in FilterChain message,
-// a filter chain will be built on-demand.
-// On-demand filter chains help speedup the warming up of listeners since the building and initialization of
-// an on-demand filter chain will be postponed to the arrival of new connection requests that require this filter chain.
-// Filter chains that are not often used can be set as on-demand.
-#FilterChain_OnDemandConfiguration: {
-	"@type": "type.googleapis.com/envoy.config.listener.v3.FilterChain_OnDemandConfiguration"
-	// The timeout to wait for filter chain placeholders to complete rebuilding.
-	// 1. If this field is set to 0, timeout is disabled.
-	// 2. If not specified, a default timeout of 15s is used.
-	// Rebuilding will wait until dependencies are ready, have failed, or this timeout is reached.
-	// Upon failure or timeout, all connections related to this filter chain will be closed.
-	// Rebuilding will start again on the next new connection.
-	rebuild_timeout?: string
 }
 
 // A set of match configurations used for logical operations.

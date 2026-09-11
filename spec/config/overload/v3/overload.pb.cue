@@ -4,12 +4,14 @@ import (
 	v3 "envoyproxy.io/envoy-cue/spec/type/v3"
 )
 
-#ScaleTimersOverloadActionConfig_TimerType: "UNSPECIFIED" | "HTTP_DOWNSTREAM_CONNECTION_IDLE" | "HTTP_DOWNSTREAM_STREAM_IDLE" | "TRANSPORT_SOCKET_CONNECT"
+#ScaleTimersOverloadActionConfig_TimerType: "UNSPECIFIED" | "HTTP_DOWNSTREAM_CONNECTION_IDLE" | "HTTP_DOWNSTREAM_STREAM_IDLE" | "TRANSPORT_SOCKET_CONNECT" | "HTTP_DOWNSTREAM_CONNECTION_MAX" | "HTTP_DOWNSTREAM_STREAM_FLUSH"
 
 ScaleTimersOverloadActionConfig_TimerType_UNSPECIFIED:                     "UNSPECIFIED"
 ScaleTimersOverloadActionConfig_TimerType_HTTP_DOWNSTREAM_CONNECTION_IDLE: "HTTP_DOWNSTREAM_CONNECTION_IDLE"
 ScaleTimersOverloadActionConfig_TimerType_HTTP_DOWNSTREAM_STREAM_IDLE:     "HTTP_DOWNSTREAM_STREAM_IDLE"
 ScaleTimersOverloadActionConfig_TimerType_TRANSPORT_SOCKET_CONNECT:        "TRANSPORT_SOCKET_CONNECT"
+ScaleTimersOverloadActionConfig_TimerType_HTTP_DOWNSTREAM_CONNECTION_MAX:  "HTTP_DOWNSTREAM_CONNECTION_MAX"
+ScaleTimersOverloadActionConfig_TimerType_HTTP_DOWNSTREAM_STREAM_FLUSH:    "HTTP_DOWNSTREAM_STREAM_FLUSH"
 
 #ResourceMonitor: {
 	"@type": "type.googleapis.com/envoy.config.overload.v3.ResourceMonitor"
@@ -31,7 +33,7 @@ ScaleTimersOverloadActionConfig_TimerType_TRANSPORT_SOCKET_CONNECT:        "TRAN
 	"@type": "type.googleapis.com/envoy.config.overload.v3.ScaledTrigger"
 	// If the resource pressure is greater than this value, the trigger will be in the
 	// :ref:`scaling <arch_overview_overload_manager-triggers-state>` state with value
-	// ``(pressure - scaling_threshold) / (saturation_threshold - scaling_threshold)``.
+	// “(pressure - scaling_threshold) / (saturation_threshold - scaling_threshold)“.
 	scaling_threshold?: float64
 	// If the resource pressure is greater than this value, the trigger will enter saturation.
 	saturation_threshold?: float64
@@ -54,18 +56,63 @@ ScaleTimersOverloadActionConfig_TimerType_TRANSPORT_SOCKET_CONNECT:        "TRAN
 	timer_scale_factors?: [...#ScaleTimersOverloadActionConfig_ScaleTimer]
 }
 
+// Typed configuration for the "envoy.overload_actions.shrink_heap" action.
+// See :ref:`the docs <config_overload_manager_shrink_heap>` for an example of how to configure
+// this action.
+#ShrinkHeapConfig: {
+	"@type": "type.googleapis.com/envoy.config.overload.v3.ShrinkHeapConfig"
+	// The interval at which shrink heap action checks if memory should be released.
+	// If not specified, defaults to 10 seconds.
+	timer_interval?: string
+	// Maximum amount of unfreed memory in bytes to keep before releasing memory
+	// back to the system. This is used as the threshold passed to
+	// tcmalloc::MallocExtension::ReleaseMemoryToSystem().
+	// If not specified, defaults to 104857600 (100MB).
+	max_unfreed_memory_bytes?: uint64
+}
+
 #OverloadAction: {
 	"@type": "type.googleapis.com/envoy.config.overload.v3.OverloadAction"
-	// The name of the overload action. This is just a well-known string that listeners can
-	// use for registering callbacks. Custom overload actions should be named using reverse
-	// DNS to ensure uniqueness.
+	// The name of the overload action. This is just a well-known string that
+	// listeners can use for registering callbacks.
+	// Valid known overload actions include:
+	// - envoy.overload_actions.stop_accepting_requests
+	// - envoy.overload_actions.disable_http_keepalive
+	// - envoy.overload_actions.stop_accepting_connections
+	// - envoy.overload_actions.reject_incoming_connections
+	// - envoy.overload_actions.shrink_heap
+	// - envoy.overload_actions.reduce_timeouts
+	// - envoy.overload_actions.reset_high_memory_stream
 	name?: string
 	// A set of triggers for this action. The state of the action is the maximum
-	// state of all triggers, which can be scaling between 0 and 1 or saturated. Listeners
-	// are notified when the overload action changes state.
+	// state of all triggers, which can be scalar values between 0 and 1 or
+	// saturated. Listeners are notified when the overload action changes state.
+	// An overload manager action can only have one trigger for a given resource
+	// e.g. :ref:`Trigger.name
+	// <envoy_v3_api_field_config.overload.v3.Trigger.name>` must be unique
+	// in this list.
 	triggers?: [...#Trigger]
-	// Configuration for the action being instantiated.
+	// Configuration for the action being instantiated if applicable.
 	typed_config?: _
+}
+
+// A point within the connection or request lifecycle that provides context on
+// whether to shed load at that given stage for the current entity at the
+// point.
+#LoadShedPoint: {
+	"@type": "type.googleapis.com/envoy.config.overload.v3.LoadShedPoint"
+	// This is just a well-known string for the LoadShedPoint.
+	// Deployment specific LoadShedPoints e.g. within a custom extension should
+	// be prefixed by the company / deployment name to avoid colliding with any
+	// open source LoadShedPoints.
+	name?: string
+	// A set of triggers for this LoadShedPoint. The LoadShedPoint will use the
+	// the maximum state of all triggers, which can be scalar values between 0 and
+	// 1 or saturated. A LoadShedPoint can only have one trigger for a given
+	// resource e.g. :ref:`Trigger.name
+	// <envoy_v3_api_field_config.overload.v3.Trigger.name>` must be unique in
+	// this list.
+	triggers?: [...#Trigger]
 }
 
 // Configuration for which accounts the WatermarkBuffer Factories should
@@ -89,6 +136,7 @@ ScaleTimersOverloadActionConfig_TimerType_TRANSPORT_SOCKET_CONNECT:        "TRAN
 	minimum_account_to_track_power_of_two?: uint32
 }
 
+// [#next-free-field: 6]
 #OverloadManager: {
 	"@type": "type.googleapis.com/envoy.config.overload.v3.OverloadManager"
 	// The interval for refreshing resource usage.
@@ -97,6 +145,8 @@ ScaleTimersOverloadActionConfig_TimerType_TRANSPORT_SOCKET_CONNECT:        "TRAN
 	resource_monitors?: [...#ResourceMonitor]
 	// The set of overload actions.
 	actions?: [...#OverloadAction]
+	// The set of load shed points.
+	loadshed_points?: [...#LoadShedPoint]
 	// Configuration for buffer factory.
 	buffer_factory_config?: #BufferFactoryConfig
 }

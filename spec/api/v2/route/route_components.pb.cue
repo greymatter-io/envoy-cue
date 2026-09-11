@@ -1,10 +1,10 @@
 package route
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
 	_type "envoyproxy.io/envoy-cue/spec/type"
 	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
 	matcher "envoyproxy.io/envoy-cue/spec/type/matcher"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 	v2 "envoyproxy.io/envoy-cue/spec/type/tracing/v2"
 )
 
@@ -48,18 +48,18 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	// virtual host. Wildcard hosts are supported in the suffix or prefix form.
 	//
 	// Domain search order:
-	//  1. Exact domain names: ``www.foo.com``.
-	//  2. Suffix domain wildcards: ``*.foo.com`` or ``*-bar.foo.com``.
-	//  3. Prefix domain wildcards: ``foo.*`` or ``foo-*``.
-	//  4. Special wildcard ``*`` matching any domain.
+	//  1. Exact domain names: “www.foo.com“.
+	//  2. Suffix domain wildcards: “*.foo.com“ or “*-bar.foo.com“.
+	//  3. Prefix domain wildcards: “foo.*“ or “foo-*“.
+	//  4. Special wildcard “*“ matching any domain.
 	//
 	// .. note::
 	//
-	//   The wildcard will not match the empty string.
-	//   e.g. ``*-bar.foo.com`` will match ``baz-bar.foo.com`` but not ``-bar.foo.com``.
-	//   The longest wildcards match first.
-	//   Only a single virtual host in the entire route configuration can match on ``*``. A domain
-	//   must be unique across all virtual hosts or the config will fail to load.
+	//	The wildcard will not match the empty string.
+	//	e.g. ``*-bar.foo.com`` will match ``baz-bar.foo.com`` but not ``-bar.foo.com``.
+	//	The longest wildcards match first.
+	//	Only a single virtual host in the entire route configuration can match on ``*``. A domain
+	//	must be unique across all virtual hosts or the config will fail to load.
 	//
 	// Domains cannot contain control characters. This is validated by the well_known_regex HTTP_HEADER_VALUE.
 	domains?: [...string]
@@ -103,8 +103,8 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	// specific; see the :ref:`HTTP filter documentation <config_http_filters>`
 	// for if and how it is utilized.
 	//
-	// Deprecated: Do not use.
-	per_filter_config?: [string]: _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
+	per_filter_config?: [string]: structpb.#Struct
 	// The per_filter_config field can be used to provide virtual host-specific
 	// configurations for filters. The key should match the filter name, such as
 	// *envoy.filters.http.buffer* for the HTTP buffer filter. Use of this field is filter
@@ -162,8 +162,9 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 //
 // .. attention::
 //
-//   Envoy supports routing on HTTP method via :ref:`header matching
-//   <envoy_api_msg_route.HeaderMatcher>`.
+//	Envoy supports routing on HTTP method via :ref:`header matching
+//	<envoy_api_msg_route.HeaderMatcher>`.
+//
 // [#next-free-field: 18]
 #Route: {
 	"@type": "type.googleapis.com/envoy.api.v2.route.Route"
@@ -195,8 +196,8 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	// specific; see the :ref:`HTTP filter documentation <config_http_filters>` for
 	// if and how it is utilized.
 	//
-	// Deprecated: Do not use.
-	per_filter_config?: [string]: _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
+	per_filter_config?: [string]: structpb.#Struct
 	// The typed_per_filter_config field can be used to provide route-specific
 	// configurations for filters. The key should match the filter name, such as
 	// *envoy.filters.http.buffer* for the HTTP buffer filter. Use of this field is filter
@@ -273,16 +274,17 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// Examples:
 	//
-	// * The regex ``/b[io]t`` matches the path */bit*
-	// * The regex ``/b[io]t`` matches the path */bot*
-	// * The regex ``/b[io]t`` does not match the path */bite*
-	// * The regex ``/b[io]t`` does not match the path */bit/bot*
+	// * The regex “/b[io]t“ matches the path */bit*
+	// * The regex “/b[io]t“ matches the path */bot*
+	// * The regex “/b[io]t“ does not match the path */bite*
+	// * The regex “/b[io]t“ does not match the path */bit/bot*
 	//
 	// .. attention::
-	//   This field has been deprecated in favor of `safe_regex` as it is not safe for use with
-	//   untrusted input in all cases.
 	//
-	// Deprecated: Do not use.
+	//	This field has been deprecated in favor of `safe_regex` as it is not safe for use with
+	//	untrusted input in all cases.
+	//
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
 	regex?: string
 	// If specified, the route is a regular expression rule meaning that the
 	// regex must match the *:path* header once the query string is removed. The entire path
@@ -311,11 +313,11 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// .. note::
 	//
-	//    Parsing this field is implemented such that the runtime key's data may be represented
-	//    as a FractionalPercent proto represented as JSON/YAML and may also be represented as an
-	//    integer with the assumption that the value is an integral percentage out of 100. For
-	//    instance, a runtime key lookup returning the value "42" would parse as a FractionalPercent
-	//    whose numerator is 42 and denominator is HUNDRED. This preserves legacy semantics.
+	//	Parsing this field is implemented such that the runtime key's data may be represented
+	//	as a FractionalPercent proto represented as JSON/YAML and may also be represented as an
+	//	integer with the assumption that the value is an integral percentage out of 100. For
+	//	instance, a runtime key lookup returning the value "42" would parse as a FractionalPercent
+	//	whose numerator is 42 and denominator is HUNDRED. This preserves legacy semantics.
 	runtime_fraction?: core.#RuntimeFractionalPercent
 	// Specifies a set of headers that the route should match on. The router will
 	// check the request’s headers against all the specified headers in the route
@@ -348,19 +350,21 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	// An origin is allowed if either allow_origin or allow_origin_regex match.
 	//
 	// .. attention::
-	//  This field has been deprecated in favor of `allow_origin_string_match`.
 	//
-	// Deprecated: Do not use.
+	//	This field has been deprecated in favor of `allow_origin_string_match`.
+	//
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
 	allow_origin?: [...string]
 	// Specifies regex patterns that match allowed origins.
 	//
 	// An origin is allowed if either allow_origin or allow_origin_regex match.
 	//
 	// .. attention::
-	//   This field has been deprecated in favor of `allow_origin_string_match` as it is not safe for
-	//   use with untrusted input in all cases.
 	//
-	// Deprecated: Do not use.
+	//	This field has been deprecated in favor of `allow_origin_string_match` as it is not safe for
+	//	use with untrusted input in all cases.
+	//
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
 	allow_origin_regex?: [...string]
 	// Specifies string patterns that match allowed origins. An origin is allowed if any of the
 	// string matchers match.
@@ -379,14 +383,14 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// .. attention::
 	//
-	//   **This field is deprecated**. Set the
-	//   :ref:`filter_enabled<envoy_api_field_route.CorsPolicy.filter_enabled>` field instead.
+	//	**This field is deprecated**. Set the
+	//	:ref:`filter_enabled<envoy_api_field_route.CorsPolicy.filter_enabled>` field instead.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
 	enabled?: bool
 	// Specifies the % of requests for which the CORS filter is enabled.
 	//
-	// If neither ``enabled``, ``filter_enabled``, nor ``shadow_enabled`` are specified, the CORS
+	// If neither “enabled“, “filter_enabled“, nor “shadow_enabled“ are specified, the CORS
 	// filter will be enabled for 100% of the requests.
 	//
 	// If :ref:`runtime_key <envoy_api_field_core.RuntimeFractionalPercent.runtime_key>` is
@@ -395,7 +399,7 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	// Specifies the % of requests for which the CORS policies will be evaluated and tracked, but not
 	// enforced.
 	//
-	// This field is intended to be used when ``filter_enabled`` and ``enabled`` are off. One of those
+	// This field is intended to be used when “filter_enabled“ and “enabled“ are off. One of those
 	// fields have to explicitly disable the filter in order for this setting to take effect.
 	//
 	// If :ref:`runtime_key <envoy_api_field_core.RuntimeFractionalPercent.runtime_key>` is specified,
@@ -417,12 +421,12 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// .. attention::
 	//
-	//   Internally, Envoy always uses the HTTP/2 *:authority* header to represent the HTTP/1
-	//   *Host* header. Thus, if attempting to match on *Host*, match on *:authority* instead.
+	//	Internally, Envoy always uses the HTTP/2 *:authority* header to represent the HTTP/1
+	//	*Host* header. Thus, if attempting to match on *Host*, match on *:authority* instead.
 	//
 	// .. note::
 	//
-	//   If the header appears multiple times only the first value is used.
+	//	If the header appears multiple times only the first value is used.
 	cluster_header?: string
 	// Multiple upstream clusters can be specified for a given route. The
 	// request is routed to one of the upstream clusters based on weights
@@ -451,25 +455,25 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// .. attention::
 	//
-	//   Pay careful attention to the use of trailing slashes in the
-	//   :ref:`route's match <envoy_api_field_route.Route.match>` prefix value.
-	//   Stripping a prefix from a path requires multiple Routes to handle all cases. For example,
-	//   rewriting */prefix* to */* and */prefix/etc* to */etc* cannot be done in a single
-	//   :ref:`Route <envoy_api_msg_route.Route>`, as shown by the below config entries:
+	//	Pay careful attention to the use of trailing slashes in the
+	//	:ref:`route's match <envoy_api_field_route.Route.match>` prefix value.
+	//	Stripping a prefix from a path requires multiple Routes to handle all cases. For example,
+	//	rewriting */prefix* to */* and */prefix/etc* to */etc* cannot be done in a single
+	//	:ref:`Route <envoy_api_msg_route.Route>`, as shown by the below config entries:
 	//
-	//   .. code-block:: yaml
+	//	.. code-block:: yaml
 	//
-	//     - match:
-	//         prefix: "/prefix/"
-	//       route:
-	//         prefix_rewrite: "/"
-	//     - match:
-	//         prefix: "/prefix"
-	//       route:
-	//         prefix_rewrite: "/"
+	//	  - match:
+	//	      prefix: "/prefix/"
+	//	    route:
+	//	      prefix_rewrite: "/"
+	//	  - match:
+	//	      prefix: "/prefix"
+	//	    route:
+	//	      prefix_rewrite: "/"
 	//
-	//   Having above entries in the config, requests to */prefix* will be stripped to */*, while
-	//   requests to */prefix/etc* will be stripped to */etc*.
+	//	Having above entries in the config, requests to */prefix* will be stripped to */*, while
+	//	requests to */prefix/etc* will be stripped to */etc*.
 	prefix_rewrite?: string
 	// Indicates that during forwarding, portions of the path that match the
 	// pattern should be rewritten, even allowing the substitution of capture
@@ -485,20 +489,20 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// Examples using Google's `RE2 <https://github.com/google/re2>`_ engine:
 	//
-	// * The path pattern ``^/service/([^/]+)(/.*)$`` paired with a substitution
-	//   string of ``\2/instance/\1`` would transform ``/service/foo/v1/api``
-	//   into ``/v1/api/instance/foo``.
+	//   - The path pattern “^/service/([^/]+)(/.*)$“ paired with a substitution
+	//     string of “\2/instance/\1“ would transform “/service/foo/v1/api“
+	//     into “/v1/api/instance/foo“.
 	//
-	// * The pattern ``one`` paired with a substitution string of ``two`` would
-	//   transform ``/xxx/one/yyy/one/zzz`` into ``/xxx/two/yyy/two/zzz``.
+	//   - The pattern “one“ paired with a substitution string of “two“ would
+	//     transform “/xxx/one/yyy/one/zzz“ into “/xxx/two/yyy/two/zzz“.
 	//
-	// * The pattern ``^(.*?)one(.*)$`` paired with a substitution string of
-	//   ``\1two\2`` would replace only the first occurrence of ``one``,
-	//   transforming path ``/xxx/one/yyy/one/zzz`` into ``/xxx/two/yyy/one/zzz``.
+	//   - The pattern “^(.*?)one(.*)$“ paired with a substitution string of
+	//     “\1two\2“ would replace only the first occurrence of “one“,
+	//     transforming path “/xxx/one/yyy/one/zzz“ into “/xxx/two/yyy/one/zzz“.
 	//
-	// * The pattern ``(?i)/xxx/`` paired with a substitution string of ``/yyy/``
-	//   would do a case-insensitive match and transform path ``/aaa/XxX/bbb`` to
-	//   ``/aaa/yyy/bbb``.
+	//   - The pattern “(?i)/xxx/“ paired with a substitution string of “/yyy/“
+	//     would do a case-insensitive match and transform path “/aaa/XxX/bbb“ to
+	//     “/aaa/yyy/bbb“.
 	regex_rewrite?: matcher.#RegexMatchAndSubstitute
 	// Indicates that during forwarding, the host header will be swapped with
 	// this value.
@@ -506,7 +510,7 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	// Indicates that during forwarding, the host header will be swapped with
 	// the hostname of the upstream host chosen by the cluster manager. This
 	// option is applicable only when the destination cluster for a route is of
-	// type ``STRICT_DNS``,  ``LOGICAL_DNS`` or ``STATIC``. For ``STATIC`` clusters, the
+	// type “STRICT_DNS“,  “LOGICAL_DNS“ or “STATIC“. For “STATIC“ clusters, the
 	// hostname attribute of the endpoint must be configured. Setting this to true
 	// with other cluster types has no effect.
 	auto_host_rewrite?: bool
@@ -516,12 +520,12 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// .. attention::
 	//
-	//   Pay attention to the potential security implications of using this option. Provided header
-	//   must come from trusted source.
+	//	Pay attention to the potential security implications of using this option. Provided header
+	//	must come from trusted source.
 	//
 	// .. note::
 	//
-	//   If the header appears multiple times only the first value is used.
+	//	If the header appears multiple times only the first value is used.
 	auto_host_rewrite_header?: string
 	// Specifies the upstream timeout for the route. If not specified, the default is 15s. This
 	// spans between the point at which the entire downstream request (i.e. end-of-stream) has been
@@ -530,10 +534,10 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// .. note::
 	//
-	//   This timeout includes all retries. See also
-	//   :ref:`config_http_filters_router_x-envoy-upstream-rq-timeout-ms`,
-	//   :ref:`config_http_filters_router_x-envoy-upstream-rq-per-try-timeout-ms`, and the
-	//   :ref:`retry overview <arch_overview_http_routing_retry>`.
+	//	This timeout includes all retries. See also
+	//	:ref:`config_http_filters_router_x-envoy-upstream-rq-timeout-ms`,
+	//	:ref:`config_http_filters_router_x-envoy-upstream-rq-per-try-timeout-ms`, and the
+	//	:ref:`retry overview <arch_overview_http_routing_retry>`.
 	timeout?: string
 	// Specifies the idle timeout for the route. If not specified, there is no per-route idle timeout,
 	// although the connection manager wide :ref:`stream_idle_timeout
@@ -567,10 +571,11 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	// Indicates that the route has a request mirroring policy.
 	//
 	// .. attention::
-	//   This field has been deprecated in favor of `request_mirror_policies` which supports one or
-	//   more mirroring policies.
 	//
-	// Deprecated: Do not use.
+	//	This field has been deprecated in favor of `request_mirror_policies` which supports one or
+	//	more mirroring policies.
+	//
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
 	request_mirror_policy?: #RouteAction_RequestMirrorPolicy
 	// Indicates that the route has request mirroring policies.
 	request_mirror_policies?: [...#RouteAction_RequestMirrorPolicy]
@@ -612,12 +617,12 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// .. note::
 	//
-	//    If a timeout is specified using :ref:`config_http_filters_router_x-envoy-upstream-rq-timeout-ms`, it takes
-	//    precedence over `grpc-timeout header <https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md>`_, when
-	//    both are present. See also
-	//    :ref:`config_http_filters_router_x-envoy-upstream-rq-timeout-ms`,
-	//    :ref:`config_http_filters_router_x-envoy-upstream-rq-per-try-timeout-ms`, and the
-	//    :ref:`retry overview <arch_overview_http_routing_retry>`.
+	//	If a timeout is specified using :ref:`config_http_filters_router_x-envoy-upstream-rq-timeout-ms`, it takes
+	//	precedence over `grpc-timeout header <https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md>`_, when
+	//	both are present. See also
+	//	:ref:`config_http_filters_router_x-envoy-upstream-rq-timeout-ms`,
+	//	:ref:`config_http_filters_router_x-envoy-upstream-rq-per-try-timeout-ms`, and the
+	//	:ref:`retry overview <arch_overview_http_routing_retry>`.
 	max_grpc_timeout?: string
 	// If present, Envoy will adjust the timeout provided by the `grpc-timeout` header by subtracting
 	// the provided duration from the header. This is useful in allowing Envoy to set its global
@@ -668,11 +673,11 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// .. note::
 	//
-	//   If left unspecified, Envoy will use the global
-	//   :ref:`route timeout <envoy_api_field_route.RouteAction.timeout>` for the request.
-	//   Consequently, when using a :ref:`5xx <config_http_filters_router_x-envoy-retry-on>` based
-	//   retry policy, a request that times out will not be retried as the total timeout budget
-	//   would have been exhausted.
+	//	If left unspecified, Envoy will use the global
+	//	:ref:`route timeout <envoy_api_field_route.RouteAction.timeout>` for the request.
+	//	Consequently, when using a :ref:`5xx <config_http_filters_router_x-envoy-retry-on>` based
+	//	retry policy, a request that times out will not be retried as the total timeout budget
+	//	would have been exhausted.
 	per_try_timeout?: string
 	// Specifies an implementation of a RetryPriority which is used to determine the
 	// distribution of load across priorities used for retries. Refer to
@@ -720,10 +725,10 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	// This means that a retry will be issued without resetting the original request, leaving multiple upstream requests in flight.
 	// The first request to complete successfully will be the one returned to the caller.
 	//
-	// * At any time, a successful response (i.e. not triggering any of the retry-on conditions) would be returned to the client.
-	// * Before per-try timeout, an error response (per retry-on conditions) would be retried immediately or returned ot the client
-	//   if there are no more retries left.
-	// * After per-try timeout, an error response would be discarded, as a retry in the form of a hedged request is already in progress.
+	//   - At any time, a successful response (i.e. not triggering any of the retry-on conditions) would be returned to the client.
+	//   - Before per-try timeout, an error response (per retry-on conditions) would be retried immediately or returned ot the client
+	//     if there are no more retries left.
+	//   - After per-try timeout, an error response would be discarded, as a retry in the form of a hedged request is already in progress.
 	//
 	// Note: For this to have effect, you must have a :ref:`RetryPolicy <envoy_api_msg_route.RetryPolicy>` that retries at least
 	// one error code and specifies a maximum number of retries.
@@ -749,12 +754,12 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// For example, let's say we have the following routes:
 	//
-	// - match: { path: "/old-path-1" }
-	//   redirect: { path_redirect: "/new-path-1" }
-	// - match: { path: "/old-path-2" }
-	//   redirect: { path_redirect: "/new-path-2", strip-query: "true" }
-	// - match: { path: "/old-path-3" }
-	//   redirect: { path_redirect: "/new-path-3?foo=1", strip_query: "true" }
+	//   - match: { path: "/old-path-1" }
+	//     redirect: { path_redirect: "/new-path-1" }
+	//   - match: { path: "/old-path-2" }
+	//     redirect: { path_redirect: "/new-path-2", strip-query: "true" }
+	//   - match: { path: "/old-path-3" }
+	//     redirect: { path_redirect: "/new-path-3?foo=1", strip_query: "true" }
 	//
 	// 1. if request uri is "/old-path-1?bar=1", users will be redirected to "/new-path-1?bar=1"
 	// 2. if request uri is "/old-path-2?bar=1", users will be redirected to "/new-path-2"
@@ -766,8 +771,8 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// .. attention::
 	//
-	//   Pay attention to the use of trailing slashes as mentioned in
-	//   :ref:`RouteAction's prefix_rewrite <envoy_api_field_route.RouteAction.prefix_rewrite>`.
+	//	Pay attention to the use of trailing slashes as mentioned in
+	//	:ref:`RouteAction's prefix_rewrite <envoy_api_field_route.RouteAction.prefix_rewrite>`.
 	prefix_rewrite?: string
 	// The HTTP status code to use in the redirect response. The default response
 	// code is MOVED_PERMANENTLY (301).
@@ -786,9 +791,9 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// .. note::
 	//
-	//   Headers can be specified using *response_headers_to_add* in the enclosing
-	//   :ref:`envoy_api_msg_route.Route`, :ref:`envoy_api_msg_RouteConfiguration` or
-	//   :ref:`envoy_api_msg_route.VirtualHost`.
+	//	Headers can be specified using *response_headers_to_add* in the enclosing
+	//	:ref:`envoy_api_msg_route.Route`, :ref:`envoy_api_msg_RouteConfiguration` or
+	//	:ref:`envoy_api_msg_route.VirtualHost`.
 	body?: core.#DataSource
 }
 
@@ -799,9 +804,9 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// .. note::
 	//
-	//   For ingress (inbound) requests, or egress (outbound) responses, this value may be overridden
-	//   by the :ref:`x-envoy-decorator-operation
-	//   <config_http_filters_router_x-envoy-decorator-operation>` header.
+	//	For ingress (inbound) requests, or egress (outbound) responses, this value may be overridden
+	//	by the :ref:`x-envoy-decorator-operation
+	//	<config_http_filters_router_x-envoy-decorator-operation>` header.
 	operation?: string
 	// Whether the decorated details should be propagated to the other party. The default is true.
 	propagate?: bool
@@ -812,7 +817,7 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	// Target percentage of requests managed by this HTTP connection manager that will be force
 	// traced if the :ref:`x-client-trace-id <config_http_conn_man_headers_x-client-trace-id>`
 	// header is set. This field is a direct analog for the runtime variable
-	// 'tracing.client_sampling' in the :ref:`HTTP Connection Manager
+	// 'tracing.client_enabled' in the :ref:`HTTP Connection Manager
 	// <config_http_conn_man_runtime>`.
 	// Default: 100%
 	client_sampling?: _type.#FractionalPercent
@@ -854,9 +859,9 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 //
 // .. note::
 //
-//    Virtual clusters are a useful tool, but we do not recommend setting up a virtual cluster for
-//    every application endpoint. This is both not easily maintainable and as well the matching and
-//    statistics output are not free.
+//	Virtual clusters are a useful tool, but we do not recommend setting up a virtual cluster for
+//	every application endpoint. This is both not easily maintainable and as well the matching and
+//	statistics output are not free.
 #VirtualCluster: {
 	"@type": "type.googleapis.com/envoy.api.v2.route.VirtualCluster"
 	// Specifies a regex pattern to use for matching requests. The entire path of the request
@@ -865,15 +870,16 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// Examples:
 	//
-	// * The regex ``/rides/\d+`` matches the path */rides/0*
-	// * The regex ``/rides/\d+`` matches the path */rides/123*
-	// * The regex ``/rides/\d+`` does not match the path */rides/123/456*
+	// * The regex “/rides/\d+“ matches the path */rides/0*
+	// * The regex “/rides/\d+“ matches the path */rides/123*
+	// * The regex “/rides/\d+“ does not match the path */rides/123/456*
 	//
 	// .. attention::
-	//   This field has been deprecated in favor of `headers` as it is not safe for use with
-	//   untrusted input in all cases.
 	//
-	// Deprecated: Do not use.
+	//	This field has been deprecated in favor of `headers` as it is not safe for use with
+	//	untrusted input in all cases.
+	//
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
 	pattern?: string
 	// Specifies a list of header matchers to use for matching requests. Each specified header must
 	// match. The pseudo-headers `:path` and `:method` can be used to match the request path and
@@ -887,9 +893,10 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	// etc.
 	//
 	// .. attention::
-	//   This field has been deprecated in favor of `headers`.
 	//
-	// Deprecated: Do not use.
+	//	This field has been deprecated in favor of `headers`.
+	//
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
 	method?: core.#RequestMethod
 }
 
@@ -902,7 +909,7 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// .. note::
 	//
-	//   The filter supports a range of 0 - 10 inclusively for stage numbers.
+	//	The filter supports a range of 0 - 10 inclusively for stage numbers.
 	stage?: uint32
 	// The key to be set in runtime to disable this rate limit configuration.
 	disable_key?: string
@@ -917,28 +924,30 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 
 // .. attention::
 //
-//   Internally, Envoy always uses the HTTP/2 *:authority* header to represent the HTTP/1 *Host*
-//   header. Thus, if attempting to match on *Host*, match on *:authority* instead.
+//	Internally, Envoy always uses the HTTP/2 *:authority* header to represent the HTTP/1 *Host*
+//	header. Thus, if attempting to match on *Host*, match on *:authority* instead.
 //
 // .. attention::
 //
-//   To route on HTTP method, use the special HTTP/2 *:method* header. This works for both
-//   HTTP/1 and HTTP/2 as Envoy normalizes headers. E.g.,
+//	To route on HTTP method, use the special HTTP/2 *:method* header. This works for both
+//	HTTP/1 and HTTP/2 as Envoy normalizes headers. E.g.,
 //
-//   .. code-block:: json
+//	.. code-block:: json
 //
-//     {
-//       "name": ":method",
-//       "exact_match": "POST"
-//     }
+//	  {
+//	    "name": ":method",
+//	    "exact_match": "POST"
+//	  }
 //
 // .. attention::
-//   In the absence of any header match specifier, match will default to :ref:`present_match
-//   <envoy_api_field_route.HeaderMatcher.present_match>`. i.e, a request that has the :ref:`name
-//   <envoy_api_field_route.HeaderMatcher.name>` header will match, regardless of the header's
-//   value.
 //
-//  [#next-major-version: HeaderMatcher should be refactored to use StringMatcher.]
+//	 In the absence of any header match specifier, match will default to :ref:`present_match
+//	 <envoy_api_field_route.HeaderMatcher.present_match>`. i.e, a request that has the :ref:`name
+//	 <envoy_api_field_route.HeaderMatcher.name>` header will match, regardless of the header's
+//	 value.
+//
+//	[#next-major-version: HeaderMatcher should be refactored to use StringMatcher.]
+//
 // [#next-free-field: 12]
 #HeaderMatcher: {
 	"@type": "type.googleapis.com/envoy.api.v2.route.HeaderMatcher"
@@ -953,15 +962,16 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// Examples:
 	//
-	// * The regex ``\d{3}`` matches the value *123*
-	// * The regex ``\d{3}`` does not match the value *1234*
-	// * The regex ``\d{3}`` does not match the value *123.456*
+	// * The regex “\d{3}“ matches the value *123*
+	// * The regex “\d{3}“ does not match the value *1234*
+	// * The regex “\d{3}“ does not match the value *123.456*
 	//
 	// .. attention::
-	//   This field has been deprecated in favor of `safe_regex_match` as it is not safe for use
-	//   with untrusted input in all cases.
 	//
-	// Deprecated: Do not use.
+	//	This field has been deprecated in favor of `safe_regex_match` as it is not safe for use
+	//	with untrusted input in all cases.
+	//
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
 	regex_match?: string
 	// If specified, this regex string is a regular expression rule which implies the entire request
 	// header value must match the regex. The rule will not match if only a subsequence of the
@@ -976,8 +986,8 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// Examples:
 	//
-	// * For range [-10,0), route will match for header value -1, but not for 0, "somestring", 10.9,
-	//   "-1somestring"
+	//   - For range [-10,0), route will match for header value -1, but not for 0, "somestring", 10.9,
+	//     "-1somestring"
 	range_match?: _type.#Int64Range
 	// If specified, header match will be performed based on whether the header is in the
 	// request.
@@ -1000,7 +1010,7 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// Examples:
 	//
-	// * The regex ``\d{3}`` does not match the value *1234*, so it will match when inverted.
+	// * The regex “\d{3}“ does not match the value *1234*, so it will match when inverted.
 	// * The range [-10,0) will match the value -1, so it will not match when inverted.
 	invert_match?: bool
 }
@@ -1018,19 +1028,21 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	// key appears with a value (e.g., "?debug=true") or not (e.g., "?debug")
 	//
 	// ..attention::
-	//   This field is deprecated. Use an `exact` match inside the `string_match` field.
 	//
-	// Deprecated: Do not use.
+	//	This field is deprecated. Use an `exact` match inside the `string_match` field.
+	//
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
 	value?: string
 	// Specifies whether the query parameter value is a regular expression.
 	// Defaults to false. The entire query parameter value (i.e., the part to
 	// the right of the equals sign in "key=value") must match the regex.
-	// E.g., the regex ``\d+$`` will match *123* but not *a123* or *123a*.
+	// E.g., the regex “\d+$“ will match *123* but not *a123* or *123a*.
 	//
 	// ..attention::
-	//   This field is deprecated. Use a `safe_regex` match inside the `string_match` field.
 	//
-	// Deprecated: Do not use.
+	//	This field is deprecated. Use a `safe_regex` match inside the `string_match` field.
+	//
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
 	regex?: bool
 	// Specifies whether a query parameter value should match against a string.
 	string_match?: matcher.#StringMatcher
@@ -1083,8 +1095,8 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	// specific; see the :ref:`HTTP filter documentation <config_http_filters>`
 	// for if and how it is utilized.
 	//
-	// Deprecated: Do not use.
-	per_filter_config?: [string]: _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
+	per_filter_config?: [string]: structpb.#Struct
 	// The per_filter_config field can be used to provide weighted cluster-specific
 	// configurations for filters. The key should match the filter name, such as
 	// *envoy.filters.http.buffer* for the HTTP buffer filter. Use of this field is filter
@@ -1117,7 +1129,7 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 //
 // .. note::
 //
-//   Shadowing will not be triggered if the primary cluster does not exist.
+//	Shadowing will not be triggered if the primary cluster does not exist.
 #RouteAction_RequestMirrorPolicy: {
 	"@type": "type.googleapis.com/envoy.api.v2.route.RouteAction_RequestMirrorPolicy"
 	// Specifies the cluster that requests will be mirrored to. The cluster must
@@ -1132,14 +1144,14 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	//
 	// .. attention::
 	//
-	//   **This field is deprecated**. Set the
-	//   :ref:`runtime_fraction
-	//   <envoy_api_field_route.RouteAction.RequestMirrorPolicy.runtime_fraction>`
-	//   field instead. Mirroring occurs if both this and
-	//   <envoy_api_field_route.RouteAction.RequestMirrorPolicy.runtime_fraction>`
-	//   are not set.
+	//	**This field is deprecated**. Set the
+	//	:ref:`runtime_fraction
+	//	<envoy_api_field_route.RouteAction.RequestMirrorPolicy.runtime_fraction>`
+	//	field instead. Mirroring occurs if both this and
+	//	<envoy_api_field_route.RouteAction.RequestMirrorPolicy.runtime_fraction>`
+	//	are not set.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
 	runtime_key?: string
 	// If not specified, all requests to the target cluster will be mirrored.
 	//
@@ -1178,13 +1190,13 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 	// list of hash polices.
 	// For example, if the following hash methods are configured:
 	//
-	//  ========= ========
-	//  specifier terminal
-	//  ========= ========
-	//  Header A  true
-	//  Header B  false
-	//  Header C  false
-	//  ========= ========
+	//	========= ========
+	//	specifier terminal
+	//	========= ========
+	//	Header A  true
+	//	Header B  false
+	//	Header C  false
+	//	========= ========
 	//
 	// The generateHash process ends if policy "header A" generates a hash, as
 	// it's a terminal policy.
@@ -1216,18 +1228,18 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 
 // Envoy supports two types of cookie affinity:
 //
-// 1. Passive. Envoy takes a cookie that's present in the cookies header and
-//    hashes on its value.
+//  1. Passive. Envoy takes a cookie that's present in the cookies header and
+//     hashes on its value.
 //
-// 2. Generated. Envoy generates and sets a cookie with an expiration (TTL)
-//    on the first request from the client in its response to the client,
-//    based on the endpoint the request gets sent to. The client then
-//    presents this on the next and all subsequent requests. The hash of
-//    this is sufficient to ensure these requests get sent to the same
-//    endpoint. The cookie is generated by hashing the source and
-//    destination ports and addresses so that multiple independent HTTP2
-//    streams on the same connection will independently receive the same
-//    cookie, even if they arrive at the Envoy simultaneously.
+//  2. Generated. Envoy generates and sets a cookie with an expiration (TTL)
+//     on the first request from the client in its response to the client,
+//     based on the endpoint the request gets sent to. The client then
+//     presents this on the next and all subsequent requests. The hash of
+//     this is sufficient to ensure these requests get sent to the same
+//     endpoint. The cookie is generated by hashing the source and
+//     destination ports and addresses so that multiple independent HTTP2
+//     streams on the same connection will independently receive the same
+//     cookie, even if they arrive at the Envoy simultaneously.
 #RouteAction_HashPolicy_Cookie: {
 	"@type": "type.googleapis.com/envoy.api.v2.route.RouteAction_HashPolicy_Cookie"
 	// The name of the cookie that will be used to obtain the hash key. If the
@@ -1268,16 +1280,16 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 #RetryPolicy_RetryPriority: {
 	"@type": "type.googleapis.com/envoy.api.v2.route.RetryPolicy_RetryPriority"
 	name?:   string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }
 
 #RetryPolicy_RetryHostPredicate: {
 	"@type": "type.googleapis.com/envoy.api.v2.route.RetryPolicy_RetryHostPredicate"
 	name?:   string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/route/route_components.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }
 
@@ -1316,7 +1328,7 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 //
 // .. code-block:: cpp
 //
-//   ("source_cluster", "<local service cluster>")
+//	("source_cluster", "<local service cluster>")
 //
 // <local service cluster> is derived from the :option:`--service-cluster` option.
 #RateLimit_Action_SourceCluster: {
@@ -1327,18 +1339,18 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 //
 // .. code-block:: cpp
 //
-//   ("destination_cluster", "<routed target cluster>")
+//	("destination_cluster", "<routed target cluster>")
 //
 // Once a request matches against a route table rule, a routed cluster is determined by one of
 // the following :ref:`route table configuration <envoy_api_msg_RouteConfiguration>`
 // settings:
 //
-// * :ref:`cluster <envoy_api_field_route.RouteAction.cluster>` indicates the upstream cluster
-//   to route to.
-// * :ref:`weighted_clusters <envoy_api_field_route.RouteAction.weighted_clusters>`
-//   chooses a cluster randomly from a set of clusters with attributed weight.
-// * :ref:`cluster_header <envoy_api_field_route.RouteAction.cluster_header>` indicates which
-//   header in the request contains the target cluster.
+//   - :ref:`cluster <envoy_api_field_route.RouteAction.cluster>` indicates the upstream cluster
+//     to route to.
+//   - :ref:`weighted_clusters <envoy_api_field_route.RouteAction.weighted_clusters>`
+//     chooses a cluster randomly from a set of clusters with attributed weight.
+//   - :ref:`cluster_header <envoy_api_field_route.RouteAction.cluster_header>` indicates which
+//     header in the request contains the target cluster.
 #RateLimit_Action_DestinationCluster: {
 	"@type": "type.googleapis.com/envoy.api.v2.route.RateLimit_Action_DestinationCluster"
 }
@@ -1348,7 +1360,7 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 //
 // .. code-block:: cpp
 //
-//   ("<descriptor_key>", "<header_value_queried_from_header>")
+//	("<descriptor_key>", "<header_value_queried_from_header>")
 #RateLimit_Action_RequestHeaders: {
 	"@type": "type.googleapis.com/envoy.api.v2.route.RateLimit_Action_RequestHeaders"
 	// The header name to be queried from the request headers. The header’s
@@ -1364,7 +1376,7 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 //
 // .. code-block:: cpp
 //
-//   ("remote_address", "<trusted address from x-forwarded-for>")
+//	("remote_address", "<trusted address from x-forwarded-for>")
 #RateLimit_Action_RemoteAddress: {
 	"@type": "type.googleapis.com/envoy.api.v2.route.RateLimit_Action_RemoteAddress"
 }
@@ -1373,7 +1385,7 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 //
 // .. code-block:: cpp
 //
-//   ("generic_key", "<descriptor_value>")
+//	("generic_key", "<descriptor_value>")
 #RateLimit_Action_GenericKey: {
 	"@type": "type.googleapis.com/envoy.api.v2.route.RateLimit_Action_GenericKey"
 	// The value to use in the descriptor entry.
@@ -1384,7 +1396,7 @@ RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 //
 // .. code-block:: cpp
 //
-//   ("header_match", "<descriptor_value>")
+//	("header_match", "<descriptor_value>")
 #RateLimit_Action_HeaderValueMatch: {
 	"@type": "type.googleapis.com/envoy.api.v2.route.RateLimit_Action_HeaderValueMatch"
 	// The value to use in the descriptor entry.

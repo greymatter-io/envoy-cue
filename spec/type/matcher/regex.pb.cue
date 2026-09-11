@@ -30,7 +30,7 @@ package matcher
 	// defined by the chosen regular expression engine. Google's `RE2
 	// <https://github.com/google/re2>`_ regular expression engine uses a
 	// backslash followed by the capture group number to denote a numbered
-	// capture group. E.g., ``\1`` refers to capture group 1, and ``\2`` refers
+	// capture group. E.g., “\1“ refers to capture group 1, and “\2“ refers
 	// to capture group 2.
 	substitution?: string
 }
@@ -39,11 +39,11 @@ package matcher
 // the documented `syntax <https://github.com/google/re2/wiki/Syntax>`_. The engine is designed
 // to complete execution in linear time as well as limit the amount of memory used.
 //
-// Envoy supports program size checking via runtime. The runtime keys ``re2.max_program_size.error_level``
-// and ``re2.max_program_size.warn_level`` can be set to integers as the maximum program size or
+// Envoy supports program size checking via runtime. The runtime keys “re2.max_program_size.error_level“
+// and “re2.max_program_size.warn_level“ can be set to integers as the maximum program size or
 // complexity that a compiled regex can have before an exception is thrown or a warning is
-// logged, respectively. ``re2.max_program_size.error_level`` defaults to 100, and
-// ``re2.max_program_size.warn_level`` has no default if unset (will not check/log a warning).
+// logged, respectively. “re2.max_program_size.error_level“ defaults to 100, and
+// “re2.max_program_size.warn_level“ has no default if unset (will not check/log a warning).
 //
 // Envoy emits two stats for tracking the program size of regexes: the histogram `re2.program_size`,
 // which records the program size, and the counter `re2.exceeded_warn_level`, which is incremented
@@ -58,6 +58,6 @@ package matcher
 	// This field is deprecated; regexp validation should be performed on the management server
 	// instead of being done by each individual client.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/type/matcher/regex.proto.
 	max_program_size?: uint32
 }

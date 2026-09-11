@@ -1,5 +1,9 @@
 package v3
 
+import (
+	v3 "envoyproxy.io/envoy-cue/spec/extensions/load_balancing_policies/common/v3"
+)
+
 // The hash function used to hash hosts onto the ketama ring.
 #RingHash_HashFunction: "DEFAULT_HASH" | "XX_HASH" | "MURMUR_HASH_2"
 
@@ -10,8 +14,7 @@ RingHash_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 // This configuration allows the built-in RING_HASH LB policy to be configured via the LB policy
 // extension point. See the :ref:`load balancing architecture overview
 // <arch_overview_load_balancing_types>` for more information.
-// [#extension: envoy.clusters.lb_policy]
-// [#next-free-field: 6]
+// [#next-free-field: 8]
 #RingHash: {
 	"@type": "type.googleapis.com/envoy.extensions.load_balancing_policies.ring_hash.v3.RingHash"
 	// The hash function used to hash hosts onto the ketama ring. The value defaults to
@@ -26,8 +29,15 @@ RingHash_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// to further constrain resource use. See also
 	// :ref:`minimum_ring_size<envoy_v3_api_field_config.cluster.v3.Cluster.RingHashLbConfig.minimum_ring_size>`.
 	maximum_ring_size?: uint64
-	// If set to `true`, the cluster will use hostname instead of the resolved
+	// If set to “true“, the cluster will use hostname instead of the resolved
 	// address as the key to consistently hash to an upstream host. Only valid for StrictDNS clusters with hostnames which resolve to a single IP address.
+	//
+	// .. note::
+	//
+	//	This is deprecated and please use :ref:`consistent_hashing_lb_config
+	//	<envoy_v3_api_field_extensions.load_balancing_policies.ring_hash.v3.RingHash.consistent_hashing_lb_config>` instead.
+	//
+	// Deprecated: Marked as deprecated in envoy/extensions/load_balancing_policies/ring_hash/v3/ring_hash.proto.
 	use_hostname_for_hashing?: bool
 	// Configures percentage of average cluster load to bound per upstream host. For example, with a value of 150
 	// no upstream host will get a load more than 1.5 times the average load of all the hosts in the cluster.
@@ -35,7 +45,7 @@ RingHash_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// Minimum is 100.
 	//
 	// This is implemented based on the method described in the paper https://arxiv.org/abs/1608.01350. For the specified
-	// `hash_balance_factor`, requests to any upstream host are capped at `hash_balance_factor/100` times the average number of requests
+	// “hash_balance_factor“, requests to any upstream host are capped at “hash_balance_factor/100“ times the average number of requests
 	// across the cluster. When a request arrives for an upstream host that is currently serving at its max capacity, linear probing
 	// is used to identify an eligible host. Further, the linear probe is implemented using a random jump in hosts ring/table to identify
 	// the eligible host (this technique is as described in the paper https://arxiv.org/abs/1908.08762 - the random jump avoids the
@@ -43,7 +53,18 @@ RingHash_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// If weights are specified on the hosts, they are respected.
 	//
-	// This is an O(N) algorithm, unlike other load balancers. Using a lower `hash_balance_factor` results in more hosts
+	// This is an O(N) algorithm, unlike other load balancers. Using a lower “hash_balance_factor“ results in more hosts
 	// being probed, so use a higher value if you require better performance.
+	//
+	// .. note::
+	//
+	//	This is deprecated and please use :ref:`consistent_hashing_lb_config
+	//	<envoy_v3_api_field_extensions.load_balancing_policies.ring_hash.v3.RingHash.consistent_hashing_lb_config>` instead.
+	//
+	// Deprecated: Marked as deprecated in envoy/extensions/load_balancing_policies/ring_hash/v3/ring_hash.proto.
 	hash_balance_factor?: uint32
+	// Common configuration for hashing-based load balancing policies.
+	consistent_hashing_lb_config?: v3.#ConsistentHashingLbConfig
+	// Enable locality weighted load balancing for ring hash lb explicitly.
+	locality_weighted_lb_config?: v3.#LocalityLbConfig_LocalityWeightedLbConfig
 }

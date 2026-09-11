@@ -4,7 +4,7 @@ import (
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
-// Admin endpoint uses this wrapper for ``/listeners`` to display listener status information.
+// Admin endpoint uses this wrapper for “/listeners“ to display listener status information.
 // See :ref:`/listeners <operations_admin_interface_listeners>` for more information.
 #Listeners: {
 	"@type": "type.googleapis.com/envoy.admin.v3.Listeners"

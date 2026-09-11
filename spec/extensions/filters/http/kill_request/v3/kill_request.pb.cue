@@ -4,8 +4,8 @@ import (
 	v3 "envoyproxy.io/envoy-cue/spec/type/v3"
 )
 
-// On which direction should the filter check for the ``kill_request_header``.
-// Default to ``REQUEST`` if unspecified.
+// On which direction should the filter check for the “kill_request_header“.
+// Default to “REQUEST“ if unspecified.
 #KillRequest_Direction: "REQUEST" | "RESPONSE"
 
 KillRequest_Direction_REQUEST:  "REQUEST"

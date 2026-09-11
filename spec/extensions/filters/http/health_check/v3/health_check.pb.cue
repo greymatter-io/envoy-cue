@@ -15,15 +15,16 @@ import (
 	cache_time?: string
 	// If operating in non-pass-through mode, specifies a set of upstream cluster
 	// names and the minimum percentage of servers in each of those clusters that
-	// must be healthy or degraded in order for the filter to return a 200.
+	// must be healthy or degraded in order for the filter to return a 200. If any of
+	// the clusters configured here does not exist, the filter will not return a 200.
 	//
 	// .. note::
 	//
-	//    This value is interpreted as an integer by truncating, so 12.50% will be calculated
-	//    as if it were 12%.
+	//	This value is interpreted as an integer by truncating, so 12.50% will be calculated
+	//	as if it were 12%.
 	cluster_min_healthy_percentages?: [string]: v3.#Percent
 	// Specifies a set of health check request headers to match on. The health check filter will
 	// check a request’s headers against all the specified headers. To specify the health check
-	// endpoint, set the ``:path`` header to match on.
+	// endpoint, set the “:path“ header to match on.
 	headers?: [...v31.#HeaderMatcher]
 }

@@ -8,10 +8,10 @@ import (
 // For example, the size of an HTTP request, or the status code of an HTTP response.
 //
 // Each attribute has a type and a name, which is logically defined as a proto message field
-// of the ``AttributeContext``. The ``AttributeContext`` is a collection of individual attributes
+// of the “AttributeContext“. The “AttributeContext“ is a collection of individual attributes
 // supported by Envoy authorization system.
 // [#comment: The following items are left out of this proto
-// Request.Auth field for jwt tokens
+// Request.Auth field for JWTs
 // Request.Api for api management
 // Origin peer that originated the request
 // Caching Protocol
@@ -21,7 +21,7 @@ import (
 // - field mask to send
 // - which return values from request_context are copied back
 // - which return values are copied into request_headers]
-// [#next-free-field: 12]
+// [#next-free-field: 14]
 #AttributeContext: {
 	"@type": "type.googleapis.com/envoy.service.auth.v3.AttributeContext"
 	// The source of a network activity, such as starting a TCP connection.
@@ -41,12 +41,22 @@ import (
 	context_extensions?: [string]: string
 	// Dynamic metadata associated with the request.
 	metadata_context?: v3.#Metadata
+	// Metadata associated with the selected route.
+	route_metadata_context?: v3.#Metadata
+	// TLS session details of the underlying connection.
+	// This is not populated by default and will be populated only if the ext_authz filter has
+	// been specifically configured to include this information.
+	// For HTTP ext_authz, that requires :ref:`include_tls_session <config_http_filters_ext_authz>`
+	// to be set to true.
+	// For network ext_authz, that requires :ref:`include_tls_session <config_network_filters_ext_authz>`
+	// to be set to true.
+	tls_session?: #AttributeContext_TLSSession
 }
 
 // This message defines attributes for a node that handles a network request.
 // The node can be either a service or an application that sends, forwards,
-// or receives the request. Service peers should fill in the ``service``,
-// ``principal``, and ``labels`` as appropriate.
+// or receives the request. Service peers should fill in the “service“,
+// “principal“, and “labels“ as appropriate.
 // [#next-free-field: 6]
 #AttributeContext_Peer: {
 	"@type": "type.googleapis.com/envoy.service.auth.v3.AttributeContext_Peer"
@@ -66,12 +76,13 @@ import (
 	// The authenticated identity of this peer.
 	// For example, the identity associated with the workload such as a service account.
 	// If an X.509 certificate is used to assert the identity this field should be sourced from
-	// ``URI Subject Alternative Names``, ``DNS Subject Alternate Names`` or ``Subject`` in that order.
+	// “URI Subject Alternative Names“, “DNS Subject Alternate Names“ or “Subject“ in that order.
 	// The primary identity should be the principal. The principal format is issuer specific.
 	//
-	// Example:
-	// *    SPIFFE format is ``spiffe://trust-domain/path``
-	// *    Google account format is ``https://accounts.google.com/{userid}``
+	// Examples:
+	//
+	// - SPIFFE format is “spiffe://trust-domain/path“.
+	// - Google account format is “https://accounts.google.com/{userid}“.
 	principal?: string
 	// The X.509 certificate used to authenticate the identify of this peer.
 	// When present, the certificate contents are encoded in URL and PEM format.
@@ -89,7 +100,7 @@ import (
 
 // This message defines attributes for an HTTP request.
 // HTTP/1.x, HTTP/2, gRPC are all considered as HTTP requests.
-// [#next-free-field: 13]
+// [#next-free-field: 14]
 #AttributeContext_HttpRequest: {
 	"@type": "type.googleapis.com/envoy.service.auth.v3.AttributeContext_HttpRequest"
 	// The unique ID for a request, which can be propagated to downstream
@@ -97,21 +108,42 @@ import (
 	// within a single day for a specific service.
 	// For HTTP requests, it should be X-Request-ID or equivalent.
 	id?: string
-	// The HTTP request method, such as ``GET``, ``POST``.
+	// The HTTP request method, such as “GET“, “POST“.
 	method?: string
 	// The HTTP request headers. If multiple headers share the same key, they
 	// must be merged according to the HTTP spec. All header keys must be
 	// lower-cased, because HTTP header keys are case-insensitive.
+	// Header value is encoded as UTF-8 string. Non-UTF-8 characters will be replaced by "!".
+	// This field will not be set if
+	// :ref:`encode_raw_headers <envoy_v3_api_field_extensions.filters.http.ext_authz.v3.ExtAuthz.encode_raw_headers>`
+	// is set to true.
 	headers?: [string]: string
+	// A list of the raw HTTP request headers. This is used instead of
+	// :ref:`headers <envoy_v3_api_field_service.auth.v3.AttributeContext.HttpRequest.headers>` when
+	// :ref:`encode_raw_headers <envoy_v3_api_field_extensions.filters.http.ext_authz.v3.ExtAuthz.encode_raw_headers>`
+	// is set to true.
+	//
+	// Note that this is not actually a map type. “header_map“ contains a single repeated field
+	// “headers“.
+	//
+	// Here, only the “key“ and “raw_value“ fields will be populated for each HeaderValue, and
+	// that is only when
+	// :ref:`encode_raw_headers <envoy_v3_api_field_extensions.filters.http.ext_authz.v3.ExtAuthz.encode_raw_headers>`
+	// is set to true.
+	//
+	// Also, unlike the
+	// :ref:`headers <envoy_v3_api_field_service.auth.v3.AttributeContext.HttpRequest.headers>`
+	// field, headers with the same key are not combined into a single comma separated header.
+	header_map?: v3.#HeaderMap
 	// The request target, as it appears in the first line of the HTTP request. This includes
 	// the URL path and query-string. No decoding is performed.
 	path?: string
-	// The HTTP request ``Host`` or '`Authority`` header value.
+	// The HTTP request “Host“ or “:authority“ header value.
 	host?: string
-	// The HTTP URL scheme, such as ``http`` and ``https``.
+	// The HTTP URL scheme, such as “http“ and “https“.
 	scheme?: string
 	// This field is always empty, and exists for compatibility reasons. The HTTP URL query is
-	// included in ``path`` field.
+	// included in “path“ field.
 	query?: string
 	// This field is always empty, and exists for compatibility reasons. The URL fragment is
 	// not submitted as part of HTTP requests; it is unknowable.
@@ -130,4 +162,11 @@ import (
 	// :ref:`pack_as_bytes <envoy_v3_api_field_extensions.filters.http.ext_authz.v3.BufferSettings.pack_as_bytes>`
 	// is set to true.
 	raw_body?: bytes
+}
+
+// This message defines attributes for the underlying TLS session.
+#AttributeContext_TLSSession: {
+	"@type": "type.googleapis.com/envoy.service.auth.v3.AttributeContext_TLSSession"
+	// SNI used for TLS session.
+	sni?: string
 }

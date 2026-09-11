@@ -5,7 +5,7 @@ import (
 )
 
 // Describes custom tags for the active span.
-// [#next-free-field: 6]
+// [#next-free-field: 7]
 #CustomTag: {
 	"@type": "type.googleapis.com/envoy.type.tracing.v3.CustomTag"
 	// Used to populate the tag name.
@@ -18,6 +18,12 @@ import (
 	request_header?: #CustomTag_Header
 	// A custom tag to obtain tag value from the metadata.
 	metadata?: #CustomTag_Metadata
+	// Custom tag value.
+	//
+	// The same :ref:`format specifier <config_access_log_format>` as used for
+	// :ref:`HTTP access logging <config_access_log>` applies here, however
+	// unknown specifier values are replaced with the empty string instead of “-“.
+	value?: string
 }
 
 // Literal type custom tag with static value for the tag value.

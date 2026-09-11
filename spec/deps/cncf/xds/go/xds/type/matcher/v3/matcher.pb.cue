@@ -12,9 +12,10 @@ import (
 }
 
 #Matcher_OnMatch: {
-	"@type":  "type.googleapis.com/github.com.cncf.xds.go.xds.type.matcher.v3.Matcher_OnMatch"
-	matcher?: #Matcher
-	action?:  v3.#TypedExtensionConfig
+	"@type":        "type.googleapis.com/github.com.cncf.xds.go.xds.type.matcher.v3.Matcher_OnMatch"
+	matcher?:       #Matcher
+	action?:        v3.#TypedExtensionConfig
+	keep_matching?: bool
 }
 
 #Matcher_MatcherList: {

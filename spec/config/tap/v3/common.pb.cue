@@ -27,7 +27,7 @@ OutputSink_Format_PROTO_TEXT:                    "PROTO_TEXT"
 	// :ref:`match_config <envoy_v3_api_field_config.tap.v3.TapConfig.match_config>` must be set. If both
 	// are set, the :ref:`match <envoy_v3_api_field_config.tap.v3.TapConfig.match>` will be used.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/tap/v3/common.proto.
 	match_config?: #MatchPredicate
 	// The match configuration. If the configuration matches the data source being tapped, a tap will
 	// occur, with the result written to the configured output.
@@ -38,14 +38,16 @@ OutputSink_Format_PROTO_TEXT:                    "PROTO_TEXT"
 	// The tap output configuration. If a match configuration matches a data source being tapped,
 	// a tap will occur and the data will be written to the configured output.
 	output_config?: #OutputConfig
-	// [#not-implemented-hide:] Specify if Tap matching is enabled. The % of requests\connections for
-	// which the tap matching is enabled. When not enabled, the request\connection will not be
-	// recorded.
-	//
-	// .. note::
-	//
-	//   This field defaults to 100/:ref:`HUNDRED
-	//   <envoy_v3_api_enum_type.v3.FractionalPercent.DenominatorType>`.
+	// Specifies the fraction of requests (HTTP tap filter) or connections (transport
+	// socket tap) for which the tap match predicate is evaluated. When unset, every
+	// request/connection proceeds to match evaluation (equivalent to sampling at 100%),
+	// the runtime layer is not consulted, and “configured_sample_rate“ is not set on
+	// emitted traces. When set, only the configured fraction is matched; the remainder
+	// is not tapped. The value can be overridden at runtime via :ref:`runtime_key
+	// <envoy_v3_api_field_config.core.v3.RuntimeFractionalPercent.runtime_key>`. The
+	// configured sampling rate is recorded on the :ref:`configured_sample_rate
+	// <envoy_v3_api_field_data.tap.v3.TraceWrapper.configured_sample_rate>` of the
+	// first segment of each emitted trace.
 	tap_enabled?: v31.#RuntimeFractionalPercent
 }
 
@@ -92,9 +94,9 @@ OutputSink_Format_PROTO_TEXT:                    "PROTO_TEXT"
 //
 // .. attention::
 //
-//   Searching for patterns in HTTP body is potentially cpu intensive. For each specified pattern, http body is scanned byte by byte to find a match.
-//   If multiple patterns are specified, the process is repeated for each pattern. If location of a pattern is known, ``bytes_limit`` should be specified
-//   to scan only part of the http body.
+//	Searching for patterns in HTTP body is potentially cpu intensive. For each specified pattern, http body is scanned byte by byte to find a match.
+//	If multiple patterns are specified, the process is repeated for each pattern. If location of a pattern is known, ``bytes_limit`` should be specified
+//	to scan only part of the http body.
 #HttpGenericBodyMatch: {
 	"@type": "type.googleapis.com/envoy.config.tap.v3.HttpGenericBodyMatch"
 	// Limits search to specified number of bytes - default zero (no limit - match entire captured buffer).
@@ -104,6 +106,7 @@ OutputSink_Format_PROTO_TEXT:                    "PROTO_TEXT"
 }
 
 // Tap output configuration.
+// [#next-free-field: 6]
 #OutputConfig: {
 	"@type": "type.googleapis.com/envoy.config.tap.v3.OutputConfig"
 	// Output sinks for tap data. Currently a single sink is allowed in the list. Once multiple
@@ -126,10 +129,15 @@ OutputSink_Format_PROTO_TEXT:                    "PROTO_TEXT"
 	// match can be determined. See the HTTP tap filter :ref:`streaming
 	// <config_http_filters_tap_streaming>` documentation for more information.
 	streaming?: bool
+	// Tapped messages will be sent on each read/write event for streamed tapping by default.
+	// But this behavior could be controlled by setting this field.
+	// If set then the tapped messages will be send once the threshold is reached.
+	// This could be used to avoid high frequent sending.
+	min_streamed_sent_bytes?: uint32
 }
 
 // Tap output sink configuration.
-// [#next-free-field: 6]
+// [#next-free-field: 7]
 #OutputSink: {
 	"@type": "type.googleapis.com/envoy.config.tap.v3.OutputSink"
 	// Sink output format.
@@ -138,10 +146,10 @@ OutputSink_Format_PROTO_TEXT:                    "PROTO_TEXT"
 	//
 	// .. attention::
 	//
-	//   It is only allowed to specify the streaming admin output sink if the tap is being
-	//   configured from the :http:post:`/tap` admin endpoint. Thus, if an extension has
-	//   been configured to receive tap configuration from some other source (e.g., static
-	//   file, XDS, etc.) configuring the streaming admin output type will fail.
+	//	It is only allowed to specify the streaming admin output sink if the tap is being
+	//	configured from the :http:post:`/tap` admin endpoint. Thus, if an extension has
+	//	been configured to receive tap configuration from some other source (e.g., static
+	//	file, XDS, etc.) configuring the streaming admin output type will fail.
 	streaming_admin?: #StreamingAdminSink
 	// Tap output will be written to a file per tap sink.
 	file_per_tap?: #FilePerTapSink
@@ -153,11 +161,13 @@ OutputSink_Format_PROTO_TEXT:                    "PROTO_TEXT"
 	//
 	// .. attention::
 	//
-	//   It is only allowed to specify the buffered admin output sink if the tap is being
-	//   configured from the :http:post:`/tap` admin endpoint. Thus, if an extension has
-	//   been configured to receive tap configuration from some other source (e.g., static
-	//   file, XDS, etc.) configuring the buffered admin output type will fail.
+	//	It is only allowed to specify the buffered admin output sink if the tap is being
+	//	configured from the :http:post:`/tap` admin endpoint. Thus, if an extension has
+	//	been configured to receive tap configuration from some other source (e.g., static
+	//	file, XDS, etc.) configuring the buffered admin output type will fail.
 	buffered_admin?: #BufferedAdminSink
+	// Tap output filter will be defined by an extension type
+	custom_sink?: v31.#TypedExtensionConfig
 }
 
 // Streaming admin sink configuration.
@@ -168,7 +178,7 @@ OutputSink_Format_PROTO_TEXT:                    "PROTO_TEXT"
 // BufferedAdminSink configures a tap output to collect traces without returning them until
 // one of multiple criteria are satisfied.
 // Similar to StreamingAdminSink, it is only allowed to specify the buffered admin output
-// sink if the tap is being configured from the ``/tap`` admin endpoint.
+// sink if the tap is being configured from the “/tap“ admin endpoint.
 #BufferedAdminSink: {
 	"@type": "type.googleapis.com/envoy.config.tap.v3.BufferedAdminSink"
 	// Stop collecting traces when the specified number are collected.

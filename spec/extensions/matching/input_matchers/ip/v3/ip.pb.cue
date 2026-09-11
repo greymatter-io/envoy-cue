@@ -19,9 +19,10 @@ import (
 	// matcher. Names in the table below are concatenated to this prefix.
 	//
 	// .. csv-table::
-	//    :header: Name, Type, Description
-	//    :widths: 1, 1, 2
 	//
-	//    ip_parsing_failed, Counter, Total number of IP addresses the matcher was unable to parse
+	//	:header: Name, Type, Description
+	//	:widths: 1, 1, 2
+	//
+	//	ip_parsing_failed, Counter, Total number of IP addresses the matcher was unable to parse
 	stat_prefix?: string
 }

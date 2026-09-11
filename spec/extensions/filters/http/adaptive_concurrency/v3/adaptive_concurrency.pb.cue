@@ -21,6 +21,14 @@ import (
 	// If set to false, the adaptive concurrency filter will operate as a pass-through filter. If the
 	// message is unspecified, the filter will be enabled.
 	enabled?: v31.#RuntimeFeatureFlag
+	// This field allows for a custom HTTP response status code to the downstream client when
+	// the concurrency limit has been exceeded.
+	// Defaults to 503 (Service Unavailable).
+	//
+	// .. note::
+	//
+	//	If this is set to < 400, 503 will be used instead.
+	concurrency_limit_exceeded_status?: v3.#HttpStatus
 }
 
 // Parameters controlling the periodic recalculation of the concurrency limit from sampled request
@@ -34,12 +42,15 @@ import (
 }
 
 // Parameters controlling the periodic minRTT recalculation.
-// [#next-free-field: 6]
+// [#next-free-field: 7]
 #GradientControllerConfig_MinimumRTTCalculationParams: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.adaptive_concurrency.v3.GradientControllerConfig_MinimumRTTCalculationParams"
 	// The time interval between recalculating the minimum request round-trip time. Has to be
-	// positive.
+	// positive. If set to zero, dynamic sampling of the minRTT is disabled.
 	interval?: string
+	// The fixed value for the minRTT. This value is used when minRTT is not sampled dynamically.
+	// If dynamic sampling of the minRTT is disabled, this field must be set.
+	fixed_value?: string
 	// The number of requests to aggregate/sample during the minRTT recalculation window before
 	// updating. Defaults to 50.
 	request_count?: uint32

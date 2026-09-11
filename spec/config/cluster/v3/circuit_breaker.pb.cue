@@ -18,8 +18,9 @@ import (
 	// Optional per-host limits which apply to each individual host in a cluster.
 	//
 	// .. note::
-	//  currently only the :ref:`max_connections
-	//  <envoy_v3_api_field_config.cluster.v3.CircuitBreakers.Thresholds.max_connections>` field is supported for per-host limits.
+	//
+	//	currently only the :ref:`max_connections
+	//	<envoy_v3_api_field_config.cluster.v3.CircuitBreakers.Thresholds.max_connections>` field is supported for per-host limits.
 	//
 	// If multiple per-host :ref:`Thresholds<envoy_v3_api_msg_config.cluster.v3.CircuitBreakers.Thresholds>`
 	// are defined with the same :ref:`RoutingPriority<envoy_v3_api_enum_config.core.v3.RoutingPriority>`,
@@ -56,8 +57,8 @@ import (
 	//
 	// .. note::
 	//
-	//    If this field is set, the retry budget will override any configured retry circuit
-	//    breaker.
+	//	If this field is set, the retry budget will override any configured retry circuit
+	//	breaker.
 	retry_budget?: #CircuitBreakers_Thresholds_RetryBudget
 	// If track_remaining is true, then stats will be published that expose
 	// the number of resources remaining until the circuit breakers open. If
@@ -65,8 +66,8 @@ import (
 	//
 	// .. note::
 	//
-	//    If a retry budget is used in lieu of the max_retries circuit breaker,
-	//    the remaining retry resources remaining will not be tracked.
+	//	If a retry budget is used in lieu of the max_retries circuit breaker,
+	//	the remaining retry resources remaining will not be tracked.
 	track_remaining?: bool
 	// The maximum number of connection pools per cluster that Envoy will concurrently support at
 	// once. If not specified, the default is unlimited. Set this for clusters which create a
@@ -84,6 +85,24 @@ import (
 	//
 	// This parameter is optional. Defaults to 20%.
 	budget_percent?: v31.#Percent
+	// An optional duration in which requests will be considered when calculating
+	// the budget for retries. This parameter alters the way in which the retry budget
+	// is calculated, overriding the default behavior when specified.
+	//
+	// By default, when budget_interval is set to 0ms, only presently active
+	// and pending requests are considered when calculating the retry budget.
+	//
+	// When a non-zero budget_interval is specified, new requests are
+	// considered for the duration of budget_interval when calculating
+	// the retry budget.
+	//
+	// For example, if 10 requests start at the same time, with a specified budget_interval
+	// of 100ms, all 10 requests will be considered when calculating the retry
+	// budget for the next 100ms, regardless of if they have completed.
+	// All 10 requests will expire after the budget_interval duration.
+	//
+	// This parameter is optional. Defaults to 0ms.
+	budget_interval?: string
 	// Specifies the minimum retry concurrency allowed for the retry budget. The limit on the
 	// number of active retries may never go below this number.
 	//

@@ -1,6 +1,7 @@
 package v3
 
 import (
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 	v31 "envoyproxy.io/envoy-cue/spec/config/endpoint/v3"
 	v32 "envoyproxy.io/envoy-cue/spec/config/cluster/v3"
@@ -31,6 +32,19 @@ Capability_Protocol_REDIS: "REDIS"
 	"@type":        "type.googleapis.com/envoy.service.health.v3.EndpointHealth"
 	endpoint?:      v31.#Endpoint
 	health_status?: v3.#HealthStatus
+	// Optional metadata about the health check result, populated by the active
+	// health checker and forwarded to the management server for richer health
+	// state interpretation.
+	//
+	// Well-known keys:
+	//
+	// “http_status_code“ (number)
+	//
+	//	Set by the HTTP health checker. Contains the HTTP response status code
+	//	returned by the upstream endpoint during the most recent health check,
+	//	e.g. ``200``, ``503``. Only present when the health check received a
+	//	complete HTTP response; absent on connection failures or timeouts.
+	health_metadata?: structpb.#Struct
 }
 
 // Group endpoint health by locality under each cluster.
@@ -52,7 +66,7 @@ Capability_Protocol_REDIS: "REDIS"
 	"@type": "type.googleapis.com/envoy.service.health.v3.EndpointHealthResponse"
 	// Deprecated - Flat list of endpoint health information.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/service/health/v3/hds.proto.
 	endpoints_health?: [...#EndpointHealth]
 	// Organize Endpoint health information by cluster.
 	cluster_endpoints_health?: [...#ClusterEndpointsHealth]
@@ -74,6 +88,7 @@ Capability_Protocol_REDIS: "REDIS"
 // health checks to support statistics reporting, logging and debugging by the
 // Envoy instance (outside of HDS). For maximum usefulness, it should match the
 // same cluster structure as that provided by EDS.
+// [#next-free-field: 6]
 #ClusterHealthCheck: {
 	"@type":       "type.googleapis.com/envoy.service.health.v3.ClusterHealthCheck"
 	cluster_name?: string
@@ -83,6 +98,9 @@ Capability_Protocol_REDIS: "REDIS"
 	// on connection when health checking. For more details, see
 	// :ref:`config.cluster.v3.Cluster.transport_socket_matches <envoy_v3_api_field_config.cluster.v3.Cluster.transport_socket_matches>`.
 	transport_socket_matches?: [...v32.#Cluster_TransportSocketMatch]
+	// Optional configuration used to bind newly established upstream connections.
+	// If the address and port are empty, no bind will be performed.
+	upstream_bind_config?: v3.#BindConfig
 }
 
 #HealthCheckSpecifier: {
@@ -97,20 +115,3 @@ Capability_Protocol_REDIS: "REDIS"
 #HdsDummy: {
 	"@type": "type.googleapis.com/envoy.service.health.v3.HdsDummy"
 }
-
-// HealthDiscoveryServiceClient is the client API for HealthDiscoveryService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-#HealthDiscoveryServiceClient: _
-
-#HealthDiscoveryService_StreamHealthCheckClient: _
-
-// HealthDiscoveryServiceServer is the server API for HealthDiscoveryService service.
-#HealthDiscoveryServiceServer: _
-
-// UnimplementedHealthDiscoveryServiceServer can be embedded to have forward compatible implementations.
-#UnimplementedHealthDiscoveryServiceServer: {
-	"@type": "type.googleapis.com/envoy.service.health.v3.UnimplementedHealthDiscoveryServiceServer"
-}
-
-#HealthDiscoveryService_StreamHealthCheckServer: _

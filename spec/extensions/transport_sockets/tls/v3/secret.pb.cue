@@ -6,8 +6,12 @@ import (
 
 #GenericSecret: {
 	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.GenericSecret"
-	// Secret of generic type and is available to filters.
+	// Secret of generic type and is available to filters. It is expected
+	// that only only one of secret and secrets is set.
 	secret?: v3.#DataSource
+	// For cases where multiple associated secrets need to be distributed together. It is expected
+	// that only only one of secret and secrets is set.
+	secrets?: [string]: v3.#DataSource
 }
 
 #SdsSecretConfig: {

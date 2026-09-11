@@ -23,7 +23,7 @@ import (
 	// Runtime flag that controls whether the filter is enabled for decompression or not. If set to false, the
 	// filter will operate as a pass-through filter. If the message is unspecified, the filter will be enabled.
 	enabled?: v3.#RuntimeFeatureFlag
-	// If set to true, will decompress response even if a ``no-transform`` cache control header is set.
+	// If set to true, will decompress response even if a “no-transform“ cache control header is set.
 	ignore_no_transform_header?: bool
 }
 

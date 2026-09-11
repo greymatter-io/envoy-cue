@@ -45,15 +45,17 @@ import (
 	//
 	// .. code-block:: json
 	//
-	//  { "drop_overloads": [
-	//      { "category": "throttle", "drop_percentage": 60 }
-	//      { "category": "lb", "drop_percentage": 50 }
-	//  ]}
+	//	{ "drop_overloads": [
+	//	    { "category": "throttle", "drop_percentage": 60 }
+	//	    { "category": "lb", "drop_percentage": 50 }
+	//	]}
 	//
 	// The actual drop percentages applied to the traffic at the clients will be
-	//    "throttle"_drop = 60%
-	//    "lb"_drop = 20%  // 50% of the remaining 'actual' load, which is 40%.
-	//    actual_outgoing_load = 20% // remaining after applying all categories.
+	//
+	//	"throttle"_drop = 60%
+	//	"lb"_drop = 20%  // 50% of the remaining 'actual' load, which is 40%.
+	//	actual_outgoing_load = 20% // remaining after applying all categories.
+	//
 	// [#not-implemented-hide:]
 	drop_overloads?: [...#ClusterLoadAssignment_Policy_DropOverload]
 	// Priority levels and localities are considered overprovisioned with this
@@ -66,7 +68,7 @@ import (
 	//
 	// .. code-block:: json
 	//
-	//  { "overprovisioning_factor": 100 }
+	//	{ "overprovisioning_factor": 100 }
 	//
 	// Read more at :ref:`priority levels <arch_overview_load_balancing_priority_levels>` and
 	// :ref:`localities <arch_overview_load_balancing_locality_weighted_lb>`.
@@ -85,7 +87,7 @@ import (
 	// <arch_overview_load_balancing_overprovisioning_factor>` suggests.
 	// [#not-implemented-hide:]
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/api/v2/endpoint.proto.
 	disable_overprovisioning?: bool
 }
 

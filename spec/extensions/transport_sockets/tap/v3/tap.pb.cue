@@ -13,4 +13,16 @@ import (
 	common_config?: v3.#CommonExtensionConfig
 	// The underlying transport socket being wrapped.
 	transport_socket?: v31.#TransportSocket
+	// Additional configurations for the transport socket tap
+	socket_tap_config?: #SocketTapConfig
+}
+
+// Additional configurations for the transport socket tap
+#SocketTapConfig: {
+	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tap.v3.SocketTapConfig"
+	// Indicates to whether output the connection information per event
+	// This is only applicable if the streamed trace is enabled
+	set_connection_per_event?: bool
+	// The contents of the transport tap's statistics prefix.
+	stats_prefix?: string
 }

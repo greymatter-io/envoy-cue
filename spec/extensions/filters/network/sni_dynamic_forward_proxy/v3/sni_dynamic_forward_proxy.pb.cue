@@ -19,4 +19,9 @@ import (
 	dns_cache_config?: v3.#DnsCacheConfig
 	// The port number to connect to the upstream.
 	port_value?: uint32
+	// When this flag is set, the filter will add the resolved upstream address in the filter
+	// state. The state should be saved with key
+	// “envoy.stream.upstream_address“ (See
+	// :repo:`upstream_address.h<source/common/stream_info/upstream_address.h>`).
+	save_upstream_address?: bool
 }

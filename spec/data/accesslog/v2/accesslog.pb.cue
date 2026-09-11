@@ -193,7 +193,7 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	tls_version?: #TLSProperties_TLSVersion
 	// TLS cipher suite negotiated during handshake. The value is a
 	// four-digit hex code defined by the IANA TLS Cipher Suite Registry
-	// (e.g. ``009C`` for ``TLS_RSA_WITH_AES_128_GCM_SHA256``).
+	// (e.g. “009C“ for “TLS_RSA_WITH_AES_128_GCM_SHA256“).
 	//
 	// Here it is expressed as an integer.
 	tls_cipher_suite?: uint32
@@ -214,26 +214,26 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	request_method?: core.#RequestMethod
 	// The scheme portion of the incoming request URI.
 	scheme?: string
-	// HTTP/2 ``:authority`` or HTTP/1.1 ``Host`` header value.
+	// HTTP/2 “:authority“ or HTTP/1.1 “Host“ header value.
 	authority?: string
 	// The port of the incoming request URI
 	// (unused currently, as port is composed onto authority).
 	port?: uint32
 	// The path portion from the incoming request URI.
 	path?: string
-	// Value of the ``User-Agent`` request header.
+	// Value of the “User-Agent“ request header.
 	user_agent?: string
-	// Value of the ``Referer`` request header.
+	// Value of the “Referer“ request header.
 	referer?: string
-	// Value of the ``X-Forwarded-For`` request header.
+	// Value of the “X-Forwarded-For“ request header.
 	forwarded_for?: string
-	// Value of the ``X-Request-Id`` request header
+	// Value of the “X-Request-Id“ request header
 	//
 	// This header is used by Envoy to uniquely identify a request.
 	// It will be generated for all external requests and internal requests that
 	// do not already have a request ID.
 	request_id?: string
-	// Value of the ``X-Envoy-Original-Path`` request header.
+	// Value of the “X-Envoy-Original-Path“ request header.
 	original_path?: string
 	// Size of the HTTP request headers in bytes.
 	//

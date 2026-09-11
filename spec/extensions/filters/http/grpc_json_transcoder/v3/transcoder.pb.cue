@@ -6,7 +6,7 @@ GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS_EXCEPT_RESERVED: "ALL_CHARACTE
 GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS_EXCEPT_SLASH:    "ALL_CHARACTERS_EXCEPT_SLASH"
 GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS:                 "ALL_CHARACTERS"
 
-// [#next-free-field: 15]
+// [#next-free-field: 18]
 // GrpcJsonTranscoder filter configuration.
 // The filter itself can be used per route / per virtual host or on the general level. The most
 // specific one is being used for a given route. If the list of services is empty - filter
@@ -27,8 +27,8 @@ GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS:                 "ALL_CHARACTE
 	proto_descriptor_bin?: bytes
 	// A list of strings that
 	// supplies the fully qualified service names (i.e. "package_name.service_name") that
-	// the transcoder will translate. If the service name doesn't exist in ``proto_descriptor``,
-	// Envoy will fail at startup. The ``proto_descriptor`` may contain more services than
+	// the transcoder will translate. If the service name doesn't exist in “proto_descriptor“,
+	// Envoy will fail at startup. The “proto_descriptor“ may contain more services than
 	// the service names specified here, but they won't be translated.
 	//
 	// By default, the filter will pass through requests that do not map to any specified services.
@@ -43,7 +43,7 @@ GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS:                 "ALL_CHARACTE
 	print_options?: #GrpcJsonTranscoder_PrintOptions
 	// Whether to keep the incoming request route after the outgoing headers have been transformed to
 	// the match the upstream gRPC service. Note: This means that routes for gRPC services that are
-	// not transcoded cannot be used in combination with ``match_incoming_request_route``.
+	// not transcoded cannot be used in combination with “match_incoming_request_route“.
 	match_incoming_request_route?: bool
 	// A list of query parameters to be ignored for transcoding method mapping.
 	// By default, the transcoder filter will not transcode a request if there are any
@@ -53,83 +53,83 @@ GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS:                 "ALL_CHARACTE
 	//
 	// .. code-block:: proto
 	//
-	//     service Bookstore {
-	//       rpc GetShelf(GetShelfRequest) returns (Shelf) {
-	//         option (google.api.http) = {
-	//           get: "/shelves/{shelf}"
-	//         };
-	//       }
-	//     }
+	//	service Bookstore {
+	//	  rpc GetShelf(GetShelfRequest) returns (Shelf) {
+	//	    option (google.api.http) = {
+	//	      get: "/shelves/{shelf}"
+	//	    };
+	//	  }
+	//	}
 	//
-	//     message GetShelfRequest {
-	//       int64 shelf = 1;
-	//     }
+	//	message GetShelfRequest {
+	//	  int64 shelf = 1;
+	//	}
 	//
-	//     message Shelf {}
+	//	message Shelf {}
 	//
-	// The request ``/shelves/100?foo=bar`` will not be mapped to ``GetShelf``` because variable
-	// binding for ``foo`` is not defined. Adding ``foo`` to ``ignored_query_parameters`` will allow
-	// the same request to be mapped to ``GetShelf``.
+	// The request “/shelves/100?foo=bar“ will not be mapped to “GetShelf``` because variable
+	// binding for “foo“ is not defined. Adding “foo“ to “ignored_query_parameters“ will allow
+	// the same request to be mapped to “GetShelf“.
 	ignored_query_parameters?: [...string]
-	// Whether to route methods without the ``google.api.http`` option.
+	// Whether to route methods without the “google.api.http“ option.
 	//
 	// Example :
 	//
 	// .. code-block:: proto
 	//
-	//     package bookstore;
+	//	package bookstore;
 	//
-	//     service Bookstore {
-	//       rpc GetShelf(GetShelfRequest) returns (Shelf) {}
-	//     }
+	//	service Bookstore {
+	//	  rpc GetShelf(GetShelfRequest) returns (Shelf) {}
+	//	}
 	//
-	//     message GetShelfRequest {
-	//       int64 shelf = 1;
-	//     }
+	//	message GetShelfRequest {
+	//	  int64 shelf = 1;
+	//	}
 	//
-	//     message Shelf {}
+	//	message Shelf {}
 	//
-	// The client could ``post`` a json body ``{"shelf": 1234}`` with the path of
-	// ``/bookstore.Bookstore/GetShelfRequest`` to call ``GetShelfRequest``.
+	// The client could “post“ a json body “{"shelf": 1234}“ with the path of
+	// “/bookstore.Bookstore/GetShelfRequest“ to call “GetShelfRequest“.
 	auto_mapping?: bool
 	// Whether to ignore query parameters that cannot be mapped to a corresponding
 	// protobuf field. Use this if you cannot control the query parameters and do
-	// not know them beforehand. Otherwise use ``ignored_query_parameters``.
+	// not know them beforehand. Otherwise use “ignored_query_parameters“.
 	// Defaults to false.
 	ignore_unknown_query_parameters?: bool
 	// Whether to convert gRPC status headers to JSON.
-	// When trailer indicates a gRPC error and there was no HTTP body, take ``google.rpc.Status``
-	// from the ``grpc-status-details-bin`` header and use it as JSON body.
-	// If there was no such header, make ``google.rpc.Status`` out of the ``grpc-status`` and
-	// ``grpc-message`` headers.
-	// The error details types must be present in the ``proto_descriptor``.
+	// When trailer indicates a gRPC error and there was no HTTP body, take “google.rpc.Status“
+	// from the “grpc-status-details-bin“ header and use it as JSON body.
+	// If there was no such header, make “google.rpc.Status“ out of the “grpc-status“ and
+	// “grpc-message“ headers.
+	// The error details types must be present in the “proto_descriptor“.
 	//
 	// For example, if an upstream server replies with headers:
 	//
 	// .. code-block:: none
 	//
-	//     grpc-status: 5
-	//     grpc-status-details-bin:
-	//         CAUaMwoqdHlwZS5nb29nbGVhcGlzLmNvbS9nb29nbGUucnBjLlJlcXVlc3RJbmZvEgUKA3ItMQ
+	//	grpc-status: 5
+	//	grpc-status-details-bin:
+	//	    CAUaMwoqdHlwZS5nb29nbGVhcGlzLmNvbS9nb29nbGUucnBjLlJlcXVlc3RJbmZvEgUKA3ItMQ
 	//
-	// The ``grpc-status-details-bin`` header contains a base64-encoded protobuf message
-	// ``google.rpc.Status``. It will be transcoded into:
+	// The “grpc-status-details-bin“ header contains a base64-encoded protobuf message
+	// “google.rpc.Status“. It will be transcoded into:
 	//
 	// .. code-block:: none
 	//
-	//     HTTP/1.1 404 Not Found
-	//     content-type: application/json
+	//	HTTP/1.1 404 Not Found
+	//	content-type: application/json
 	//
-	//     {"code":5,"details":[{"@type":"type.googleapis.com/google.rpc.RequestInfo","requestId":"r-1"}]}
+	//	{"code":5,"details":[{"@type":"type.googleapis.com/google.rpc.RequestInfo","requestId":"r-1"}]}
 	//
-	// In order to transcode the message, the ``google.rpc.RequestInfo`` type from
-	// the ``google/rpc/error_details.proto`` should be included in the configured
+	// In order to transcode the message, the “google.rpc.RequestInfo“ type from
+	// the “google/rpc/error_details.proto“ should be included in the configured
 	// :ref:`proto descriptor set <config_grpc_json_generate_proto_descriptor_set>`.
 	convert_grpc_status?: bool
 	// URL unescaping policy.
 	// This spec is only applied when extracting variable with multiple segments in the URL path.
-	// For example, in case of ``/foo/{x=*}/bar/{y=prefix/*}/{z=**}`` ``x`` variable is single segment and ``y`` and ``z`` are multiple segments.
-	// For a path with ``/foo/first/bar/prefix/second/third/fourth``, ``x=first``, ``y=prefix/second``, ``z=third/fourth``.
+	// For example, in case of “/foo/{x=*}/bar/{y=prefix/*}/{z=**}“ “x“ variable is single segment and “y“ and “z“ are multiple segments.
+	// For a path with “/foo/first/bar/prefix/second/third/fourth“, “x=first“, “y=prefix/second“, “z=third/fourth“.
 	// If this setting is not specified, the value defaults to :ref:`ALL_CHARACTERS_EXCEPT_RESERVED<envoy_v3_api_enum_value_extensions.filters.http.grpc_json_transcoder.v3.GrpcJsonTranscoder.UrlUnescapeSpec.ALL_CHARACTERS_EXCEPT_RESERVED>`.
 	url_unescape_spec?: #GrpcJsonTranscoder_UrlUnescapeSpec
 	// If true, unescape '+' to space when extracting variables in query parameters.
@@ -141,9 +141,9 @@ GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS:                 "ALL_CHARACTE
 	// According to the http template `syntax <https://github.com/googleapis/googleapis/blob/master/google/api/http.proto#L226-L231>`_,
 	// the custom verb is **":" LITERAL** at the end of http template.
 	//
-	// For a request with ``/foo/bar:baz`` and ``:baz`` is not registered in any url_template, here is the behavior change
-	// - if the field is not set, ``:baz`` will not be treated as custom verb, so it will match ``/foo/{x=*}``.
-	// - if the field is set, ``:baz`` is treated as custom verb,  so it will NOT match ``/foo/{x=*}`` since the template doesn't use any custom verb.
+	// For a request with “/foo/bar:baz“ and “:baz“ is not registered in any url_template, here is the behavior change
+	// - if the field is not set, “:baz“ will not be treated as custom verb, so it will match “/foo/{x=*}“.
+	// - if the field is set, “:baz“ is treated as custom verb,  so it will NOT match “/foo/{x=*}“ since the template doesn't use any custom verb.
 	match_unregistered_custom_verb?: bool
 	// Configure the behavior when handling requests that cannot be transcoded.
 	//
@@ -151,21 +151,47 @@ GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS:                 "ALL_CHARACTE
 	// This includes requests with unknown query parameters, unregister paths, etc.
 	//
 	// Set these options to enable strict HTTP request validation, resulting in the transcoder rejecting
-	// such requests with a ``HTTP 4xx``. See each individual option for more details on the validation.
+	// such requests with a “HTTP 4xx“. See each individual option for more details on the validation.
 	// gRPC requests will still silently pass through without transcoding.
 	//
 	// The benefit is a proper error message to the downstream.
 	// If the upstream is a gRPC server, it cannot handle the passed-through HTTP requests and will reset
 	// the TCP connection. The downstream will then
-	// receive a ``HTTP 503 Service Unavailable`` due to the upstream connection reset.
+	// receive a “HTTP 503 Service Unavailable“ due to the upstream connection reset.
 	// This incorrect error message may conflict with other Envoy components, such as retry policies.
 	request_validation_options?: #GrpcJsonTranscoder_RequestValidationOptions
 	// Proto enum values are supposed to be in upper cases when used in JSON.
 	// Set this to true if your JSON request uses non uppercase enum values.
 	case_insensitive_enum_parsing?: bool
+	// The maximum size of a request body to be transcoded, in bytes. A body exceeding this size will
+	// provoke a “HTTP 413 Request Entity Too Large“ response.
+	//
+	// Large values may cause envoy to use a lot of memory if there are many concurrent requests.
+	//
+	// If unset, the current stream buffer size is used.
+	max_request_body_size?: uint32
+	// The maximum size of a response body to be transcoded, in bytes. A body exceeding this size will
+	// provoke a “HTTP 500 Internal Server Error“ response.
+	//
+	// Large values may cause envoy to use a lot of memory if there are many concurrent requests.
+	//
+	// If unset, the current stream buffer size is used.
+	max_response_body_size?: uint32
+	// If true, query parameters that cannot be mapped to a corresponding
+	// protobuf field are captured in an HttpBody extension of UnknownQueryParams.
+	capture_unknown_query_parameters?: bool
 }
 
-// [#next-free-field: 6]
+// “UnknownQueryParams“ is added as an extension field in “HttpBody“ if
+// “GrpcJsonTranscoder::capture_unknown_query_parameters“ is true and unknown query
+// parameters were present in the request.
+#UnknownQueryParams: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.grpc_json_transcoder.v3.UnknownQueryParams"
+	// A map from unrecognized query parameter keys, to the values associated with those keys.
+	key?: [string]: #UnknownQueryParams_Values
+}
+
+// [#next-free-field: 7]
 #GrpcJsonTranscoder_PrintOptions: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.grpc_json_transcoder.v3.GrpcJsonTranscoder_PrintOptions"
 	// Whether to add spaces, line breaks and indentation to make the JSON
@@ -181,11 +207,15 @@ GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS:                 "ALL_CHARACTE
 	// as strings. Defaults to false.
 	always_print_enums_as_ints?: bool
 	// Whether to preserve proto field names. By default protobuf will
-	// generate JSON field names using the ``json_name`` option, or lower camel case,
+	// generate JSON field names using the “json_name“ option, or lower camel case,
 	// in that order. Setting this flag will preserve the original field names. Defaults to false.
 	preserve_proto_field_names?: bool
 	// If true, return all streams as newline-delimited JSON messages instead of as a comma-separated array
 	stream_newline_delimited?: bool
+	// If true, enforces Server-Sent Events (SSE) message framing (“data:
+	// <message>\n\n“) and, “stream_newline_delimited“ is ignored. If false,
+	// message framing is determined by “stream_newline_delimited“.
+	stream_sse_style_delimited?: bool
 }
 
 #GrpcJsonTranscoder_RequestValidationOptions: {
@@ -193,14 +223,15 @@ GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS:                 "ALL_CHARACTE
 	// By default, a request that cannot be mapped to any specified gRPC
 	// :ref:`services <envoy_v3_api_field_extensions.filters.http.grpc_json_transcoder.v3.GrpcJsonTranscoder.services>`
 	// will pass-through this filter.
-	// When set to true, the request will be rejected with a ``HTTP 404 Not Found``.
+	// When set to true, the request will be rejected with a “HTTP 404 Not Found“.
 	reject_unknown_method?: bool
 	// By default, a request with query parameters that cannot be mapped to the gRPC request message
 	// will pass-through this filter.
-	// When set to true, the request will be rejected with a ``HTTP 400 Bad Request``.
+	// When set to true, the request will be rejected with a “HTTP 400 Bad Request“.
 	//
 	// The fields
-	// :ref:`ignore_unknown_query_parameters <envoy_v3_api_field_extensions.filters.http.grpc_json_transcoder.v3.GrpcJsonTranscoder.ignore_unknown_query_parameters>`
+	// :ref:`ignore_unknown_query_parameters <envoy_v3_api_field_extensions.filters.http.grpc_json_transcoder.v3.GrpcJsonTranscoder.ignore_unknown_query_parameters>`,
+	// :ref:`capture_unknown_query_parameters <envoy_v3_api_field_extensions.filters.http.grpc_json_transcoder.v3.GrpcJsonTranscoder.capture_unknown_query_parameters>`,
 	// and
 	// :ref:`ignored_query_parameters <envoy_v3_api_field_extensions.filters.http.grpc_json_transcoder.v3.GrpcJsonTranscoder.ignored_query_parameters>`
 	// have priority over this strict validation behavior.
@@ -210,4 +241,9 @@ GrpcJsonTranscoder_UrlUnescapeSpec_ALL_CHARACTERS:                 "ALL_CHARACTE
 	// If this field is set to true, the request will be rejected if the binding
 	// value is different from the body value.
 	reject_binding_body_field_collisions?: bool
+}
+
+#UnknownQueryParams_Values: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.grpc_json_transcoder.v3.UnknownQueryParams_Values"
+	values?: [...string]
 }

@@ -28,31 +28,14 @@ import (
 	// :ref:`client_features<envoy_api_field_core.Node.client_features>` field will honor this field.
 	send_all_clusters?: bool
 	// The minimum interval of time to collect stats over. This is only a minimum for two reasons:
-	// 1. There may be some delay from when the timer fires until stats sampling occurs.
-	// 2. For clusters that were already feature in the previous *LoadStatsResponse*, any traffic
-	//    that is observed in between the corresponding previous *LoadStatsRequest* and this
-	//    *LoadStatsResponse* will also be accumulated and billed to the cluster. This avoids a period
-	//    of inobservability that might otherwise exists between the messages. New clusters are not
-	//    subject to this consideration.
+	//  1. There may be some delay from when the timer fires until stats sampling occurs.
+	//  2. For clusters that were already feature in the previous *LoadStatsResponse*, any traffic
+	//     that is observed in between the corresponding previous *LoadStatsRequest* and this
+	//     *LoadStatsResponse* will also be accumulated and billed to the cluster. This avoids a period
+	//     of inobservability that might otherwise exists between the messages. New clusters are not
+	//     subject to this consideration.
 	load_reporting_interval?: string
 	// Set to *true* if the management server supports endpoint granularity
 	// report.
 	report_endpoint_granularity?: bool
 }
-
-// LoadReportingServiceClient is the client API for LoadReportingService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-#LoadReportingServiceClient: _
-
-#LoadReportingService_StreamLoadStatsClient: _
-
-// LoadReportingServiceServer is the server API for LoadReportingService service.
-#LoadReportingServiceServer: _
-
-// UnimplementedLoadReportingServiceServer can be embedded to have forward compatible implementations.
-#UnimplementedLoadReportingServiceServer: {
-	"@type": "type.googleapis.com/envoy.service.load_stats.v2.UnimplementedLoadReportingServiceServer"
-}
-
-#LoadReportingService_StreamLoadStatsServer: _

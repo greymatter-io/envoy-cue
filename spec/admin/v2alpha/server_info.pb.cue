@@ -82,9 +82,9 @@ CommandLineOptions_Mode_InitOnly: "InitOnly"
 	mode?: #CommandLineOptions_Mode
 	// max_stats and max_obj_name_len are now unused and have no effect.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/admin/v2alpha/server_info.proto.
 	max_stats?: uint64
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/admin/v2alpha/server_info.proto.
 	max_obj_name_len?: uint64
 	// See :option:`--disable-hot-restart` for details.
 	disable_hot_restart?: bool

@@ -1,8 +1,9 @@
 package v3
 
 import (
-	v3 "envoyproxy.io/envoy-cue/spec/data/dns/v3"
-	v31 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+	v3 "envoyproxy.io/envoy-cue/spec/config/accesslog/v3"
+	v31 "envoyproxy.io/envoy-cue/spec/data/dns/v3"
+	v32 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
 // Configuration for the DNS filter.
@@ -15,8 +16,24 @@ import (
 	server_config?: #DnsFilterConfig_ServerContextConfig
 	// Client context configuration controls Envoy's behavior when it must use external
 	// resolvers to answer a query. This object is optional and if omitted instructs
-	// the filter to resolve queries from the data in the server_config
+	// the filter to resolve queries from the data in the server_config.
+	// Also, if “client_config“ is omitted, here is the Envoy's behavior to create DNS resolver:
+	//
+	// 1. If :ref:`typed_dns_resolver_config <envoy_v3_api_field_config.bootstrap.v3.Bootstrap.typed_dns_resolver_config>`
+	// is not empty, uses it.
+	//
+	// 2. Otherwise, uses the default c-ares DNS resolver.
 	client_config?: #DnsFilterConfig_ClientContextConfig
+	// Configuration for :ref:`access logs <arch_overview_access_logs>`
+	// emitted by the DNS filter for each DNS query received.
+	// Supports custom format commands for DNS-specific attributes:
+	// - “QUERY_NAME“: The DNS query name being resolved
+	// - “QUERY_TYPE“: The DNS query type (A, AAAA, SRV, etc.)
+	// - “QUERY_CLASS“: The DNS query class
+	// - “ANSWER_COUNT“: Number of answers in the response
+	// - “RESPONSE_CODE“: DNS response code
+	// - “PARSE_STATUS“: Whether the query was successfully parsed
+	access_log?: [...v3.#AccessLog]
 }
 
 // This message contains the configuration for the DNS Filter operating
@@ -25,11 +42,11 @@ import (
 #DnsFilterConfig_ServerContextConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.udp.dns_filter.v3.DnsFilterConfig_ServerContextConfig"
 	// Load the configuration specified from the control plane
-	inline_dns_table?: v3.#DnsTable
+	inline_dns_table?: v31.#DnsTable
 	// Seed the filter configuration from an external path. This source
 	// is a yaml formatted file that contains the DnsTable driving Envoy's
 	// responses to DNS queries
-	external_dns_table?: v31.#DataSource
+	external_dns_table?: v32.#DataSource
 }
 
 // This message contains the configuration for the DNS Filter operating
@@ -55,26 +72,26 @@ import (
 	//
 	// [#not-implemented-hide:]
 	//
-	// Deprecated: Do not use.
-	upstream_resolvers?: [...v31.#Address]
+	// Deprecated: Marked as deprecated in envoy/extensions/filters/udp/dns_filter/v3/dns_filter.proto.
+	upstream_resolvers?: [...v32.#Address]
 	// DNS resolution configuration which includes the underlying dns resolver addresses and options.
 	// This field is deprecated in favor of
 	// :ref:`typed_dns_resolver_config <envoy_v3_api_field_extensions.filters.udp.dns_filter.v3.DnsFilterConfig.ClientContextConfig.typed_dns_resolver_config>`.
 	//
-	// Deprecated: Do not use.
-	dns_resolution_config?: v31.#DnsResolutionConfig
+	// Deprecated: Marked as deprecated in envoy/extensions/filters/udp/dns_filter/v3/dns_filter.proto.
+	dns_resolution_config?: v32.#DnsResolutionConfig
 	// DNS resolver type configuration extension. This extension can be used to configure c-ares, apple,
 	// or any other DNS resolver types and the related parameters.
 	// For example, an object of
 	// :ref:`CaresDnsResolverConfig <envoy_v3_api_msg_extensions.network.dns_resolver.cares.v3.CaresDnsResolverConfig>`
-	// can be packed into this ``typed_dns_resolver_config``. This configuration replaces the
+	// can be packed into this “typed_dns_resolver_config“. This configuration replaces the
 	// :ref:`dns_resolution_config <envoy_v3_api_field_extensions.filters.udp.dns_filter.v3.DnsFilterConfig.ClientContextConfig.dns_resolution_config>`
 	// configuration.
-	// During the transition period when both ``dns_resolution_config`` and ``typed_dns_resolver_config`` exists,
-	// when ``typed_dns_resolver_config`` is in place, Envoy will use it and ignore ``dns_resolution_config``.
-	// When ``typed_dns_resolver_config`` is missing, the default behavior is in place.
+	// During the transition period when both “dns_resolution_config“ and “typed_dns_resolver_config“ exists,
+	// when “typed_dns_resolver_config“ is in place, Envoy will use it and ignore “dns_resolution_config“.
+	// When “typed_dns_resolver_config“ is missing, the default behavior is in place.
 	// [#extension-category: envoy.network.dns_resolver]
-	typed_dns_resolver_config?: v31.#TypedExtensionConfig
+	typed_dns_resolver_config?: v32.#TypedExtensionConfig
 	// Controls how many outstanding external lookup contexts the filter tracks.
 	// The context structure allows the filter to respond to every query even if the external
 	// resolution times out or is otherwise unsuccessful

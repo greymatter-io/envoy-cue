@@ -1,9 +1,9 @@
 package v2
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
 	auth "envoyproxy.io/envoy-cue/spec/api/v2/auth"
 	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 	v2 "envoyproxy.io/envoy-cue/spec/config/metrics/v2"
 	v21 "envoyproxy.io/envoy-cue/spec/config/trace/v2"
 	v22 "envoyproxy.io/envoy-cue/spec/api/v2"
@@ -44,14 +44,15 @@ import (
 	// Configuration for an external tracing provider.
 	//
 	// .. attention::
-	//  This field has been deprecated in favor of :ref:`HttpConnectionManager.Tracing.provider
-	//  <envoy_api_field_config.filter.network.http_connection_manager.v2.HttpConnectionManager.Tracing.provider>`.
+	//
+	//	This field has been deprecated in favor of :ref:`HttpConnectionManager.Tracing.provider
+	//	<envoy_api_field_config.filter.network.http_connection_manager.v2.HttpConnectionManager.Tracing.provider>`.
 	tracing?: v21.#Tracing
 	// Configuration for the runtime configuration provider (deprecated). If not
 	// specified, a “null” provider will be used which will result in all defaults
 	// being used.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/bootstrap/v2/bootstrap.proto.
 	runtime?: #Runtime
 	// Configuration for the runtime configuration provider. If not
 	// specified, a “null” provider will be used which will result in all defaults
@@ -88,7 +89,7 @@ import (
 	// :ref:`use_tcp_for_dns_lookups <envoy_api_field_Cluster.use_tcp_for_dns_lookups>` are
 	// specified.
 	// Setting this value causes failure if the
-	// ``envoy.restart_features.use_apple_api_for_dns_lookups`` runtime value is true during
+	// “envoy.restart_features.use_apple_api_for_dns_lookups“ runtime value is true during
 	// server startup. Apple' API only uses UDP for DNS resolution.
 	use_tcp_for_dns_lookups?: bool
 }
@@ -184,7 +185,7 @@ import (
 	// <config_runtime_layering>` by other runtime layers, e.g.
 	// disk or admin. This follows the :ref:`runtime protobuf JSON representation
 	// encoding <config_runtime_proto_json>`.
-	base?: _struct.#Struct
+	base?: structpb.#Struct
 }
 
 // [#next-free-field: 6]
@@ -197,7 +198,7 @@ import (
 	// This follows the :ref:`runtime protobuf JSON representation encoding
 	// <config_runtime_proto_json>`. Unlike static xDS resources, this static
 	// layer is overridable by later layers in the runtime virtual filesystem.
-	static_layer?: _struct.#Struct
+	static_layer?: structpb.#Struct
 	disk_layer?:   #RuntimeLayer_DiskLayer
 	admin_layer?:  #RuntimeLayer_AdminLayer
 	rtds_layer?:   #RuntimeLayer_RtdsLayer

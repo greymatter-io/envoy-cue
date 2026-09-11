@@ -32,8 +32,8 @@ OutputSink_Format_PROTO_TEXT:                    "PROTO_TEXT"
 	//
 	// .. note::
 	//
-	//   This field defaults to 100/:ref:`HUNDRED
-	//   <envoy_api_enum_type.FractionalPercent.DenominatorType>`.
+	//	This field defaults to 100/:ref:`HUNDRED
+	//	<envoy_api_enum_type.FractionalPercent.DenominatorType>`.
 	tap_enabled?: core.#RuntimeFractionalPercent
 }
 
@@ -103,10 +103,10 @@ OutputSink_Format_PROTO_TEXT:                    "PROTO_TEXT"
 	//
 	// .. attention::
 	//
-	//   It is only allowed to specify the streaming admin output sink if the tap is being
-	//   configured from the :http:post:`/tap` admin endpoint. Thus, if an extension has
-	//   been configured to receive tap configuration from some other source (e.g., static
-	//   file, XDS, etc.) configuring the streaming admin output type will fail.
+	//	It is only allowed to specify the streaming admin output sink if the tap is being
+	//	configured from the :http:post:`/tap` admin endpoint. Thus, if an extension has
+	//	been configured to receive tap configuration from some other source (e.g., static
+	//	file, XDS, etc.) configuring the streaming admin output type will fail.
 	streaming_admin?: #StreamingAdminSink
 	// Tap output will be written to a file per tap sink.
 	file_per_tap?: #FilePerTapSink

@@ -14,7 +14,7 @@ import (
 	//
 	// .. note::
 	//
-	//  The filter supports a range of 0 - 10 inclusively for stage numbers.
+	//	The filter supports a range of 0 - 10 inclusively for stage numbers.
 	stage?: uint32
 	// The type of requests the filter should apply to. The supported
 	// types are *internal*, *external* or *both*. A request is considered internal if

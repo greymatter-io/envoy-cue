@@ -1,7 +1,7 @@
 package v2
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 // [#next-free-field: 6]
@@ -17,18 +17,18 @@ import (
 	//
 	// .. code-block:: json
 	//
-	//  {
-	//    "spec": {
-	//      "attachment": {
-	//        "pod": "{{ POD_NAME }}",
-	//        "namespace": "{{ POD_NAMESPACE }}"
-	//      },
-	//      "match_request": true
-	//    }
-	//  }
+	//	{
+	//	  "spec": {
+	//	    "attachment": {
+	//	      "pod": "{{ POD_NAME }}",
+	//	      "namespace": "{{ POD_NAMESPACE }}"
+	//	    },
+	//	    "match_request": true
+	//	  }
+	//	}
 	//
 	// (where POD_NAME, POD_NAMESPACE are configured in the pod via the Downward API)
-	attachment_template?: _struct.#Struct
+	attachment_template?: structpb.#Struct
 	// The timeout for individual requests sent to the Squash cluster. Defaults to 1 second.
 	request_timeout?: string
 	// The total timeout Squash will delay a request and wait for it to be attached. Defaults to 60

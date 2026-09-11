@@ -19,7 +19,7 @@ import (
 	//
 	// * :ref:`HealthCheckEvent <envoy_api_msg_data.core.v2alpha.HealthCheckEvent>`
 	// * :ref:`OutlierDetectionEvent <envoy_api_msg_data.cluster.v2alpha.OutlierDetectionEvent>`
-	events?: _
+	events?: [...]
 }
 
 // [#not-implemented-hide:]
@@ -36,20 +36,3 @@ import (
 	// The node sending the event messages over the stream.
 	node?: core.#Node
 }
-
-// EventReportingServiceClient is the client API for EventReportingService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-#EventReportingServiceClient: _
-
-#EventReportingService_StreamEventsClient: _
-
-// EventReportingServiceServer is the server API for EventReportingService service.
-#EventReportingServiceServer: _
-
-// UnimplementedEventReportingServiceServer can be embedded to have forward compatible implementations.
-#UnimplementedEventReportingServiceServer: {
-	"@type": "type.googleapis.com/envoy.service.event_reporting.v2alpha.UnimplementedEventReportingServiceServer"
-}
-
-#EventReportingService_StreamEventsServer: _

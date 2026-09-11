@@ -1,11 +1,11 @@
 package v2
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
 	_type "envoyproxy.io/envoy-cue/spec/type"
 	auth "envoyproxy.io/envoy-cue/spec/api/v2/auth"
 	cluster "envoyproxy.io/envoy-cue/spec/api/v2/cluster"
 	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 // Refer to :ref:`service discovery type <arch_overview_service_discovery_types>`
@@ -91,17 +91,17 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. code-block:: yaml
 	//
-	//  transport_socket_matches:
-	//  - name: "enableMTLS"
-	//    match:
-	//      acceptMTLS: true
-	//    transport_socket:
-	//      name: envoy.transport_sockets.tls
-	//      config: { ... } # tls socket configuration
-	//  - name: "defaultToPlaintext"
-	//    match: {}
-	//    transport_socket:
-	//      name: envoy.transport_sockets.raw_buffer
+	//	transport_socket_matches:
+	//	- name: "enableMTLS"
+	//	  match:
+	//	    acceptMTLS: true
+	//	  transport_socket:
+	//	    name: envoy.transport_sockets.tls
+	//	    config: { ... } # tls socket configuration
+	//	- name: "defaultToPlaintext"
+	//	  match: {}
+	//	  transport_socket:
+	//	    name: envoy.transport_sockets.raw_buffer
 	//
 	// Connections to the endpoints whose metadata value under *envoy.transport_socket_match*
 	// having "acceptMTLS"/"true" key/value pair use the "enableMTLS" socket configuration.
@@ -132,10 +132,10 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// The cluster name is used when emitting
 	// :ref:`statistics <config_cluster_manager_cluster_stats>` if :ref:`alt_stat_name
 	// <envoy_api_field_Cluster.alt_stat_name>` is not provided.
-	// Any ``:`` in the cluster name will be converted to ``_`` when emitting statistics.
+	// Any “:“ in the cluster name will be converted to “_“ when emitting statistics.
 	name?: string
 	// An optional alternative to the cluster name to be used while emitting stats.
-	// Any ``:`` in the name will be converted to ``_`` when emitting statistics. This should not be
+	// Any “:“ in the name will be converted to “_“ when emitting statistics. This should not be
 	// confused with :ref:`Router Filter Header
 	// <config_http_filters_router_x-envoy-upstream-alt-stat-name>`.
 	alt_stat_name?: string
@@ -162,11 +162,10 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. attention::
 	//
-	//   **This field is deprecated**. Set the
-	//   :ref:`load_assignment<envoy_api_field_Cluster.load_assignment>` field instead.
+	//	**This field is deprecated**. Set the
+	//	:ref:`load_assignment<envoy_api_field_Cluster.load_assignment>` field instead.
 	//
-	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/api/v2/cluster.proto.
 	hosts?: [...core.#Address]
 	// Setting this is required for specifying members of
 	// :ref:`STATIC<envoy_api_enum_value_Cluster.DiscoveryType.STATIC>`,
@@ -176,9 +175,8 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. attention::
 	//
-	//   Setting this allows non-EDS cluster types to contain embedded EDS equivalent
-	//   :ref:`endpoint assignments<envoy_api_msg_ClusterLoadAssignment>`.
-	//
+	//	Setting this allows non-EDS cluster types to contain embedded EDS equivalent
+	//	:ref:`endpoint assignments<envoy_api_msg_ClusterLoadAssignment>`.
 	load_assignment?: #ClusterLoadAssignment
 	// Optional :ref:`active health checking <arch_overview_health_checking>`
 	// configuration for the cluster. If no
@@ -196,10 +194,10 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. attention::
 	//
-	//   **This field is deprecated**. Use `transport_socket` with name `tls` instead. If both are
-	//   set, `transport_socket` takes priority.
+	//	**This field is deprecated**. Use `transport_socket` with name `tls` instead. If both are
+	//	set, `transport_socket` takes priority.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/api/v2/cluster.proto.
 	tls_context?: auth.#UpstreamTlsContext
 	// HTTP protocol options that are applied only to upstream HTTP connections.
 	// These options apply to all HTTP versions.
@@ -221,8 +219,8 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// "envoy.filters.network.thrift_proxy". See the extension's documentation for details on
 	// specific options.
 	//
-	// Deprecated: Do not use.
-	extension_protocol_options?: [string]: _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/cluster.proto.
+	extension_protocol_options?: [string]: structpb.#Struct
 	// The extension_protocol_options field is used to provide extension-specific protocol options
 	// for upstream connections. The key should match the extension filter name, such as
 	// "envoy.filters.network.thrift_proxy". See the extension's documentation for details on
@@ -266,13 +264,13 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// and :ref:`LOGICAL_DNS<envoy_api_enum_value_Cluster.DiscoveryType.LOGICAL_DNS>`
 	// this setting is ignored.
 	// Setting this value causes failure if the
-	// ``envoy.restart_features.use_apple_api_for_dns_lookups`` runtime value is true during
+	// “envoy.restart_features.use_apple_api_for_dns_lookups“ runtime value is true during
 	// server startup. Apple's API only allows overriding DNS resolvers via system settings.
 	dns_resolvers?: [...core.#Address]
 	// [#next-major-version: Reconcile DNS options in a single message.]
 	// Always use TCP queries instead of UDP queries for DNS lookups.
 	// Setting this value causes failure if the
-	// ``envoy.restart_features.use_apple_api_for_dns_lookups`` runtime value is true during
+	// “envoy.restart_features.use_apple_api_for_dns_lookups“ runtime value is true during
 	// server startup. Apple' API only uses UDP for DNS resolution.
 	use_tcp_for_dns_lookups?: bool
 	// If specified, outlier detection will be enabled for this upstream cluster.
@@ -328,14 +326,14 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. note::
 	//
-	//   This is currently only supported for connections created by tcp_proxy.
+	//	This is currently only supported for connections created by tcp_proxy.
 	//
 	// .. note::
 	//
-	//   The current implementation of this feature closes all connections immediately when
-	//   the unhealthy status is detected. If there are a large number of connections open
-	//   to an upstream host that becomes unhealthy, Envoy may spend a substantial amount of
-	//   time exclusively closing these connections, and not processing any other traffic.
+	//	The current implementation of this feature closes all connections immediately when
+	//	the unhealthy status is detected. If there are a large number of connections open
+	//	to an upstream host that becomes unhealthy, Envoy may spend a substantial amount of
+	//	time exclusively closing these connections, and not processing any other traffic.
 	close_connections_on_host_health_failure?: bool
 	// If set to true, Envoy will ignore the health value of a host when processing its removal
 	// from service discovery. This means that if active health checking is used, Envoy will *not*
@@ -424,7 +422,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// will use the transport socket configuration specified here.
 	// The endpoint's metadata entry in *envoy.transport_socket_match* is used to match
 	// against the values specified in this field.
-	match?: _struct.#Struct
+	match?: structpb.#Struct
 	// The configuration of the transport socket.
 	transport_socket?: core.#TransportSocket
 }
@@ -467,17 +465,17 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// namespace. It is valid for no hosts to match, in which case the behavior
 	// is the same as a fallback_policy of
 	// :ref:`NO_FALLBACK<envoy_api_enum_value_Cluster.LbSubsetConfig.LbSubsetFallbackPolicy.NO_FALLBACK>`.
-	default_subset?: _struct.#Struct
+	default_subset?: structpb.#Struct
 	// For each entry, LbEndpoint.Metadata's
 	// *envoy.lb* namespace is traversed and a subset is created for each unique
 	// combination of key and value. For example:
 	//
 	// .. code-block:: json
 	//
-	//   { "subset_selectors": [
-	//       { "keys": [ "version" ] },
-	//       { "keys": [ "stage", "hardware_type" ] }
-	//   ]}
+	//	{ "subset_selectors": [
+	//	    { "keys": [ "version" ] },
+	//	    { "keys": [ "stage", "hardware_type" ] }
+	//	]}
 	//
 	// A subset is matched when the metadata from the selected route and
 	// weighted cluster contains the same keys and values as the subset's
@@ -549,13 +547,13 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. attention::
 	//
-	//   This header isn't sanitized by default, so enabling this feature allows HTTP clients to
-	//   route traffic to arbitrary hosts and/or ports, which may have serious security
-	//   consequences.
+	//	This header isn't sanitized by default, so enabling this feature allows HTTP clients to
+	//	route traffic to arbitrary hosts and/or ports, which may have serious security
+	//	consequences.
 	//
 	// .. note::
 	//
-	//   If the header appears multiple times only the first value is used.
+	//	If the header appears multiple times only the first value is used.
 	use_http_header?: bool
 }
 
@@ -568,7 +566,8 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// To disable panic mode, set to 0%.
 	//
 	// .. note::
-	//   The specified percent will be truncated to the nearest 1%.
+	//
+	//	The specified percent will be truncated to the nearest 1%.
 	healthy_panic_threshold?:     _type.#Percent
 	zone_aware_lb_config?:        #Cluster_CommonLbConfig_ZoneAwareLbConfig
 	locality_weighted_lb_config?: #Cluster_CommonLbConfig_LocalityWeightedLbConfig
@@ -690,7 +689,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// Optional config for the LB policy.
 	// No more than one of these two fields may be populated.
 	//
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/cluster.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }

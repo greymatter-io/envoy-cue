@@ -4,7 +4,7 @@ import (
 	v3 "envoyproxy.io/envoy-cue/spec/extensions/filters/common/fault/v3"
 )
 
-// [#next-free-field: 6]
+// [#next-free-field: 7]
 #MongoProxy: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.mongo_proxy.v3.MongoProxy"
 	// The human readable prefix to use when emitting :ref:`statistics
@@ -26,4 +26,6 @@ import (
 	// Note that metrics will not be emitted for "find" commands, since those are considered
 	// queries, and metrics for those are emitted under a dedicated "query" namespace.
 	commands?: [...string]
+	// The maximum depth of a BSON document that Envoy will parse. Defaults to 100.
+	max_bson_depth?: uint32
 }

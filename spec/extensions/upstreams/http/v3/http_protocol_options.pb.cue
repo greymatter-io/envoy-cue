@@ -3,12 +3,14 @@ package v3
 import (
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 	v31 "envoyproxy.io/envoy-cue/spec/extensions/filters/network/http_connection_manager/v3"
+	v32 "envoyproxy.io/envoy-cue/spec/config/route/v3"
+	v33 "envoyproxy.io/envoy-cue/spec/config/common/matcher/v3"
 )
 
 // HttpProtocolOptions specifies Http upstream protocol options. This object
 // is used in
 // :ref:`typed_extension_protocol_options<envoy_v3_api_field_config.cluster.v3.Cluster.typed_extension_protocol_options>`,
-// keyed by the name ``envoy.extensions.upstreams.http.v3.HttpProtocolOptions``.
+// keyed by the name “envoy.extensions.upstreams.http.v3.HttpProtocolOptions“.
 //
 // This controls what protocol(s) should be used for upstream and how said protocol(s) are configured.
 //
@@ -17,64 +19,106 @@ import (
 //
 // .. code::
 //
-//   clusters:
-//     - name: some_service
-//       connect_timeout: 5s
-//       upstream_http_protocol_options:
-//         auto_sni: true
-//       common_http_protocol_options:
-//         idle_timeout: 1s
-//       http2_protocol_options:
-//         max_concurrent_streams: 100
-//        .... [further cluster config]
+//	clusters:
+//	  - name: some_service
+//	    connect_timeout: 5s
+//	    upstream_http_protocol_options:
+//	      auto_sni: true
+//	    common_http_protocol_options:
+//	      idle_timeout: 1s
+//	    http2_protocol_options:
+//	      max_concurrent_streams: 100
+//	     .... [further cluster config]
 //
 // Would now look like this:
 //
 // .. code::
 //
-//   clusters:
-//     - name: some_service
-//       connect_timeout: 5s
-//       typed_extension_protocol_options:
-//         envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
-//           "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
-//           upstream_http_protocol_options:
-//             auto_sni: true
-//           common_http_protocol_options:
-//             idle_timeout: 1s
-//           explicit_http_config:
-//             http2_protocol_options:
-//               max_concurrent_streams: 100
-//        .... [further cluster config]
-// [#next-free-field: 7]
+//	clusters:
+//	  - name: some_service
+//	    connect_timeout: 5s
+//	    typed_extension_protocol_options:
+//	      envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+//	        "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
+//	        upstream_http_protocol_options:
+//	          auto_sni: true
+//	        common_http_protocol_options:
+//	          idle_timeout: 1s
+//	        explicit_http_config:
+//	          http2_protocol_options:
+//	            max_concurrent_streams: 100
+//	     .... [further cluster config]
+//
+// [#next-free-field: 12]
 #HttpProtocolOptions: {
 	"@type": "type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions"
 	// This contains options common across HTTP/1 and HTTP/2
 	common_http_protocol_options?: v3.#HttpProtocolOptions
 	// This contains common protocol options which are only applied upstream.
 	upstream_http_protocol_options?: v3.#UpstreamHttpProtocolOptions
-	// To explicitly configure either HTTP/1 or HTTP/2 (but not both!) use ``explicit_http_config``.
-	// If the ``explicit_http_config`` is empty, HTTP/1.1 is used.
+	// To explicitly configure either HTTP/1 or HTTP/2 (but not both!) use “explicit_http_config“.
 	explicit_http_config?: #HttpProtocolOptions_ExplicitHttpConfig
 	// This allows switching on protocol based on what protocol the downstream
 	// connection used.
 	use_downstream_protocol_config?: #HttpProtocolOptions_UseDownstreamHttpConfig
 	// This allows switching on protocol based on ALPN
 	auto_config?: #HttpProtocolOptions_AutoHttpConfig
-	// .. warning::
-	//   Upstream HTTP filters are not supported by default.
-	//   This warning will be removed as support moves beyond alpha.
+	// Optional HTTP filters for the upstream HTTP filter chain.
 	//
-	// Optional HTTP filters for the upstream filter chain.
+	// .. note::
+	//
+	//	Upstream HTTP filters are currently in alpha.
 	//
 	// These filters will be applied for all HTTP streams which flow through this
-	// cluster. Unlike downstream filters, they will *not* be applied to terminated CONNECT requests.
+	// cluster. Unlike downstream HTTP filters, they will *not* be applied to terminated CONNECT requests.
 	//
-	// If using upstream filters, please be aware that local errors sent by
-	// upstream filters will not trigger retries, and local errors sent by
-	// upstream filters will count as a final response if hedging is configured.
+	// If using upstream HTTP filters, please be aware that local errors sent by
+	// upstream HTTP filters will not trigger retries, and local errors sent by
+	// upstream HTTP filters will count as a final response if hedging is configured.
 	// [#extension-category: envoy.filters.http.upstream]
 	http_filters?: [...v31.#HttpFilter]
+	// Configuration options for Unified Header Validation (UHV).
+	// UHV is an extensible mechanism for checking validity of HTTP responses.
+	//
+	// [#comment:TODO(yanavlasov): Make it a link to the default header validator doc when it becomes visible.]
+	// Leaving this field unspecified, selects the default header validator “envoy.http.header_validators.envoy_default“.
+	//
+	// [#not-implemented-hide:]
+	// [#extension-category: envoy.http.header_validators]
+	header_validation_config?: v3.#TypedExtensionConfig
+	// Defines http specific outlier detection parameters.
+	outlier_detection?: #HttpProtocolOptions_OutlierDetection
+	// Specifies a list of HTTP-level mirroring policies for requests routed to this cluster.
+	// Cluster-level policies override route-level policies when they both are configured.
+	//
+	// .. note::
+	//
+	//	Mirroring will not be triggered if the :ref:`primary cluster
+	//	<envoy_v3_api_field_config.route.v3.RouteAction.cluster>` does not exist.
+	request_mirror_policies?: [...v32.#RouteAction_RequestMirrorPolicy]
+	// Specifies a list of hash policies for consistent hashing load balancing (e.g., Ring Hash or
+	// Maglev) for requests routed to this cluster. When configured, cluster-level policies override
+	// route-level policies. When not configured, route-level policies (if any) will be used.
+	//
+	// This enables consistent routing to the same upstream host for all requests to a cluster,
+	// which is particularly useful for stateful services like caching, session management, or
+	// sticky routing requirements.
+	//
+	// .. note::
+	//
+	//	Hash policies are only effective when the cluster is configured with a hash-based load
+	//	balancing policy (e.g., :ref:`RING_HASH <envoy_v3_api_enum_value_config.cluster.v3.Cluster.LbPolicy.RING_HASH>`
+	//	or :ref:`MAGLEV <envoy_v3_api_enum_value_config.cluster.v3.Cluster.LbPolicy.MAGLEV>`).
+	hash_policy?: [...v32.#RouteAction_HashPolicy]
+	// Specifies the retry policy for requests routed to this cluster. When configured,
+	// cluster-level retry policy overrides route-level retry policy. When not configured,
+	// route-level retry policy (if any) will be used.
+	//
+	// .. note::
+	//
+	//	Cluster-level retry policy will override route-level retry policy entirely. Policies are
+	//	not merged.
+	retry_policy?: v32.#RetryPolicy
 }
 
 // If this is used, the cluster will only operate on one of the possible upstream protocols.
@@ -84,8 +128,9 @@ import (
 	http_protocol_options?:  v3.#Http1ProtocolOptions
 	http2_protocol_options?: v3.#Http2ProtocolOptions
 	// .. warning::
-	//   QUIC upstream support is currently not ready for internet use.
-	//   Please see :ref:`here <arch_overview_http3>` for details.
+	//
+	//	QUIC upstream support is currently not ready for internet use.
+	//	Please see :ref:`here <arch_overview_http3>` for details.
 	http3_protocol_options?: v3.#Http3ProtocolOptions
 }
 
@@ -99,16 +144,17 @@ import (
 	http_protocol_options?:  v3.#Http1ProtocolOptions
 	http2_protocol_options?: v3.#Http2ProtocolOptions
 	// .. warning::
-	//   QUIC upstream support is currently not ready for internet use.
-	//   Please see :ref:`here <arch_overview_http3>` for details.
+	//
+	//	QUIC upstream support is currently not ready for internet use.
+	//	Please see :ref:`here <arch_overview_http3>` for details.
 	http3_protocol_options?: v3.#Http3ProtocolOptions
 }
 
 // If this is used, the cluster can use either HTTP/1 or HTTP/2, and will use whichever
 // protocol is negotiated by ALPN with the upstream.
-// Clusters configured with ``AutoHttpConfig`` will use the highest available
+// Clusters configured with “AutoHttpConfig“ will use the highest available
 // protocol; HTTP/2 if supported, otherwise HTTP/1.
-// If the upstream does not support ALPN, ``AutoHttpConfig`` will fail over to HTTP/1.
+// If the upstream does not support ALPN, “AutoHttpConfig“ will fail over to HTTP/1.
 // This can only be used with transport sockets which support ALPN. Using a
 // transport socket which does not support ALPN will result in configuration
 // failure. The transport layer may be configured with custom ALPN, but the default ALPN
@@ -124,8 +170,9 @@ import (
 	// when HTTP/3 will be used, and when Envoy will fail over to TCP.
 	//
 	// .. warning::
-	//   QUIC upstream support is currently not ready for internet use.
-	//   Please see :ref:`here <arch_overview_http3>` for details.
+	//
+	//	QUIC upstream support is currently not ready for internet use.
+	//	Please see :ref:`here <arch_overview_http3>` for details.
 	http3_protocol_options?: v3.#Http3ProtocolOptions
 	// The presence of alternate protocols cache options causes the use of the
 	// alternate protocols cache, which is responsible for parsing and caching
@@ -133,6 +180,14 @@ import (
 	// advertise supporting it.
 	//
 	// .. note::
-	//   This is required when HTTP/3 is enabled.
+	//
+	//	This is required when HTTP/3 is enabled.
 	alternate_protocols_cache_options?: v3.#AlternateProtocolsCacheOptions
+}
+
+#HttpProtocolOptions_OutlierDetection: {
+	"@type": "type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions_OutlierDetection"
+	// If specified, only responses matching the matcher will be treated by outlier detection as errors.
+	// If not specified, only 5xx codes are treated by outlier detection as errors.
+	error_matcher?: v33.#MatchPredicate
 }

@@ -1,14 +1,14 @@
 package v3
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
 // These are stats Envoy reports to the management server at a frequency defined by
 // :ref:`LoadStatsResponse.load_reporting_interval<envoy_v3_api_field_service.load_stats.v3.LoadStatsResponse.load_reporting_interval>`.
 // Stats per upstream region/zone and optionally per subzone.
-// [#next-free-field: 9]
+// [#next-free-field: 15]
 #UpstreamLocalityStats: {
 	"@type": "type.googleapis.com/envoy.config.endpoint.v3.UpstreamLocalityStats"
 	// Name of zone, region and optionally endpoint group these metrics were
@@ -17,16 +17,50 @@ import (
 	// The total number of requests successfully completed by the endpoints in the
 	// locality.
 	total_successful_requests?: uint64
-	// The total number of unfinished requests
+	// The total number of unfinished requests. A request can be an HTTP request
+	// or a TCP connection for a TCP connection pool.
 	total_requests_in_progress?: uint64
 	// The total number of requests that failed due to errors at the endpoint,
 	// aggregated over all endpoints in the locality.
 	total_error_requests?: uint64
 	// The total number of requests that were issued by this Envoy since
 	// the last report. This information is aggregated over all the
-	// upstream endpoints in the locality.
+	// upstream endpoints in the locality. A request can be an HTTP request
+	// or a TCP connection for a TCP connection pool.
 	total_issued_requests?: uint64
-	// Stats for multi-dimensional load balancing.
+	// The total number of connections in an established state at the time of the
+	// report. This field is aggregated over all the upstream endpoints in the
+	// locality.
+	// In Envoy, this information may be based on “upstream_cx_active metric“.
+	// [#not-implemented-hide:]
+	total_active_connections?: uint64
+	// The total number of connections opened since the last report.
+	// This field is aggregated over all the upstream endpoints in the locality.
+	// In Envoy, this information may be based on “upstream_cx_total“ metric
+	// compared to itself between start and end of an interval, i.e.
+	// “upstream_cx_total“(now) - “upstream_cx_total“(now -
+	// load_report_interval).
+	// [#not-implemented-hide:]
+	total_new_connections?: uint64
+	// The total number of connection failures since the last report.
+	// This field is aggregated over all the upstream endpoints in the locality.
+	// In Envoy, this information may be based on “upstream_cx_connect_fail“
+	// metric compared to itself between start and end of an interval, i.e.
+	// “upstream_cx_connect_fail“(now) - “upstream_cx_connect_fail“(now -
+	// load_report_interval).
+	// [#not-implemented-hide:]
+	total_fail_connections?: uint64
+	// CPU utilization stats for multi-dimensional load balancing.
+	// This typically comes from endpoint metrics reported via ORCA.
+	cpu_utilization?: #UnnamedEndpointLoadMetricStats
+	// Memory utilization for multi-dimensional load balancing.
+	// This typically comes from endpoint metrics reported via ORCA.
+	mem_utilization?: #UnnamedEndpointLoadMetricStats
+	// Blended application-defined utilization for multi-dimensional load balancing.
+	// This typically comes from endpoint metrics reported via ORCA.
+	application_utilization?: #UnnamedEndpointLoadMetricStats
+	// Named stats for multi-dimensional load balancing.
+	// These typically come from endpoint metrics reported via ORCA.
 	load_metric_stats?: [...#EndpointLoadMetricStats]
 	// Endpoint granularity stats information for this locality. This information
 	// is populated if the Server requests it by setting
@@ -44,7 +78,7 @@ import (
 	address?: v3.#Address
 	// Opaque and implementation dependent metadata of the
 	// endpoint. Envoy will pass this directly to the management server.
-	metadata?: _struct.#Struct
+	metadata?: structpb.#Struct
 	// The total number of requests successfully completed by the endpoints in the
 	// locality. These include non-5xx responses for HTTP, where errors
 	// originate at the client and the endpoint responded successfully. For gRPC,
@@ -82,6 +116,16 @@ import (
 	total_metric_value?: float64
 }
 
+// Same as EndpointLoadMetricStats, except without the metric_name field.
+#UnnamedEndpointLoadMetricStats: {
+	"@type": "type.googleapis.com/envoy.config.endpoint.v3.UnnamedEndpointLoadMetricStats"
+	// Number of calls that finished and included this metric.
+	num_requests_finished_with_metric?: uint64
+	// Sum of metric values across all calls that finished with this metric for
+	// load_reporting_interval.
+	total_metric_value?: float64
+}
+
 // Per cluster load stats. Envoy reports these stats a management server in a
 // :ref:`LoadStatsRequest<envoy_v3_api_msg_service.load_stats.v3.LoadStatsRequest>`
 // Next ID: 7
@@ -107,9 +151,9 @@ import (
 	// in the DropOverload policy.
 	dropped_requests?: [...#ClusterStats_DroppedRequests]
 	// Period over which the actual load report occurred. This will be guaranteed to include every
-	// request reported. Due to system load and delays between the ``LoadStatsRequest`` sent from Envoy
-	// and the ``LoadStatsResponse`` message sent from the management server, this may be longer than
-	// the requested load reporting interval in the ``LoadStatsResponse``.
+	// request reported. Due to system load and delays between the “LoadStatsRequest“ sent from Envoy
+	// and the “LoadStatsResponse“ message sent from the management server, this may be longer than
+	// the requested load reporting interval in the “LoadStatsResponse“.
 	load_report_interval?: string
 }
 

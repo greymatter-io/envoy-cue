@@ -33,11 +33,11 @@ import (
 	//
 	// Note: this field may be omitted in any of the three following cases:
 	//
-	// 1. There were not enough hosts with enough request volume to proceed with success rate based
-	//    outlier ejection.
-	// 2. The threshold is computed to be < 0 because a negative value implies that there was no
-	//    threshold for that interval.
-	// 3. Outlier detection is not enabled for this cluster.
+	//  1. There were not enough hosts with enough request volume to proceed with success rate based
+	//     outlier ejection.
+	//  2. The threshold is computed to be < 0 because a negative value implies that there was no
+	//     threshold for that interval.
+	//  3. Outlier detection is not enabled for this cluster.
 	success_rate_ejection_threshold?: _type.#Percent
 	// Mapping from host address to the host's current status.
 	host_statuses?: [...#HostStatus]
@@ -51,11 +51,11 @@ import (
 	//
 	// Note: this field may be omitted in any of the three following cases:
 	//
-	// 1. There were not enough hosts with enough request volume to proceed with success rate based
-	//    outlier ejection.
-	// 2. The threshold is computed to be < 0 because a negative value implies that there was no
-	//    threshold for that interval.
-	// 3. Outlier detection is not enabled for this cluster.
+	//  1. There were not enough hosts with enough request volume to proceed with success rate based
+	//     outlier ejection.
+	//  2. The threshold is computed to be < 0 because a negative value implies that there was no
+	//     threshold for that interval.
+	//  3. Outlier detection is not enabled for this cluster.
 	local_origin_success_rate_ejection_threshold?: _type.#Percent
 }
 
