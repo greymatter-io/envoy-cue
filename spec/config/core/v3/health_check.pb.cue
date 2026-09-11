@@ -1,7 +1,7 @@
 package v3
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 	v3 "envoyproxy.io/envoy-cue/spec/type/v3"
 	v31 "envoyproxy.io/envoy-cue/spec/type/matcher/v3"
 )
@@ -22,7 +22,7 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	statuses?: [...#HealthStatus]
 }
 
-// [#next-free-field: 25]
+// [#next-free-field: 27]
 #HealthCheck: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.HealthCheck"
 	// The time to wait for a health check response. If the timeout is reached the
@@ -38,14 +38,14 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// interval Envoy will add interval_jitter to the wait time.
 	interval_jitter?: string
 	// An optional jitter amount as a percentage of interval_ms. If specified,
-	// during every interval Envoy will add ``interval_ms`` *
-	// ``interval_jitter_percent`` / 100 to the wait time.
+	// during every interval Envoy will add “interval_ms“ *
+	// “interval_jitter_percent“ / 100 to the wait time.
 	//
 	// If interval_jitter_ms and interval_jitter_percent are both set, both of
 	// them will be used to increase the wait time.
 	interval_jitter_percent?: uint32
 	// The number of unhealthy health checks required before a host is marked
-	// unhealthy. Note that for ``http`` health checking if a host responds with a code not in
+	// unhealthy. Note that for “http“ health checking if a host responds with a code not in
 	// :ref:`expected_statuses <envoy_v3_api_field_config.core.v3.HealthCheck.HttpHealthCheck.expected_statuses>`
 	// or :ref:`retriable_statuses <envoy_v3_api_field_config.core.v3.HealthCheck.HttpHealthCheck.retriable_statuses>`,
 	// this threshold is ignored and the host is considered immediately unhealthy.
@@ -80,7 +80,7 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// (including new hosts) when the cluster has received no traffic.
 	//
 	// This is useful for when we want to send frequent health checks with
-	// ``no_traffic_interval`` but then revert to lower frequency ``no_traffic_healthy_interval`` once
+	// “no_traffic_interval“ but then revert to lower frequency “no_traffic_healthy_interval“ once
 	// a host in the cluster is marked as healthy.
 	//
 	// Once a cluster has been used for traffic routing, Envoy will shift back to using the
@@ -109,8 +109,19 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// The default value for "healthy edge interval" is the same as the default interval.
 	healthy_edge_interval?: string
 	// Specifies the path to the :ref:`health check event log <arch_overview_health_check_logging>`.
-	// If empty, no event log will be written.
+	//
+	// .. attention::
+	//
+	//	This field is deprecated in favor of the extension
+	//	:ref:`event_logger <envoy_v3_api_field_config.core.v3.HealthCheck.event_logger>` and
+	//	:ref:`event_log_path <envoy_v3_api_field_extensions.health_check.event_sinks.file.v3.HealthCheckEventFileSink.event_log_path>`
+	//	in the file sink extension.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/core/v3/health_check.proto.
 	event_log_path?: string
+	// A list of event log sinks to process the health check event.
+	// [#extension-category: envoy.health_check.event_sinks]
+	event_logger?: [...#TypedExtensionConfig]
 	// [#not-implemented-hide:]
 	// The gRPC service for the health check event service.
 	// If empty, health check events won't be sent to a remote endpoint.
@@ -119,6 +130,10 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// initial health check failure event will be logged.
 	// The default value is false.
 	always_log_health_check_failures?: bool
+	// If set to true, health check success events will always be logged. If set to false, only host addition event will be logged
+	// if it is the first successful health check, or if the healthy threshold is reached.
+	// The default value is false.
+	always_log_health_check_success?: bool
 	// This allows overriding the cluster TLS settings, just for health check connections.
 	tls_options?: #HealthCheck_TlsOptions
 	// Optional key/value pairs that will be used to match a transport socket from those specified in the cluster's
@@ -127,22 +142,22 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	//
 	// .. code-block:: yaml
 	//
-	//  transport_socket_match_criteria:
-	//    useMTLS: true
+	//	transport_socket_match_criteria:
+	//	  useMTLS: true
 	//
 	// Will match the following :ref:`cluster socket match <envoy_v3_api_msg_config.cluster.v3.Cluster.TransportSocketMatch>`
 	//
 	// .. code-block:: yaml
 	//
-	//  transport_socket_matches:
-	//  - name: "useMTLS"
-	//    match:
-	//      useMTLS: true
-	//    transport_socket:
-	//      name: envoy.transport_sockets.tls
-	//      config: { ... } # tls socket configuration
+	//	transport_socket_matches:
+	//	- name: "useMTLS"
+	//	  match:
+	//	    useMTLS: true
+	//	  transport_socket:
+	//	    name: envoy.transport_sockets.tls
+	//	    config: { ... } # tls socket configuration
 	//
-	// If this field is set, then for health checks it will supersede an entry of ``envoy.transport_socket`` in the
+	// If this field is set, then for health checks it will supersede an entry of “envoy.transport_socket“ in the
 	// :ref:`LbEndpoint.Metadata <envoy_v3_api_field_config.endpoint.v3.LbEndpoint.metadata>`.
 	// This allows using different transport socket capabilities for health checking versus proxying to the
 	// endpoint.
@@ -151,7 +166,7 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// :ref:`transport socket matches <envoy_v3_api_field_config.cluster.v3.Cluster.transport_socket_matches>`,
 	// the cluster's :ref:`transport socket <envoy_v3_api_field_config.cluster.v3.Cluster.transport_socket>`
 	// will be used for health check socket configuration.
-	transport_socket_match_criteria?: _struct.#Struct
+	transport_socket_match_criteria?: structpb.#Struct
 }
 
 // Describes the encoding of the payload bytes in the payload.
@@ -172,19 +187,20 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// :ref:`hostname <envoy_v3_api_field_config.endpoint.v3.Endpoint.HealthCheckConfig.hostname>` field.
 	host?: string
 	// Specifies the HTTP path that will be requested during health checking. For example
-	// ``/healthcheck``.
+	// “/healthcheck“.
 	path?: string
-	// [#not-implemented-hide:] HTTP specific payload.
+	// HTTP specific payload to be sent as the request body during health checking.
+	// If specified, the method should support a request body (POST, PUT, PATCH, etc.).
 	send?: #HealthCheck_Payload
-	// Specifies a list of HTTP expected responses to match in the first ``response_buffer_size`` bytes of the response body.
+	// Specifies a list of HTTP expected responses to match in the first “response_buffer_size“ bytes of the response body.
 	// If it is set, both the expected response check and status code determine the health check.
 	// When checking the response, “fuzzy” matching is performed such that each payload block must be found,
 	// and in the order specified, but not necessarily contiguous.
 	//
 	// .. note::
 	//
-	//   It is recommended to set ``response_buffer_size`` based on the total Payload size for efficiency.
-	//   The default buffer size is 1024 bytes when it is not set.
+	//	It is recommended to set ``response_buffer_size`` based on the total Payload size for efficiency.
+	//	The default buffer size is 1024 bytes when it is not set.
 	receive?: [...#HealthCheck_Payload]
 	// Specifies the size of response buffer in bytes that is used to Payload match.
 	// The default value is 1024. Setting to 0 implies that the Payload will be matched against the entire response.
@@ -221,7 +237,8 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// <arch_overview_health_checking_identity>` for more information.
 	service_name_matcher?: v31.#StringMatcher
 	// HTTP Method that will be used for health checking, default is "GET".
-	// GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE, PATCH methods are supported, but making request body is not supported.
+	// GET, HEAD, POST, PUT, DELETE, OPTIONS, TRACE, PATCH methods are supported.
+	// Request body payloads are supported for POST, PUT, PATCH, and OPTIONS methods only.
 	// CONNECT method is disallowed because it is not appropriate for health check request.
 	// If a non-200 response is expected by the method, it needs to be set in :ref:`expected_statuses <envoy_v3_api_field_config.core.v3.HealthCheck.HttpHealthCheck.expected_statuses>`.
 	method?: #RequestMethod
@@ -235,11 +252,17 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// payload block must be found, and in the order specified, but not
 	// necessarily contiguous.
 	receive?: [...#HealthCheck_Payload]
+	// When setting this value, it tries to attempt health check request with ProxyProtocol.
+	// When “send“ is presented, they are sent after preceding ProxyProtocol header.
+	// Only ProxyProtocol header is sent when “send“ is not presented.
+	// It allows to use both ProxyProtocol V1 and V2. In V1, it presents L3/L4. In V2, it includes
+	// LOCAL command and doesn't include L3/L4.
+	proxy_protocol_config?: #ProxyProtocolConfig
 }
 
 #HealthCheck_RedisHealthCheck: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.HealthCheck_RedisHealthCheck"
-	// If set, optionally perform ``EXISTS <key>`` instead of ``PING``. A return value
+	// If set, optionally perform “EXISTS <key>“ instead of “PING“. A return value
 	// from Redis of 0 (does not exist) is considered a passing healthcheck. A return value other
 	// than 0 is considered a failure. This allows the user to mark a Redis instance for maintenance
 	// by setting the specified key to any value and waiting for traffic to drain.

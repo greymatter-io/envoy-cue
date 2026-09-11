@@ -21,7 +21,7 @@ SocketAddress_Protocol_UDP: "UDP"
 	"@type":   "type.googleapis.com/envoy.api.v2.core.SocketAddress"
 	protocol?: #SocketAddress_Protocol
 	// The address for this socket. :ref:`Listeners <config_listeners>` will bind
-	// to the address. An empty address is not allowed. Specify ``0.0.0.0`` or ``::``
+	// to the address. An empty address is not allowed. Specify “0.0.0.0“ or “::“
 	// to bind to any address. [#comment:TODO(zuercher) reinstate when implemented:
 	// It is possible to distinguish a Listener address via the prefix/suffix matching
 	// in :ref:`FilterChainMatch <envoy_api_msg_listener.FilterChainMatch>`.] When used
@@ -44,9 +44,9 @@ SocketAddress_Protocol_UDP: "UDP"
 	// *STRICT_DNS* or *LOGICAL_DNS* will generate an error at runtime.
 	resolver_name?: string
 	// When binding to an IPv6 address above, this enables `IPv4 compatibility
-	// <https://tools.ietf.org/html/rfc3493#page-11>`_. Binding to ``::`` will
+	// <https://tools.ietf.org/html/rfc3493#page-11>`_. Binding to “::“ will
 	// allow both IPv4 and IPv6 connections, with peer IPv4 addresses mapped into
-	// IPv6 space as ``::FFFF:<IPv4-address>``.
+	// IPv6 space as “::FFFF:<IPv4-address>“.
 	ipv4_compat?: bool
 }
 
@@ -95,7 +95,7 @@ SocketAddress_Protocol_UDP: "UDP"
 // the subnet mask for a `CIDR <https://tools.ietf.org/html/rfc4632>`_ range.
 #CidrRange: {
 	"@type": "type.googleapis.com/envoy.api.v2.core.CidrRange"
-	// IPv4 or IPv6 address, e.g. ``192.0.0.0`` or ``2001:db8::``.
+	// IPv4 or IPv6 address, e.g. “192.0.0.0“ or “2001:db8::“.
 	address_prefix?: string
 	// Length of prefix, e.g. 0, 32. Defaults to 0 when unset.
 	prefix_len?: uint32

@@ -1,9 +1,9 @@
 package auth
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
 	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
 	matcher "envoyproxy.io/envoy-cue/spec/type/matcher"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 #TlsParameters_TlsProtocol: "TLS_AUTO" | "TLSv1_0" | "TLSv1_1" | "TLSv1_2" | "TLSv1_3"
@@ -22,9 +22,9 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 
 #TlsParameters: {
 	"@type": "type.googleapis.com/envoy.api.v2.auth.TlsParameters"
-	// Minimum TLS protocol version. By default, it's ``TLSv1_2`` for both clients and servers.
+	// Minimum TLS protocol version. By default, it's “TLSv1_2“ for both clients and servers.
 	tls_minimum_protocol_version?: #TlsParameters_TlsProtocol
-	// Maximum TLS protocol version. By default, it's ``TLSv1_2`` for clients and ``TLSv1_3`` for
+	// Maximum TLS protocol version. By default, it's “TLSv1_2“ for clients and “TLSv1_3“ for
 	// servers.
 	tls_maximum_protocol_version?: #TlsParameters_TlsProtocol
 	// If specified, the TLS listener will only support the specified `cipher list
@@ -36,35 +36,35 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	// .. code-block:: none
 	//
-	//   [ECDHE-ECDSA-AES128-GCM-SHA256|ECDHE-ECDSA-CHACHA20-POLY1305]
-	//   [ECDHE-RSA-AES128-GCM-SHA256|ECDHE-RSA-CHACHA20-POLY1305]
-	//   ECDHE-ECDSA-AES128-SHA
-	//   ECDHE-RSA-AES128-SHA
-	//   AES128-GCM-SHA256
-	//   AES128-SHA
-	//   ECDHE-ECDSA-AES256-GCM-SHA384
-	//   ECDHE-RSA-AES256-GCM-SHA384
-	//   ECDHE-ECDSA-AES256-SHA
-	//   ECDHE-RSA-AES256-SHA
-	//   AES256-GCM-SHA384
-	//   AES256-SHA
+	//	[ECDHE-ECDSA-AES128-GCM-SHA256|ECDHE-ECDSA-CHACHA20-POLY1305]
+	//	[ECDHE-RSA-AES128-GCM-SHA256|ECDHE-RSA-CHACHA20-POLY1305]
+	//	ECDHE-ECDSA-AES128-SHA
+	//	ECDHE-RSA-AES128-SHA
+	//	AES128-GCM-SHA256
+	//	AES128-SHA
+	//	ECDHE-ECDSA-AES256-GCM-SHA384
+	//	ECDHE-RSA-AES256-GCM-SHA384
+	//	ECDHE-ECDSA-AES256-SHA
+	//	ECDHE-RSA-AES256-SHA
+	//	AES256-GCM-SHA384
+	//	AES256-SHA
 	//
 	// In builds using :ref:`BoringSSL FIPS <arch_overview_ssl_fips>`, the default cipher list is:
 	//
 	// .. code-block:: none
 	//
-	//   ECDHE-ECDSA-AES128-GCM-SHA256
-	//   ECDHE-RSA-AES128-GCM-SHA256
-	//   ECDHE-ECDSA-AES128-SHA
-	//   ECDHE-RSA-AES128-SHA
-	//   AES128-GCM-SHA256
-	//   AES128-SHA
-	//   ECDHE-ECDSA-AES256-GCM-SHA384
-	//   ECDHE-RSA-AES256-GCM-SHA384
-	//   ECDHE-ECDSA-AES256-SHA
-	//   ECDHE-RSA-AES256-SHA
-	//   AES256-GCM-SHA384
-	//   AES256-SHA
+	//	ECDHE-ECDSA-AES128-GCM-SHA256
+	//	ECDHE-RSA-AES128-GCM-SHA256
+	//	ECDHE-ECDSA-AES128-SHA
+	//	ECDHE-RSA-AES128-SHA
+	//	AES128-GCM-SHA256
+	//	AES128-SHA
+	//	ECDHE-ECDSA-AES256-GCM-SHA384
+	//	ECDHE-RSA-AES256-GCM-SHA384
+	//	ECDHE-ECDSA-AES256-SHA
+	//	ECDHE-RSA-AES256-SHA
+	//	AES256-GCM-SHA384
+	//	AES256-SHA
 	cipher_suites?: [...string]
 	// If specified, the TLS connection will only support the specified ECDH
 	// curves. If not specified, the default curves will be used.
@@ -73,14 +73,14 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	// .. code-block:: none
 	//
-	//   X25519
-	//   P-256
+	//	X25519
+	//	P-256
 	//
 	// In builds using :ref:`BoringSSL FIPS <arch_overview_ssl_fips>`, the default curve is:
 	//
 	// .. code-block:: none
 	//
-	//   P-256
+	//	P-256
 	ecdh_curves?: [...string]
 }
 
@@ -92,8 +92,8 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	// Private key method provider name. The name must match a
 	// supported private key method provider type.
 	provider_name?: string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/auth/common.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }
 
@@ -106,7 +106,7 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	private_key?: core.#DataSource
 	// BoringSSL private key method provider. This is an alternative to :ref:`private_key
 	// <envoy_api_field_auth.TlsCertificate.private_key>` field. This can't be
-	// marked as ``oneof`` due to API compatibility reasons. Setting both :ref:`private_key
+	// marked as “oneof“ due to API compatibility reasons. Setting both :ref:`private_key
 	// <envoy_api_field_auth.TlsCertificate.private_key>` and
 	// :ref:`private_key_provider
 	// <envoy_api_field_auth.TlsCertificate.private_key_provider>` fields will result in an
@@ -134,18 +134,18 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	// or on different hosts.
 	//
 	// Each key must contain exactly 80 bytes of cryptographically-secure random data. For
-	// example, the output of ``openssl rand 80``.
+	// example, the output of “openssl rand 80“.
 	//
 	// .. attention::
 	//
-	//   Using this feature has serious security considerations and risks. Improper handling of keys
-	//   may result in loss of secrecy in connections, even if ciphers supporting perfect forward
-	//   secrecy are used. See https://www.imperialviolet.org/2013/06/27/botchingpfs.html for some
-	//   discussion. To minimize the risk, you must:
+	//	Using this feature has serious security considerations and risks. Improper handling of keys
+	//	may result in loss of secrecy in connections, even if ciphers supporting perfect forward
+	//	secrecy are used. See https://www.imperialviolet.org/2013/06/27/botchingpfs.html for some
+	//	discussion. To minimize the risk, you must:
 	//
-	//   * Keep the session ticket keys at least as secure as your TLS certificate private keys
-	//   * Rotate session ticket keys at least daily, and preferably hourly
-	//   * Always generate keys using a cryptographically-secure random data source
+	//	* Keep the session ticket keys at least as secure as your TLS certificate private keys
+	//	* Rotate session ticket keys at least daily, and preferably hourly
+	//	* Always generate keys using a cryptographically-secure random data source
 	keys?: [...core.#DataSource]
 }
 
@@ -181,11 +181,11 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	// .. code-block:: bash
 	//
-	//   $ openssl x509 -in path/to/client.crt -noout -pubkey
-	//     | openssl pkey -pubin -outform DER
-	//     | openssl dgst -sha256 -binary
-	//     | openssl enc -base64
-	//   NvqYIYSbgK2vCJpQhObf77vv+bQWtc5ek5RIOwPiC9A=
+	//	$ openssl x509 -in path/to/client.crt -noout -pubkey
+	//	  | openssl pkey -pubin -outform DER
+	//	  | openssl dgst -sha256 -binary
+	//	  | openssl enc -base64
+	//	NvqYIYSbgK2vCJpQhObf77vv+bQWtc5ek5RIOwPiC9A=
 	//
 	// This is the format used in HTTP Public Key Pinning.
 	//
@@ -198,10 +198,10 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	// .. attention::
 	//
-	//   This option is preferred over :ref:`verify_certificate_hash
-	//   <envoy_api_field_auth.CertificateValidationContext.verify_certificate_hash>`,
-	//   because SPKI is tied to a private key, so it doesn't change when the certificate
-	//   is renewed using the same private key.
+	//	This option is preferred over :ref:`verify_certificate_hash
+	//	<envoy_api_field_auth.CertificateValidationContext.verify_certificate_hash>`,
+	//	because SPKI is tied to a private key, so it doesn't change when the certificate
+	//	is renewed using the same private key.
 	verify_certificate_spki?: [...string]
 	// An optional list of hex-encoded SHA-256 hashes. If specified, Envoy will verify that
 	// the SHA-256 of the DER-encoded presented certificate matches one of the specified values.
@@ -210,16 +210,16 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	// .. code-block:: bash
 	//
-	//   $ openssl x509 -in path/to/client.crt -outform DER | openssl dgst -sha256 | cut -d" " -f2
-	//   df6ff72fe9116521268f6f2dd4966f51df479883fe7037b39f75916ac3049d1a
+	//	$ openssl x509 -in path/to/client.crt -outform DER | openssl dgst -sha256 | cut -d" " -f2
+	//	df6ff72fe9116521268f6f2dd4966f51df479883fe7037b39f75916ac3049d1a
 	//
 	// A long hex-encoded and colon-separated SHA-256 (a.k.a. "fingerprint") of the certificate
 	// can be generated with the following command:
 	//
 	// .. code-block:: bash
 	//
-	//   $ openssl x509 -in path/to/client.crt -noout -fingerprint -sha256 | cut -d"=" -f2
-	//   DF:6F:F7:2F:E9:11:65:21:26:8F:6F:2D:D4:96:6F:51:DF:47:98:83:FE:70:37:B3:9F:75:91:6A:C3:04:9D:1A
+	//	$ openssl x509 -in path/to/client.crt -noout -fingerprint -sha256 | cut -d"=" -f2
+	//	DF:6F:F7:2F:E9:11:65:21:26:8F:6F:2D:D4:96:6F:51:DF:47:98:83:FE:70:37:B3:9F:75:91:6A:C3:04:9D:1A
 	//
 	// Both of those formats are acceptable.
 	//
@@ -235,11 +235,11 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	// .. attention::
 	//
-	//   Subject Alternative Names are easily spoofable and verifying only them is insecure,
-	//   therefore this option must be used together with :ref:`trusted_ca
-	//   <envoy_api_field_auth.CertificateValidationContext.trusted_ca>`.
+	//	Subject Alternative Names are easily spoofable and verifying only them is insecure,
+	//	therefore this option must be used together with :ref:`trusted_ca
+	//	<envoy_api_field_auth.CertificateValidationContext.trusted_ca>`.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/api/v2/auth/common.proto.
 	verify_subject_alt_name?: [...string]
 	// An optional list of Subject Alternative name matchers. Envoy will verify that the
 	// Subject Alternative Name of the presented certificate matches one of the specified matches.
@@ -251,14 +251,14 @@ CertificateValidationContext_TrustChainVerification_ACCEPT_UNTRUSTED:   "ACCEPT_
 	//
 	// .. code-block:: yaml
 	//
-	//  match_subject_alt_names:
-	//    exact: "api.example.com"
+	//	match_subject_alt_names:
+	//	  exact: "api.example.com"
 	//
 	// .. attention::
 	//
-	//   Subject Alternative Names are easily spoofable and verifying only them is insecure,
-	//   therefore this option must be used together with :ref:`trusted_ca
-	//   <envoy_api_field_auth.CertificateValidationContext.trusted_ca>`.
+	//	Subject Alternative Names are easily spoofable and verifying only them is insecure,
+	//	therefore this option must be used together with :ref:`trusted_ca
+	//	<envoy_api_field_auth.CertificateValidationContext.trusted_ca>`.
 	match_subject_alt_names?: [...matcher.#StringMatcher]
 	// [#not-implemented-hide:] Must present a signed time-stamped OCSP response.
 	require_ocsp_staple?: bool

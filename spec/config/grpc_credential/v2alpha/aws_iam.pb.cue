@@ -9,7 +9,7 @@ package v2alpha
 	// Example: appmesh
 	service_name?: string
 	// The `region <https://docs.aws.amazon.com/general/latest/gr/rande.html>`_ hosting the Grpc
-	// endpoint. If unspecified, the extension will use the value in the ``AWS_REGION`` environment
+	// endpoint. If unspecified, the extension will use the value in the “AWS_REGION“ environment
 	// variable.
 	//
 	// Example: us-west-2

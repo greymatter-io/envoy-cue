@@ -1,12 +1,12 @@
 package v3
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
 // Custom configuration for an :ref:`AccessLog <envoy_v3_api_msg_config.accesslog.v3.AccessLog>`
-// that writes log entries directly to a file. Configures the built-in ``envoy.access_loggers.file``
+// that writes log entries directly to a file. Configures the built-in “envoy.access_loggers.file“
 // AccessLog.
 // [#next-free-field: 6]
 #FileAccessLog: {
@@ -19,15 +19,15 @@ import (
 	// This field is deprecated.
 	// Please use :ref:`log_format <envoy_v3_api_field_extensions.access_loggers.file.v3.FileAccessLog.log_format>`.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/extensions/access_loggers/file/v3/file.proto.
 	format?: string
 	// Access log :ref:`format dictionary<config_access_log_format_dictionaries>`. All values
 	// are rendered as strings.
 	// This field is deprecated.
 	// Please use :ref:`log_format <envoy_v3_api_field_extensions.access_loggers.file.v3.FileAccessLog.log_format>`.
 	//
-	// Deprecated: Do not use.
-	json_format?: _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/extensions/access_loggers/file/v3/file.proto.
+	json_format?: structpb.#Struct
 	// Access log :ref:`format dictionary<config_access_log_format_dictionaries>`. Values are
 	// rendered as strings, numbers, or boolean values as appropriate. Nested JSON objects may
 	// be produced by some command operators (e.g.FILTER_STATE or DYNAMIC_METADATA). See the
@@ -35,8 +35,8 @@ import (
 	// This field is deprecated.
 	// Please use :ref:`log_format <envoy_v3_api_field_extensions.access_loggers.file.v3.FileAccessLog.log_format>`.
 	//
-	// Deprecated: Do not use.
-	typed_json_format?: _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/extensions/access_loggers/file/v3/file.proto.
+	typed_json_format?: structpb.#Struct
 	// Configuration to form access log data and format.
 	// If not specified, use :ref:`default format <config_access_log_default_format>`.
 	log_format?: v3.#SubstitutionFormatString

@@ -4,13 +4,14 @@ import (
 	v3 "envoyproxy.io/envoy-cue/spec/type/matcher/v3"
 )
 
+// Specifies the value type to use in metadata.
 #Config_ValueType: "STRING" | "NUMBER" | "PROTOBUF_VALUE"
 
 Config_ValueType_STRING:         "STRING"
 Config_ValueType_NUMBER:         "NUMBER"
 Config_ValueType_PROTOBUF_VALUE: "PROTOBUF_VALUE"
 
-// ValueEncode defines the encoding algorithm.
+// Specifies the encoding scheme for the value.
 #Config_ValueEncode: "NONE" | "BASE64"
 
 Config_ValueEncode_NONE:   "NONE"
@@ -22,6 +23,16 @@ Config_ValueEncode_BASE64: "BASE64"
 	request_rules?: [...#Config_Rule]
 	// The list of rules to apply to responses.
 	response_rules?: [...#Config_Rule]
+	// Optional prefix to use when emitting filter statistics. When configured,
+	// statistics are emitted with the prefix “http_filter_name.<stat_prefix>“.
+	//
+	// This emits statistics such as:
+	//
+	// - “http_filter_name.my_header_converter.rules_processed“
+	// - “http_filter_name.my_header_converter.metadata_added“
+	//
+	// If not configured, no statistics are emitted.
+	stat_prefix?: string
 }
 
 // [#next-free-field: 7]
@@ -45,7 +56,9 @@ Config_ValueEncode_BASE64: "BASE64"
 	//
 	// This is only used for :ref:`on_header_present <envoy_v3_api_field_extensions.filters.http.header_to_metadata.v3.Config.Rule.on_header_present>`.
 	//
-	// Note: if the ``value`` field is non-empty this field should be empty.
+	// .. note::
+	//
+	//	If the ``value`` field is non-empty this field should be empty.
 	regex_value_rewrite?: v3.#RegexMatchAndSubstitute
 	// The value's type — defaults to string.
 	type?: #Config_ValueType
@@ -64,14 +77,14 @@ Config_ValueEncode_BASE64: "BASE64"
 	header?: string
 	// The cookie to be extracted.
 	cookie?: string
-	// If the header or cookie is present, apply this metadata KeyValuePair.
+	// If the header or cookie is present, apply this metadata “KeyValuePair“.
 	//
-	// If the value in the KeyValuePair is non-empty, it'll be used instead
+	// If the value in the “KeyValuePair“ is non-empty, it'll be used instead
 	// of the header or cookie value.
 	on_header_present?: #Config_KeyValuePair
-	// If the header or cookie is not present, apply this metadata KeyValuePair.
+	// If the header or cookie is not present, apply this metadata “KeyValuePair“.
 	//
-	// The value in the KeyValuePair must be set, since it'll be used in lieu
+	// The value in the “KeyValuePair“ must be set, since it'll be used in lieu
 	// of the missing header or cookie value.
 	on_header_missing?: #Config_KeyValuePair
 	// Whether or not to remove the header after a rule is applied.

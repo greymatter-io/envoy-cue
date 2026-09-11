@@ -23,20 +23,3 @@ import (
 	// The node sending metrics over the stream.
 	node?: v3.#Node
 }
-
-// MetricsServiceClient is the client API for MetricsService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-#MetricsServiceClient: _
-
-#MetricsService_StreamMetricsClient: _
-
-// MetricsServiceServer is the server API for MetricsService service.
-#MetricsServiceServer: _
-
-// UnimplementedMetricsServiceServer can be embedded to have forward compatible implementations.
-#UnimplementedMetricsServiceServer: {
-	"@type": "type.googleapis.com/envoy.service.metrics.v3.UnimplementedMetricsServiceServer"
-}
-
-#MetricsService_StreamMetricsServer: _

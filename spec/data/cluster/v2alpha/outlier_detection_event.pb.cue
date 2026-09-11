@@ -28,16 +28,16 @@ Action_UNEJECT: "UNEJECT"
 	secs_since_last_action?: uint64
 	// The :ref:`cluster <envoy_api_msg_Cluster>` that owns the ejected host.
 	cluster_name?: string
-	// The URL of the ejected host. E.g., ``tcp://1.2.3.4:80``.
+	// The URL of the ejected host. E.g., “tcp://1.2.3.4:80“.
 	upstream_url?: string
 	// The action that took place.
 	action?: #Action
-	// If ``action`` is ``eject``, specifies the number of times the host has been ejected (local to
+	// If “action“ is “eject“, specifies the number of times the host has been ejected (local to
 	// that Envoy and gets reset if the host gets removed from the upstream cluster for any reason and
 	// then re-added).
 	num_ejections?: uint32
-	// If ``action`` is ``eject``, specifies if the ejection was enforced. ``true`` means the host was
-	// ejected. ``false`` means the event was logged but the host was not actually ejected.
+	// If “action“ is “eject“, specifies if the ejection was enforced. “true“ means the host was
+	// ejected. “false“ means the event was logged but the host was not actually ejected.
 	enforced?:                       bool
 	eject_success_rate_event?:       #OutlierEjectSuccessRate
 	eject_consecutive_event?:        #OutlierEjectConsecutive

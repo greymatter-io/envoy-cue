@@ -1,9 +1,9 @@
 package v2
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
 	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
 	matcher "envoyproxy.io/envoy-cue/spec/type/matcher"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 // Configuration for pluggable stats sinks.
@@ -19,8 +19,8 @@ import (
 	//
 	// Sinks optionally support tagged/multiple dimensional metrics.
 	name?: string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/config/metrics/v2/stats.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }
 
@@ -39,8 +39,8 @@ import (
 	//
 	// .. note::
 	//
-	//   If any default tags are specified twice, the config will be considered
-	//   invalid.
+	//	If any default tags are specified twice, the config will be considered
+	//	invalid.
 	//
 	// See :repo:`well_known_names.h <source/common/config/well_known_names.h>` for a list of the
 	// default tags in Envoy.
@@ -52,9 +52,10 @@ import (
 	// performance for Envoys running especially large configs.
 	//
 	// .. warning::
-	//   Excluding stats may affect Envoy's behavior in undocumented ways. See
-	//   `issue #8771 <https://github.com/envoyproxy/envoy/issues/8771>`_ for more information.
-	//   If any unexpected behavior changes are observed, please open a new issue immediately.
+	//
+	//	Excluding stats may affect Envoy's behavior in undocumented ways. See
+	//	`issue #8771 <https://github.com/envoyproxy/envoy/issues/8771>`_ for more information.
+	//	If any unexpected behavior changes are observed, please open a new issue immediately.
 	stats_matcher?: #StatsMatcher
 }
 
@@ -89,7 +90,7 @@ import (
 	//
 	// .. note::
 	//
-	//   It is invalid to specify the same tag name twice in a config.
+	//	It is invalid to specify the same tag name twice in a config.
 	tag_name?: string
 	// Designates a tag to strip from the tag extracted name and provide as a named
 	// tag value for all statistics. This will only occur if any part of the name
@@ -101,52 +102,52 @@ import (
 	// group is provided, the first will also be used to set the value of the tag.
 	// All other capture groups will be ignored.
 	//
-	// Example 1. a stat name ``cluster.foo_cluster.upstream_rq_timeout`` and
+	// Example 1. a stat name “cluster.foo_cluster.upstream_rq_timeout“ and
 	// one tag specifier:
 	//
 	// .. code-block:: json
 	//
-	//   {
-	//     "tag_name": "envoy.cluster_name",
-	//     "regex": "^cluster\\.((.+?)\\.)"
-	//   }
+	//	{
+	//	  "tag_name": "envoy.cluster_name",
+	//	  "regex": "^cluster\\.((.+?)\\.)"
+	//	}
 	//
-	// Note that the regex will remove ``foo_cluster.`` making the tag extracted
-	// name ``cluster.upstream_rq_timeout`` and the tag value for
-	// ``envoy.cluster_name`` will be ``foo_cluster`` (note: there will be no
-	// ``.`` character because of the second capture group).
+	// Note that the regex will remove “foo_cluster.“ making the tag extracted
+	// name “cluster.upstream_rq_timeout“ and the tag value for
+	// “envoy.cluster_name“ will be “foo_cluster“ (note: there will be no
+	// “.“ character because of the second capture group).
 	//
 	// Example 2. a stat name
-	// ``http.connection_manager_1.user_agent.ios.downstream_cx_total`` and two
+	// “http.connection_manager_1.user_agent.ios.downstream_cx_total“ and two
 	// tag specifiers:
 	//
 	// .. code-block:: json
 	//
-	//   [
-	//     {
-	//       "tag_name": "envoy.http_user_agent",
-	//       "regex": "^http(?=\\.).*?\\.user_agent\\.((.+?)\\.)\\w+?$"
-	//     },
-	//     {
-	//       "tag_name": "envoy.http_conn_manager_prefix",
-	//       "regex": "^http\\.((.*?)\\.)"
-	//     }
-	//   ]
+	//	[
+	//	  {
+	//	    "tag_name": "envoy.http_user_agent",
+	//	    "regex": "^http(?=\\.).*?\\.user_agent\\.((.+?)\\.)\\w+?$"
+	//	  },
+	//	  {
+	//	    "tag_name": "envoy.http_conn_manager_prefix",
+	//	    "regex": "^http\\.((.*?)\\.)"
+	//	  }
+	//	]
 	//
 	// The two regexes of the specifiers will be processed in the definition order.
 	//
-	// The first regex will remove ``ios.``, leaving the tag extracted name
-	// ``http.connection_manager_1.user_agent.downstream_cx_total``. The tag
-	// ``envoy.http_user_agent`` will be added with tag value ``ios``.
+	// The first regex will remove “ios.“, leaving the tag extracted name
+	// “http.connection_manager_1.user_agent.downstream_cx_total“. The tag
+	// “envoy.http_user_agent“ will be added with tag value “ios“.
 	//
-	// The second regex will remove ``connection_manager_1.`` from the tag
+	// The second regex will remove “connection_manager_1.“ from the tag
 	// extracted name produced by the first regex
-	// ``http.connection_manager_1.user_agent.downstream_cx_total``, leaving
-	// ``http.user_agent.downstream_cx_total`` as the tag extracted name. The tag
-	// ``envoy.http_conn_manager_prefix`` will be added with the tag value
-	// ``connection_manager_1``.
+	// “http.connection_manager_1.user_agent.downstream_cx_total“, leaving
+	// “http.user_agent.downstream_cx_total“ as the tag extracted name. The tag
+	// “envoy.http_conn_manager_prefix“ will be added with the tag value
+	// “connection_manager_1“.
 	regex?: string
-	// Specifies a fixed tag value for the ``tag_name``.
+	// Specifies a fixed tag value for the “tag_name“.
 	fixed_value?: string
 }
 
@@ -169,16 +170,16 @@ import (
 	//
 	// .. code-block:: json
 	//
-	//   {
-	//     "prefix" : "envoy-prod"
-	//   }
+	//	{
+	//	  "prefix" : "envoy-prod"
+	//	}
 	//
 	// will change emitted stats to
 	//
 	// .. code-block:: cpp
 	//
-	//   envoy-prod.test_counter:1|c
-	//   envoy-prod.test_timer:5|ms
+	//	envoy-prod.test_counter:1|c
+	//	envoy-prod.test_timer:5|ms
 	//
 	// Note that the default prefix, "envoy", will be used if a prefix is not
 	// specified.
@@ -187,8 +188,8 @@ import (
 	//
 	// .. code-block:: cpp
 	//
-	//   envoy.test_counter:1|c
-	//   envoy.test_timer:5|ms
+	//	envoy.test_counter:1|c
+	//	envoy.test_timer:5|ms
 	prefix?: string
 }
 

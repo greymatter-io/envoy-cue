@@ -56,17 +56,19 @@ import (
 	// <config_http_filters_fault_injection_stats>` stat.
 	//
 	// .. attention::
-	//   Like other :ref:`circuit breakers <arch_overview_circuit_break>` in Envoy, this is a fuzzy
-	//   limit. It's possible for the number of active faults to rise slightly above the configured
-	//   amount due to the implementation details.
+	//
+	//	Like other :ref:`circuit breakers <arch_overview_circuit_break>` in Envoy, this is a fuzzy
+	//	limit. It's possible for the number of active faults to rise slightly above the configured
+	//	amount due to the implementation details.
 	max_active_faults?: uint32
 	// The response rate limit to be applied to the response body of the stream. When configured,
 	// the percentage can be overridden by the :ref:`fault.http.rate_limit.response_percent
 	// <config_http_filters_fault_injection_runtime>` runtime key.
 	//
 	// .. attention::
-	//  This is a per-stream limit versus a connection level limit. This means that concurrent streams
-	//  will each get an independent limit.
+	//
+	//	This is a per-stream limit versus a connection level limit. This means that concurrent streams
+	//	will each get an independent limit.
 	response_rate_limit?: v2.#FaultRateLimit
 	// The runtime key to override the :ref:`default <config_http_filters_fault_injection_runtime>`
 	// runtime. The default is: fault.http.delay.fixed_delay_percent

@@ -1,8 +1,8 @@
 package endpoint
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
 	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 // These are stats Envoy reports to GLB every so often. Report frequency is
@@ -47,7 +47,7 @@ import (
 	address?: core.#Address
 	// Opaque and implementation dependent metadata of the
 	// endpoint. Envoy will pass this directly to the management server.
-	metadata?: _struct.#Struct
+	metadata?: structpb.#Struct
 	// The total number of requests successfully completed by the endpoints in the
 	// locality. These include non-5xx responses for HTTP, where errors
 	// originate at the client and the endpoint responded successfully. For gRPC,

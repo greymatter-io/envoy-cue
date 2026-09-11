@@ -1,7 +1,7 @@
 package v3
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 	v3 "envoyproxy.io/envoy-cue/spec/type/v3"
 	v31 "envoyproxy.io/envoy-cue/spec/deps/cncf/xds/go/xds/core/v3"
 )
@@ -39,12 +39,21 @@ TrafficDirection_UNSPECIFIED: "UNSPECIFIED"
 TrafficDirection_INBOUND:     "INBOUND"
 TrafficDirection_OUTBOUND:    "OUTBOUND"
 
+// Describes the supported actions types for key/value pair append action.
+#KeyValueAppend_KeyValueAppendAction: "APPEND_IF_EXISTS_OR_ADD" | "ADD_IF_ABSENT" | "OVERWRITE_IF_EXISTS_OR_ADD" | "OVERWRITE_IF_EXISTS"
+
+KeyValueAppend_KeyValueAppendAction_APPEND_IF_EXISTS_OR_ADD:    "APPEND_IF_EXISTS_OR_ADD"
+KeyValueAppend_KeyValueAppendAction_ADD_IF_ABSENT:              "ADD_IF_ABSENT"
+KeyValueAppend_KeyValueAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_EXISTS_OR_ADD"
+KeyValueAppend_KeyValueAppendAction_OVERWRITE_IF_EXISTS:        "OVERWRITE_IF_EXISTS"
+
 // Describes the supported actions types for header append action.
-#HeaderValueOption_HeaderAppendAction: "APPEND_IF_EXISTS_OR_ADD" | "ADD_IF_ABSENT" | "OVERWRITE_IF_EXISTS_OR_ADD"
+#HeaderValueOption_HeaderAppendAction: "APPEND_IF_EXISTS_OR_ADD" | "ADD_IF_ABSENT" | "OVERWRITE_IF_EXISTS_OR_ADD" | "OVERWRITE_IF_EXISTS"
 
 HeaderValueOption_HeaderAppendAction_APPEND_IF_EXISTS_OR_ADD:    "APPEND_IF_EXISTS_OR_ADD"
 HeaderValueOption_HeaderAppendAction_ADD_IF_ABSENT:              "ADD_IF_ABSENT"
 HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_EXISTS_OR_ADD"
+HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS:        "OVERWRITE_IF_EXISTS"
 
 // Identifies location of where either Envoy runs or where upstream hosts run.
 #Locality: {
@@ -74,7 +83,7 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	version?: v3.#SemanticVersion
 	// Free-form build information.
 	// Envoy defines several well known keys in the source/common/version/version.h file
-	metadata?: _struct.#Struct
+	metadata?: structpb.#Struct
 }
 
 // Version and identification for an Envoy extension.
@@ -94,7 +103,7 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	// [#comment:TODO(yanavlasov): Link to the doc with existing configuration protos.]
 	// [#comment:TODO(yanavlasov): Add tests when PR #9391 lands.]
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/core/v3/base.proto.
 	type_descriptor?: string
 	// The version is a property of the extension and maintained independently
 	// of other extensions and the Envoy API.
@@ -134,7 +143,7 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	cluster?: string
 	// Opaque metadata extending the node identifier. Envoy will pass this
 	// directly to the management server.
-	metadata?: _struct.#Struct
+	metadata?: structpb.#Struct
 	// Map from xDS resource type URL to dynamic context parameters. These may vary at runtime (unlike
 	// other fields in this message). For example, the xDS client may have a shard identifier that
 	// changes during the lifetime of the xDS client. In Envoy, this would be achieved by updating the
@@ -155,16 +164,16 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	extensions?: [...#Extension]
 	// Client feature support list. These are well known features described
 	// in the Envoy API repository for a given major version of an API. Client features
-	// use reverse DNS naming scheme, for example ``com.acme.feature``.
+	// use reverse DNS naming scheme, for example “com.acme.feature“.
 	// See :ref:`the list of features <client_features>` that xDS client may
 	// support.
 	client_features?: [...string]
 	// Known listening ports on the node as a generic hint to the management server
 	// for filtering :ref:`listeners <config_listeners>` to be returned. For example,
 	// if there is a listener bound to port 80, the list can optionally contain the
-	// SocketAddress ``(0.0.0.0,80)``. The field is optional and just a hint.
+	// SocketAddress “(0.0.0.0,80)“. The field is optional and just a hint.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/core/v3/base.proto.
 	listening_addresses?: [...#Address]
 }
 
@@ -186,25 +195,26 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 // object to match against. There are some well defined metadata used today for
 // this purpose:
 //
-// * ``{"envoy.lb": {"canary": <bool> }}`` This indicates the canary status of an
-//   endpoint and is also used during header processing
-//   (x-envoy-upstream-canary) and for stats purposes.
+//   - “{"envoy.lb": {"canary": <bool> }}“ This indicates the canary status of an
+//     endpoint and is also used during header processing
+//     (x-envoy-upstream-canary) and for stats purposes.
+//
 // [#next-major-version: move to type/metadata/v2]
 #Metadata: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.Metadata"
-	// Key is the reverse DNS filter name, e.g. com.acme.widget. The ``envoy.*``
+	// Key is the reverse DNS filter name, e.g. com.acme.widget. The “envoy.*“
 	// namespace is reserved for Envoy's built-in filters.
-	// If both ``filter_metadata`` and
+	// If both “filter_metadata“ and
 	// :ref:`typed_filter_metadata <envoy_v3_api_field_config.core.v3.Metadata.typed_filter_metadata>`
 	// fields are present in the metadata with same keys,
-	// only ``typed_filter_metadata`` field will be parsed.
-	filter_metadata?: [string]: _struct.#Struct
-	// Key is the reverse DNS filter name, e.g. com.acme.widget. The ``envoy.*``
+	// only “typed_filter_metadata“ field will be parsed.
+	filter_metadata?: [string]: structpb.#Struct
+	// Key is the reverse DNS filter name, e.g. com.acme.widget. The “envoy.*“
 	// namespace is reserved for Envoy's built-in filters.
 	// The value is encoded as google.protobuf.Any.
 	// If both :ref:`filter_metadata <envoy_v3_api_field_config.core.v3.Metadata.filter_metadata>`
-	// and ``typed_filter_metadata`` fields are present in the metadata with same keys,
-	// only ``typed_filter_metadata`` field will be parsed.
+	// and “typed_filter_metadata“ fields are present in the metadata with same keys,
+	// only “typed_filter_metadata“ field will be parsed.
 	typed_filter_metadata?: [string]: _
 }
 
@@ -213,6 +223,15 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	"@type": "type.googleapis.com/envoy.config.core.v3.RuntimeUInt32"
 	// Default value if runtime value is not available.
 	default_value?: uint32
+	// Runtime key to get value for comparison. This value is used if defined.
+	runtime_key?: string
+}
+
+// Runtime derived uint64 with a default when not specified.
+#RuntimeUInt64: {
+	"@type": "type.googleapis.com/envoy.config.core.v3.RuntimeUInt64"
+	// Default value if runtime value is not available.
+	default_value?: uint64
 	// Runtime key to get value for comparison. This value is used if defined.
 	runtime_key?: string
 }
@@ -246,6 +265,61 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	runtime_key?: string
 }
 
+// Please use :ref:`KeyValuePair <envoy_api_msg_config.core.v3.KeyValuePair>` instead.
+// [#not-implemented-hide:]
+#KeyValue: {
+	"@type": "type.googleapis.com/envoy.config.core.v3.KeyValue"
+	// The key of the key/value pair.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/core/v3/base.proto.
+	key?: string
+	// The value of the key/value pair.
+	//
+	// The “bytes“ type is used. This means if JSON or YAML is used to to represent the
+	// configuration, the value must be base64 encoded. This is unfriendly for users in most
+	// use scenarios of this message.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/core/v3/base.proto.
+	value?: bytes
+}
+
+#KeyValuePair: {
+	"@type": "type.googleapis.com/envoy.config.core.v3.KeyValuePair"
+	// The key of the key/value pair.
+	key?: string
+	// The value of the key/value pair.
+	value?: structpb.#Value
+}
+
+// Key/value pair plus option to control append behavior. This is used to specify
+// key/value pairs that should be appended to a set of existing key/value pairs.
+#KeyValueAppend: {
+	"@type": "type.googleapis.com/envoy.config.core.v3.KeyValueAppend"
+	// The single key/value pair record to be appended or overridden. This field must be set.
+	record?: #KeyValuePair
+	// Key/value pair entry that this option to append or overwrite. This field is deprecated
+	// and please use :ref:`record <envoy_v3_api_field_config.core.v3.KeyValueAppend.record>`
+	// as replacement.
+	// [#not-implemented-hide:]
+	//
+	// Deprecated: Marked as deprecated in envoy/config/core/v3/base.proto.
+	entry?: #KeyValue
+	// Describes the action taken to append/overwrite the given value for an existing
+	// key or to only add this key if it's absent.
+	action?: #KeyValueAppend_KeyValueAppendAction
+}
+
+// Key/value pair to append or remove.
+#KeyValueMutation: {
+	"@type": "type.googleapis.com/envoy.config.core.v3.KeyValueMutation"
+	// Key/value pair to append or overwrite. Only one of “append“ or “remove“ can be set or
+	// the configuration will be rejected.
+	append?: #KeyValueAppend
+	// Key to remove. Only one of “append“ or “remove“ can be set or the configuration will be
+	// rejected.
+	remove?: string
+}
+
 // Query parameter name/value pair.
 #QueryParameter: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.QueryParameter"
@@ -264,8 +338,13 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	//
 	// The same :ref:`format specifier <config_access_log_format>` as used for
 	// :ref:`HTTP access logging <config_access_log>` applies here, however
-	// unknown header values are replaced with the empty string instead of ``-``.
+	// unknown header values are replaced with the empty string instead of “-“.
+	// Header value is encoded as string. This does not work for non-utf8 characters.
+	// Only one of “value“ or “raw_value“ can be set.
 	value?: string
+	// Header value is encoded as bytes which can support non-utf8 characters.
+	// Only one of “value“ or “raw_value“ can be set.
+	raw_value?: bytes
 }
 
 // Header name/value pair plus option to control append behavior.
@@ -278,7 +357,13 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	// This field is deprecated and please use
 	// :ref:`append_action <envoy_v3_api_field_config.core.v3.HeaderValueOption.append_action>` as replacement.
 	//
-	// Deprecated: Do not use.
+	// .. note::
+	//
+	//	The :ref:`external authorization service <envoy_v3_api_msg_service.auth.v3.CheckResponse>` and
+	//	:ref:`external processor service <envoy_v3_api_msg_service.ext_proc.v3.ProcessingResponse>` have
+	//	default value (``false``) for this field.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/core/v3/base.proto.
 	append?: bool
 	// Describes the action taken to append/overwrite the given value for an existing header
 	// or to only add this header if it's absent.
@@ -293,6 +378,7 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 // Wrapper for a set of headers.
 #HeaderMap: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.HeaderMap"
+	// A list of header names and their values.
 	headers?: [...#HeaderValue]
 }
 
@@ -302,9 +388,17 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	"@type": "type.googleapis.com/envoy.config.core.v3.WatchedDirectory"
 	// Directory path to watch.
 	path?: string
+	// If set to true, the watcher will also subscribe to file modification events
+	// (“IN_MODIFY“ on Linux) in addition to move events (“IN_MOVED_TO“). This allows
+	// in-place file writes to trigger reload callbacks. Use this when the writing process
+	// cannot use atomic rename (e.g. certain secret managers that write certificate files
+	// directly). By default, only move/rename events are watched, which is the safe choice
+	// for atomic updates (e.g. Kubernetes ConfigMap symlink swaps).
+	watch_modify?: bool
 }
 
 // Data source consisting of a file, an inline value, or an environment variable.
+// [#next-free-field: 6]
 #DataSource: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.DataSource"
 	// Local filesystem data source.
@@ -315,9 +409,28 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	inline_string?: string
 	// Environment variable data source.
 	environment_variable?: string
+	// Watched directory that is watched for file changes. If this is set explicitly, the file
+	// specified in the “filename“ field will be reloaded when relevant file move events occur.
+	//
+	// .. note::
+	//
+	//	This field only makes sense when the ``filename`` field is set.
+	//
+	// .. note::
+	//
+	//	Envoy only updates when the file is replaced by a file move, and not when the file is
+	//	edited in place.
+	//
+	// .. note::
+	//
+	//	Not all use cases of ``DataSource`` support watching directories. It depends on the
+	//	specific usage of the ``DataSource``. See the documentation of the parent message for
+	//	details.
+	watched_directory?: #WatchedDirectory
 }
 
 // The message specifies the retry policy of remote data source when fetching fails.
+// [#next-free-field: 7]
 #RetryPolicy: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.RetryPolicy"
 	// Specifies parameters that control :ref:`retry backoff strategy <envoy_v3_api_msg_config.core.v3.BackoffStrategy>`.
@@ -327,6 +440,14 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	// Specifies the allowed number of retries. This parameter is optional and
 	// defaults to 1.
 	num_retries?: uint32
+	// For details, see :ref:`retry_on <envoy_v3_api_field_config.route.v3.RetryPolicy.retry_on>`.
+	retry_on?: string
+	// For details, see :ref:`retry_priority <envoy_v3_api_field_config.route.v3.RetryPolicy.retry_priority>`.
+	retry_priority?: #RetryPolicy_RetryPriority
+	// For details, see :ref:`RetryHostPredicate <envoy_v3_api_field_config.route.v3.RetryPolicy.retry_host_predicate>`.
+	retry_host_predicate?: [...#RetryPolicy_RetryHostPredicate]
+	// For details, see :ref:`host_selection_retry_max_attempts <envoy_v3_api_field_config.route.v3.RetryPolicy.host_selection_retry_max_attempts>`.
+	host_selection_retry_max_attempts?: int64
 }
 
 // The message specifies how to fetch data from remote and how to verify it.
@@ -366,11 +487,11 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 //
 // .. note::
 //
-//   Parsing of the runtime key's data is implemented such that it may be represented as a
-//   :ref:`FractionalPercent <envoy_v3_api_msg_type.v3.FractionalPercent>` proto represented as JSON/YAML
-//   and may also be represented as an integer with the assumption that the value is an integral
-//   percentage out of 100. For instance, a runtime key lookup returning the value "42" would parse
-//   as a ``FractionalPercent`` whose numerator is 42 and denominator is HUNDRED.
+//	Parsing of the runtime key's data is implemented such that it may be represented as a
+//	:ref:`FractionalPercent <envoy_v3_api_msg_type.v3.FractionalPercent>` proto represented as JSON/YAML
+//	and may also be represented as an integer with the assumption that the value is an integral
+//	percentage out of 100. For instance, a runtime key lookup returning the value "42" would parse
+//	as a ``FractionalPercent`` whose numerator is 42 and denominator is HUNDRED.
 #RuntimeFractionalPercent: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.RuntimeFractionalPercent"
 	// Default value if the runtime value's for the numerator/denominator keys are not available.
@@ -386,4 +507,18 @@ HeaderValueOption_HeaderAppendAction_OVERWRITE_IF_EXISTS_OR_ADD: "OVERWRITE_IF_E
 	// of control plane. This can be used to identify which control plane instance,
 	// the Envoy is connected to.
 	identifier?: string
+}
+
+// See :ref:`RetryPriority <envoy_v3_api_field_config.route.v3.RetryPolicy.retry_priority>`.
+#RetryPolicy_RetryPriority: {
+	"@type":       "type.googleapis.com/envoy.config.core.v3.RetryPolicy_RetryPriority"
+	name?:         string
+	typed_config?: _
+}
+
+// See :ref:`RetryHostPredicate <envoy_v3_api_field_config.route.v3.RetryPolicy.retry_host_predicate>`.
+#RetryPolicy_RetryHostPredicate: {
+	"@type":       "type.googleapis.com/envoy.config.core.v3.RetryPolicy_RetryHostPredicate"
+	name?:         string
+	typed_config?: _
 }

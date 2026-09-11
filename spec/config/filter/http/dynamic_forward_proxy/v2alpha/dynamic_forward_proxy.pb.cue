@@ -40,6 +40,6 @@ import (
 	//
 	// .. note::
 	//
-	//   If the header appears multiple times only the first value is used.
+	//	If the header appears multiple times only the first value is used.
 	auto_host_rewrite_header?: string
 }

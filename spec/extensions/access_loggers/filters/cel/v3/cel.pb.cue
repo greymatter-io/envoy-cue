@@ -1,5 +1,9 @@
 package v3
 
+import (
+	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+)
+
 // ExpressionFilter is an access logging filter that evaluates configured
 // symbolic Common Expression Language expressions to inform the decision
 // to generate an access log.
@@ -9,7 +13,13 @@ package v3
 	// Expressions are based on the set of Envoy :ref:`attributes <arch_overview_attributes>`.
 	// The provided expression must evaluate to true for logging (expression errors are considered false).
 	// Examples:
-	// - ``response.code >= 400``
-	// - ``(connection.mtls && request.headers['x-log-mtls'] == 'true') || request.url_path.contains('v1beta3')``
+	//
+	// * “response.code >= 400“
+	// * “(connection.mtls && request.headers['x-log-mtls'] == 'true') || request.url_path.contains('v1beta3')“
 	expression?: string
+	// CEL expression configuration that modifies the evaluation behavior of the “expression“ field.
+	// If specified, string conversion, concatenation, and manipulation functions may be enabled
+	// for the filter expression. See :ref:`CelExpressionConfig <envoy_v3_api_msg_config.core.v3.CelExpressionConfig>`
+	// for more details.
+	cel_config?: v3.#CelExpressionConfig
 }

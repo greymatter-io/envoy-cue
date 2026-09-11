@@ -1,0 +1,57 @@
+package v3
+
+// Configuration for a cluster of type REVERSE_CONNECTION.
+#ReverseConnectionClusterConfig: {
+	"@type": "type.googleapis.com/envoy.extensions.clusters.reverse_connection.v3.ReverseConnectionClusterConfig"
+	// Time interval after which Envoy removes unused dynamic hosts created for reverse connections.
+	// Hosts that are not referenced by any connection pool are deleted during cleanup.
+	//
+	// If unset, Envoy uses a default of 60s.
+	cleanup_interval?: string
+	// Host identifier format string.
+	//
+	// This format string is evaluated against the downstream request context to compute
+	// the host identifier for selecting the reverse connection endpoint. The format string
+	// supports Envoy's standard formatter syntax, including:
+	//
+	// * “%REQ(header-name)%“: Extract request header value.
+	// * “%DYNAMIC_METADATA(namespace:key)%“: Extract dynamic metadata value.
+	// * “%CEL(expression)%“: Evaluate CEL expression.
+	// * “%DOWNSTREAM_REMOTE_ADDRESS%“: Downstream connection address.
+	// * “%DOWNSTREAM_LOCAL_ADDRESS%“: Downstream local address.
+	// * Plain text and combinations of the above.
+	//
+	// Examples:
+	//
+	// * “%REQ(x-remote-node-id)%“: Use the value of the “x-remote-node-id“ header.
+	// * “%REQ(host):EXTRACT_FIRST_PART%“: Extract the first part of the Host header before a dot.
+	// * “%CEL(request.headers['x-node-id'] | orValue('default'))%“: Use CEL with fallback.
+	// * “node-%REQ(x-tenant-id)%-%REQ(x-region)%“: Combine multiple values.
+	//
+	// If the format string evaluates to an empty value, the request will not be routed.
+	host_id_format?: string
+	// Tenant identifier format string for tenant-aware isolation.
+	//
+	// This format string is evaluated against the downstream request context to compute
+	// the tenant identifier when tenant isolation is enabled. The format string supports
+	// the same Envoy formatter syntax as “host_id_format“.
+	//
+	// **REQUIRED** when tenant isolation is enabled (via “enable_tenant_isolation“ in the
+	// reverse tunnel filter configuration).
+	//
+	// When tenant isolation is enabled and this field is set, the tenant identifier must be
+	// derivable from the request context (i.e., the formatter must evaluate to a non-empty
+	// value). If the tenant identifier cannot be inferred, host selection will fail and the
+	// request will not be routed.
+	//
+	// Examples:
+	//
+	// * “%REQ(x-tenant-id)%“: Extract tenant ID from request header.
+	// * “%DYNAMIC_METADATA(envoy.filters.network.reverse_tunnel:tenant_id)%“: Use metadata from reverse tunnel filter.
+	// * “%CEL(request.headers['x-tenant-id'] | orValue('default'))%“: Use CEL with fallback.
+	//
+	// The delimiter used for concatenation is internal and not configurable. Users should
+	// ensure that tenant identifiers and host identifiers do not contain the delimiter character
+	// (“:“) to avoid ambiguity.
+	tenant_id_format?: string
+}

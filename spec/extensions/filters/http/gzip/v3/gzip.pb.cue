@@ -42,7 +42,7 @@ Gzip_CompressionLevel_Enum_SPEED:   "SPEED"
 	// zlib manual > deflateInit2.
 	window_bits?: uint32
 	// Set of configuration parameters common for all compression filters. You can define
-	// ``content_length``, ``content_type`` and other parameters in this field.
+	// “content_length“, “content_type“ and other parameters in this field.
 	compressor?: v3.#Compressor
 	// Value for Zlib's next output buffer. If not set, defaults to 4096.
 	// See https://www.zlib.net/manual.html for more details. Also see

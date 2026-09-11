@@ -1,10 +1,16 @@
 package v1alpha1
 
 import (
-	durationpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/durationpb"
 	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
-	timestamppb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/timestamppb"
 )
+
+// CEL component specifier.
+#SourceInfo_Extension_Component: "COMPONENT_UNSPECIFIED" | "COMPONENT_PARSER" | "COMPONENT_TYPE_CHECKER" | "COMPONENT_RUNTIME"
+
+SourceInfo_Extension_Component_COMPONENT_UNSPECIFIED:  "COMPONENT_UNSPECIFIED"
+SourceInfo_Extension_Component_COMPONENT_PARSER:       "COMPONENT_PARSER"
+SourceInfo_Extension_Component_COMPONENT_TYPE_CHECKER: "COMPONENT_TYPE_CHECKER"
+SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 
 // An expression together with source information as returned by the parser.
 #ParsedExpr: {
@@ -22,14 +28,16 @@ import (
 // operators with the exception of the '.' operator are modelled as function
 // calls. This makes it easy to represent new operators into the existing AST.
 //
-// All references within expressions must resolve to a [Decl][google.api.expr.v1alpha1.Decl] provided at
-// type-check for an expression to be valid. A reference may either be a bare
-// identifier `name` or a qualified identifier `google.api.name`. References
-// may either refer to a value or a function declaration.
+// All references within expressions must resolve to a
+// [Decl][google.api.expr.v1alpha1.Decl] provided at type-check for an
+// expression to be valid. A reference may either be a bare identifier `name` or
+// a qualified identifier `google.api.name`. References may either refer to a
+// value or a function declaration.
 //
 // For example, the expression `google.api.name.startsWith('expr')` references
-// the declaration `google.api.name` within a [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and
-// the function declaration `startsWith`.
+// the declaration `google.api.name` within a
+// [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression, and the
+// function declaration `startsWith`.
 #Expr: {
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.Expr"
 	// Required. An id assigned to this node by the parser which is unique in a
@@ -61,7 +69,8 @@ import (
 // primitives.
 //
 // Lists and structs are not included as constants as these aggregate types may
-// contain [Expr][google.api.expr.v1alpha1.Expr] elements which require evaluation and are thus not constant.
+// contain [Expr][google.api.expr.v1alpha1.Expr] elements which require
+// evaluation and are thus not constant.
 //
 // Examples of literals include: `"hello"`, `b'bytes'`, `1u`, `4.2`, `-2`,
 // `true`, `null`.
@@ -86,13 +95,13 @@ import (
 	// Deprecated: duration is no longer considered a builtin cel type.
 	//
 	// Deprecated: Do not use.
-	duration_value?: durationpb.#Duration
+	duration_value?: string
 	// protobuf.Timestamp value.
 	//
 	// Deprecated: timestamp is no longer considered a builtin cel type.
 	//
 	// Deprecated: Do not use.
-	timestamp_value?: timestamppb.#Timestamp
+	timestamp_value?: string
 }
 
 // Source information collected at parse time.
@@ -125,6 +134,14 @@ import (
 	// in the map corresponds to the expression id of the expanded macro, and the
 	// value is the call `Expr` that was replaced.
 	macro_calls?: [int64]: #Expr
+	// A list of tags for extensions that were used while parsing or type checking
+	// the source expression. For example, optimizations that require special
+	// runtime support may be specified.
+	//
+	// These are used to check feature support between components in separate
+	// implementations. This can be used to either skip redundant work or
+	// report an error if the extension is unsupported.
+	extensions?: [...#SourceInfo_Extension]
 }
 
 // A specific position in source.
@@ -148,7 +165,8 @@ import (
 	// Required. Holds a single, unqualified identifier, possibly preceded by a
 	// '.'.
 	//
-	// Qualified names are represented by the [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression.
+	// Qualified names are represented by the
+	// [Expr.Select][google.api.expr.v1alpha1.Expr.Select] expression.
 	name?: string
 }
 
@@ -193,6 +211,13 @@ import (
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.Expr_CreateList"
 	// The elements part of the list.
 	elements?: [...#Expr]
+	// The indices within the elements list which are marked as optional
+	// elements.
+	//
+	// When an optional-typed value is present, the value it contains
+	// is included in the list. If the optional-typed value is absent, the list
+	// element is omitted from the CreateList result.
+	optional_indices?: [...int32]
 }
 
 // A map or message creation expression.
@@ -221,36 +246,77 @@ import (
 // Aggregate type macros may be applied to all elements in a list or all keys
 // in a map:
 //
-// *  `all`, `exists`, `exists_one` -  test a predicate expression against
-//    the inputs and return `true` if the predicate is satisfied for all,
-//    any, or only one value `list.all(x, x < 10)`.
-// *  `filter` - test a predicate expression against the inputs and return
-//    the subset of elements which satisfy the predicate:
-//    `payments.filter(p, p > 1000)`.
-// *  `map` - apply an expression to all elements in the input and return the
-//    output aggregate type: `[1, 2, 3].map(i, i * i)`.
+//   - `all`, `exists`, `exists_one` -  test a predicate expression against
+//     the inputs and return `true` if the predicate is satisfied for all,
+//     any, or only one value `list.all(x, x < 10)`.
+//   - `filter` - test a predicate expression against the inputs and return
+//     the subset of elements which satisfy the predicate:
+//     `payments.filter(p, p > 1000)`.
+//   - `map` - apply an expression to all elements in the input and return the
+//     output aggregate type: `[1, 2, 3].map(i, i * i)`.
 //
 // The `has(m.x)` macro tests whether the property `x` is present in struct
 // `m`. The semantics of this macro depend on the type of `m`. For proto2
 // messages `has(m.x)` is defined as 'defined, but not set`. For proto3, the
 // macro tests whether the property is set to its default. For map and struct
 // types, the macro tests whether the property `x` is defined on `m`.
+//
+// Comprehensions for the standard environment macros evaluation can be best
+// visualized as the following pseudocode:
+//
+// ```
+// let `accu_var` = `accu_init`
+//
+//	for (let `iter_var` in `iter_range`) {
+//	  if (!`loop_condition`) {
+//	    break
+//	  }
+//	  `accu_var` = `loop_step`
+//	}
+//
+// return `result`
+// ```
+//
+// Comprehensions for the optional V2 macros which support map-to-map
+// translation differ slightly from the standard environment macros in that
+// they expose both the key or index in addition to the value for each list
+// or map entry:
+//
+// ```
+// let `accu_var` = `accu_init`
+//
+//	for (let `iter_var`, `iter_var2` in `iter_range`) {
+//	  if (!`loop_condition`) {
+//	    break
+//	  }
+//	  `accu_var` = `loop_step`
+//	}
+//
+// return `result`
+// ```
 #Expr_Comprehension: {
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.Expr_Comprehension"
-	// The name of the iteration variable.
+	// The name of the first iteration variable.
+	// When the iter_range is a list, this variable is the list element.
+	// When the iter_range is a map, this variable is the map entry key.
 	iter_var?: string
-	// The range over which var iterates.
+	// The name of the second iteration variable, empty if not set.
+	// When the iter_range is a list, this variable is the integer index.
+	// When the iter_range is a map, this variable is the map entry value.
+	// This field is only set for comprehension v2 macros.
+	iter_var2?: string
+	// The range over which the comprehension iterates.
 	iter_range?: #Expr
 	// The name of the variable used for accumulation of the result.
 	accu_var?: string
 	// The initial value of the accumulator.
 	accu_init?: #Expr
-	// An expression which can contain iter_var and accu_var.
+	// An expression which can contain iter_var, iter_var2, and accu_var.
 	//
 	// Returns false when the result has been computed and may be used as
 	// a hint to short-circuit the remainder of the comprehension.
 	loop_condition?: #Expr
-	// An expression which can contain iter_var and accu_var.
+	// An expression which can contain iter_var, iter_var2, and accu_var.
 	//
 	// Computes the next value of accu_var.
 	loop_step?: #Expr
@@ -272,5 +338,37 @@ import (
 	// The key expression for a map creation statement.
 	map_key?: #Expr
 	// Required. The value assigned to the key.
+	//
+	// If the optional_entry field is true, the expression must resolve to an
+	// optional-typed value. If the optional value is present, the key will be
+	// set; however, if the optional value is absent, the key will be unset.
 	value?: #Expr
+	// Whether the key-value pair is optional.
+	optional_entry?: bool
+}
+
+// An extension that was requested for the source expression.
+#SourceInfo_Extension: {
+	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.SourceInfo_Extension"
+	// Identifier for the extension. Example: constant_folding
+	id?: string
+	// If set, the listed components must understand the extension for the
+	// expression to evaluate correctly.
+	//
+	// This field has set semantics, repeated values should be deduplicated.
+	affected_components?: [...#SourceInfo_Extension_Component]
+	// Version info. May be skipped if it isn't meaningful for the extension.
+	// (for example constant_folding might always be v0.0).
+	version?: #SourceInfo_Extension_Version
+}
+
+// Version
+#SourceInfo_Extension_Version: {
+	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.SourceInfo_Extension_Version"
+	// Major version changes indicate different required support level from
+	// the required components.
+	major?: int64
+	// Minor version changes must not change the observed behavior from
+	// existing implementations, but may be provided informationally.
+	minor?: int64
 }

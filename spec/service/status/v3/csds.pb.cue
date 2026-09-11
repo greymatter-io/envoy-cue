@@ -16,12 +16,13 @@ ConfigStatus_STALE:    "STALE"
 ConfigStatus_ERROR:    "ERROR"
 
 // Config status from a client-side view.
-#ClientConfigStatus: "CLIENT_UNKNOWN" | "CLIENT_REQUESTED" | "CLIENT_ACKED" | "CLIENT_NACKED"
+#ClientConfigStatus: "CLIENT_UNKNOWN" | "CLIENT_REQUESTED" | "CLIENT_ACKED" | "CLIENT_NACKED" | "CLIENT_RECEIVED_ERROR"
 
-ClientConfigStatus_CLIENT_UNKNOWN:   "CLIENT_UNKNOWN"
-ClientConfigStatus_CLIENT_REQUESTED: "CLIENT_REQUESTED"
-ClientConfigStatus_CLIENT_ACKED:     "CLIENT_ACKED"
-ClientConfigStatus_CLIENT_NACKED:    "CLIENT_NACKED"
+ClientConfigStatus_CLIENT_UNKNOWN:        "CLIENT_UNKNOWN"
+ClientConfigStatus_CLIENT_REQUESTED:      "CLIENT_REQUESTED"
+ClientConfigStatus_CLIENT_ACKED:          "CLIENT_ACKED"
+ClientConfigStatus_CLIENT_NACKED:         "CLIENT_NACKED"
+ClientConfigStatus_CLIENT_RECEIVED_ERROR: "CLIENT_RECEIVED_ERROR"
 
 // Request for client status of clients identified by a list of NodeMatchers.
 #ClientStatusRequest: {
@@ -31,6 +32,10 @@ ClientConfigStatus_CLIENT_NACKED:    "CLIENT_NACKED"
 	node_matchers?: [...v3.#NodeMatcher]
 	// The node making the csds request.
 	node?: v31.#Node
+	// If true, the server will not include the resource contents in the response
+	// (i.e., the generic_xds_configs.xds_config field will not be populated).
+	// [#not-implemented-hide:]
+	exclude_resource_contents?: bool
 }
 
 // Detailed config (per xDS) with status.
@@ -45,11 +50,12 @@ ClientConfigStatus_CLIENT_NACKED:    "CLIENT_NACKED"
 	// is, xDS clients should always dump the most recent accepted xDS config.
 	//
 	// .. attention::
-	//   This field is deprecated. Use :ref:`ClientResourceStatus
-	//   <envoy_v3_api_enum_admin.v3.ClientResourceStatus>` for per-resource
-	//   config status instead.
 	//
-	// Deprecated: Do not use.
+	//	This field is deprecated. Use :ref:`ClientResourceStatus
+	//	<envoy_v3_api_enum_admin.v3.ClientResourceStatus>` for per-resource
+	//	config status instead.
+	//
+	// Deprecated: Marked as deprecated in envoy/service/status/v3/csds.proto.
 	client_status?:       #ClientConfigStatus
 	listener_config?:     v32.#ListenersConfigDump
 	cluster_config?:      v32.#ClustersConfigDump
@@ -66,11 +72,15 @@ ClientConfigStatus_CLIENT_NACKED:    "CLIENT_NACKED"
 	// This field is deprecated in favor of generic_xds_configs which is
 	// much simpler and uniform in structure.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/service/status/v3/csds.proto.
 	xds_config?: [...#PerXdsConfig]
 	// Represents generic xDS config and the exact config structure depends on
 	// the type URL (like Cluster if it is CDS)
 	generic_xds_configs?: [...#ClientConfig_GenericXdsConfig]
+	// For xDS clients, the scope in which the data is used.
+	// For example, gRPC indicates the data plane target or that the data is
+	// associated with gRPC server(s).
+	client_scope?: string
 }
 
 #ClientStatusResponse: {
@@ -114,20 +124,3 @@ ClientConfigStatus_CLIENT_NACKED:    "CLIENT_NACKED"
 	// through the file at the startup.
 	is_static_resource?: bool
 }
-
-// ClientStatusDiscoveryServiceClient is the client API for ClientStatusDiscoveryService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-#ClientStatusDiscoveryServiceClient: _
-
-#ClientStatusDiscoveryService_StreamClientStatusClient: _
-
-// ClientStatusDiscoveryServiceServer is the server API for ClientStatusDiscoveryService service.
-#ClientStatusDiscoveryServiceServer: _
-
-// UnimplementedClientStatusDiscoveryServiceServer can be embedded to have forward compatible implementations.
-#UnimplementedClientStatusDiscoveryServiceServer: {
-	"@type": "type.googleapis.com/envoy.service.status.v3.UnimplementedClientStatusDiscoveryServiceServer"
-}
-
-#ClientStatusDiscoveryService_StreamClientStatusServer: _

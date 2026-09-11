@@ -2,7 +2,7 @@ package v2
 
 import (
 	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
-	endpoint "envoyproxy.io/envoy-cue/spec/api/v2/endpoint"
+	endpointpb "envoyproxy.io/envoy-cue/spec/api/v2/endpoint"
 )
 
 // Different Envoy instances may have different capabilities (e.g. Redis)
@@ -28,7 +28,7 @@ Capability_Protocol_REDIS: "REDIS"
 
 #EndpointHealth: {
 	"@type":        "type.googleapis.com/envoy.service.discovery.v2.EndpointHealth"
-	endpoint?:      endpoint.#Endpoint
+	endpoint?:      endpointpb.#Endpoint
 	health_status?: core.#HealthStatus
 }
 
@@ -46,7 +46,7 @@ Capability_Protocol_REDIS: "REDIS"
 #LocalityEndpoints: {
 	"@type":   "type.googleapis.com/envoy.service.discovery.v2.LocalityEndpoints"
 	locality?: core.#Locality
-	endpoints?: [...endpoint.#Endpoint]
+	endpoints?: [...endpointpb.#Endpoint]
 }
 
 // The cluster name and locality is provided to Envoy for the endpoints that it
@@ -66,20 +66,3 @@ Capability_Protocol_REDIS: "REDIS"
 	// The default is 1 second.
 	interval?: string
 }
-
-// HealthDiscoveryServiceClient is the client API for HealthDiscoveryService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-#HealthDiscoveryServiceClient: _
-
-#HealthDiscoveryService_StreamHealthCheckClient: _
-
-// HealthDiscoveryServiceServer is the server API for HealthDiscoveryService service.
-#HealthDiscoveryServiceServer: _
-
-// UnimplementedHealthDiscoveryServiceServer can be embedded to have forward compatible implementations.
-#UnimplementedHealthDiscoveryServiceServer: {
-	"@type": "type.googleapis.com/envoy.service.discovery.v2.UnimplementedHealthDiscoveryServiceServer"
-}
-
-#HealthDiscoveryService_StreamHealthCheckServer: _

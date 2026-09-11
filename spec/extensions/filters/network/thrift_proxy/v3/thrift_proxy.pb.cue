@@ -25,7 +25,7 @@ ProtocolType_TWITTER:       "TWITTER"
 #Trds: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.thrift_proxy.v3.Trds"
 	// Configuration source specifier.
-	// In case of ``api_config_source`` only aggregated ``api_type`` is supported.
+	// In case of “api_config_source“ only aggregated “api_type“ is supported.
 	config_source?: v3.#ConfigSource
 	// The name of the route configuration. This allows to use different route
 	// configurations. Tells which route configuration should be fetched from the configuration source.
@@ -45,14 +45,14 @@ ProtocolType_TWITTER:       "TWITTER"
 	// The human readable prefix to use when emitting statistics.
 	stat_prefix?: string
 	// The route table for the connection manager is static and is specified in this property.
-	// It is invalid to define both ``route_config`` and ``trds``.
+	// It is invalid to define both “route_config“ and “trds“.
 	route_config?: #RouteConfiguration
-	// Use xDS to fetch the route configuration. It is invalid to define both ``route_config`` and ``trds``.
+	// Use xDS to fetch the route configuration. It is invalid to define both “route_config“ and “trds“.
 	trds?: #Trds
 	// A list of individual Thrift filters that make up the filter chain for requests made to the
 	// Thrift proxy. Order matters as the filters are processed sequentially. For backwards
 	// compatibility, if no thrift_filters are specified, a default Thrift router filter
-	// (``envoy.filters.thrift.router``) is used.
+	// (“envoy.filters.thrift.router“) is used.
 	// [#extension-category: envoy.thrift_proxy.filters]
 	thrift_filters?: [...#ThriftFilter]
 	// If set to true, Envoy will try to skip decode data after metadata in the Thrift message.
@@ -89,7 +89,7 @@ ProtocolType_TWITTER:       "TWITTER"
 // ThriftProtocolOptions specifies Thrift upstream protocol options. This object is used in
 // in
 // :ref:`typed_extension_protocol_options<envoy_v3_api_field_config.cluster.v3.Cluster.typed_extension_protocol_options>`,
-// keyed by the name ``envoy.filters.network.thrift_proxy``.
+// keyed by the name “envoy.filters.network.thrift_proxy“.
 #ThriftProtocolOptions: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.thrift_proxy.v3.ThriftProtocolOptions"
 	// Supplies the type of transport that the Thrift proxy should use for upstream connections.

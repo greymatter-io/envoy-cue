@@ -13,25 +13,25 @@ import (
 	grpc_service?: core.#GrpcService
 	// HTTP service configuration (default timeout: 200ms).
 	http_service?: #HttpService
-	//  Changes filter's behaviour on errors:
+	//	Changes filter's behaviour on errors:
 	//
-	//  1. When set to true, the filter will *accept* client request even if the communication with
-	//  the authorization service has failed, or if the authorization service has returned a HTTP 5xx
-	//  error.
+	//	1. When set to true, the filter will *accept* client request even if the communication with
+	//	the authorization service has failed, or if the authorization service has returned a HTTP 5xx
+	//	error.
 	//
-	//  2. When set to false, ext-authz will *reject* client requests and return a *Forbidden*
-	//  response if the communication with the authorization service has failed, or if the
-	//  authorization service has returned a HTTP 5xx error.
+	//	2. When set to false, ext-authz will *reject* client requests and return a *Forbidden*
+	//	response if the communication with the authorization service has failed, or if the
+	//	authorization service has returned a HTTP 5xx error.
 	//
 	// Note that errors can be *always* tracked in the :ref:`stats
 	// <config_http_filters_ext_authz_stats>`.
 	failure_mode_allow?: bool
 	// [#not-implemented-hide: Support for this field has been removed.]
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/filter/http/ext_authz/v2/ext_authz.proto.
 	use_alpha?: bool
 	// Enables filter to buffer the client request body and send it within the authorization request.
-	// A ``x-envoy-auth-partial-body: false|true`` metadata header will be added to the authorization
+	// A “x-envoy-auth-partial-body: false|true“ metadata header will be added to the authorization
 	// request message indicating if the body data is partial.
 	with_request_body?: #BufferSettings
 	// Clears route cache in order to allow the external authorization service to correctly affect
@@ -43,7 +43,6 @@ import (
 	//
 	// 3. At least one *authorization response header* is added to the client request, or is used for
 	// altering another client request header.
-	//
 	clear_route_cache?: bool
 	// Sets the HTTP status that is returned to the client when there is a network error between the
 	// filter and the authorization server. The default status is HTTP 403 Forbidden.
@@ -57,9 +56,8 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//    metadata_context_namespaces:
-	//    - envoy.filters.http.jwt_authn
-	//
+	//	metadata_context_namespaces:
+	//	- envoy.filters.http.jwt_authn
 	metadata_context_namespaces?: [...string]
 	// Specifies if the filter is enabled.
 	//
@@ -148,7 +146,6 @@ import (
 	// <envoy_api_field_config.filter.http.ext_authz.v2.ExtAuthz.with_request_body>` setting),
 	// consequently the value of *Content-Length* of the authorization request reflects the size of
 	// its payload size.
-	//
 	allowed_headers?: matcher.#ListStringMatcher
 	// Sets a list of headers that will be included to the request to authorization service. Note that
 	// client request of the same key will be overridden.
@@ -161,7 +158,7 @@ import (
 	// response headers that have a correspondent match will be added to the original client request.
 	// Note that coexistent headers will be overridden.
 	allowed_upstream_headers?: matcher.#ListStringMatcher
-	// When this :ref:`list <envoy_api_msg_type.matcher.ListStringMatcher>`. is set, authorization
+	// When this :ref:`list <envoy_api_msg_type.matcher.ListStringMatcher>` is set, authorization
 	// response headers that have a correspondent match will be added to the client's response. Note
 	// that when this list is *not* set, all the authorization response headers, except *Authority
 	// (Host)* will be in the response to the client. When a header is included in this list, *Path*,
@@ -193,7 +190,7 @@ import (
 	//
 	// .. note::
 	//
-	//   These settings are only applied to a filter configured with a
-	//   :ref:`grpc_service<envoy_api_field_config.filter.http.ext_authz.v2.ExtAuthz.grpc_service>`.
+	//	These settings are only applied to a filter configured with a
+	//	:ref:`grpc_service<envoy_api_field_config.filter.http.ext_authz.v2.ExtAuthz.grpc_service>`.
 	context_extensions?: [string]: string
 }

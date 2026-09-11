@@ -27,7 +27,7 @@ ZipkinConfig_CollectorEndpointVersion_GRPC:         "GRPC"
 	// Determines whether client and server spans will share the same span context.
 	// The default value is true.
 	shared_span_context?: bool
-	// Determines the selected collector endpoint version. By default, the ``HTTP_JSON_V1`` will be
+	// Determines the selected collector endpoint version. By default, the “HTTP_JSON_V1“ will be
 	// used.
 	collector_endpoint_version?: #ZipkinConfig_CollectorEndpointVersion
 }

@@ -1,7 +1,7 @@
 package v3
 
 // Type of ejection that took place
-#OutlierEjectionType: "CONSECUTIVE_5XX" | "CONSECUTIVE_GATEWAY_FAILURE" | "SUCCESS_RATE" | "CONSECUTIVE_LOCAL_ORIGIN_FAILURE" | "SUCCESS_RATE_LOCAL_ORIGIN" | "FAILURE_PERCENTAGE" | "FAILURE_PERCENTAGE_LOCAL_ORIGIN"
+#OutlierEjectionType: "CONSECUTIVE_5XX" | "CONSECUTIVE_GATEWAY_FAILURE" | "SUCCESS_RATE" | "CONSECUTIVE_LOCAL_ORIGIN_FAILURE" | "SUCCESS_RATE_LOCAL_ORIGIN" | "FAILURE_PERCENTAGE" | "FAILURE_PERCENTAGE_LOCAL_ORIGIN" | "DEGRADED"
 
 OutlierEjectionType_CONSECUTIVE_5XX:                  "CONSECUTIVE_5XX"
 OutlierEjectionType_CONSECUTIVE_GATEWAY_FAILURE:      "CONSECUTIVE_GATEWAY_FAILURE"
@@ -10,6 +10,7 @@ OutlierEjectionType_CONSECUTIVE_LOCAL_ORIGIN_FAILURE: "CONSECUTIVE_LOCAL_ORIGIN_
 OutlierEjectionType_SUCCESS_RATE_LOCAL_ORIGIN:        "SUCCESS_RATE_LOCAL_ORIGIN"
 OutlierEjectionType_FAILURE_PERCENTAGE:               "FAILURE_PERCENTAGE"
 OutlierEjectionType_FAILURE_PERCENTAGE_LOCAL_ORIGIN:  "FAILURE_PERCENTAGE_LOCAL_ORIGIN"
+OutlierEjectionType_DEGRADED:                         "DEGRADED"
 
 // Represents possible action applied to upstream host
 #Action: "EJECT" | "UNEJECT"
@@ -28,16 +29,16 @@ Action_UNEJECT: "UNEJECT"
 	secs_since_last_action?: uint64
 	// The :ref:`cluster <envoy_v3_api_msg_config.cluster.v3.Cluster>` that owns the ejected host.
 	cluster_name?: string
-	// The URL of the ejected host. E.g., ``tcp://1.2.3.4:80``.
+	// The URL of the ejected host. E.g., “tcp://1.2.3.4:80“.
 	upstream_url?: string
 	// The action that took place.
 	action?: #Action
-	// If ``action`` is ``eject``, specifies the number of times the host has been ejected (local to
+	// If “action“ is “eject“, specifies the number of times the host has been ejected (local to
 	// that Envoy and gets reset if the host gets removed from the upstream cluster for any reason and
 	// then re-added).
 	num_ejections?: uint32
-	// If ``action`` is ``eject``, specifies if the ejection was enforced. ``true`` means the host was
-	// ejected. ``false`` means the event was logged but the host was not actually ejected.
+	// If “action“ is “eject“, specifies if the ejection was enforced. “true“ means the host was
+	// ejected. “false“ means the event was logged but the host was not actually ejected.
 	enforced?:                       bool
 	eject_success_rate_event?:       #OutlierEjectSuccessRate
 	eject_consecutive_event?:        #OutlierEjectConsecutive

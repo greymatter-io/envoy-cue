@@ -1,9 +1,9 @@
 package core
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
 	_type "envoyproxy.io/envoy-cue/spec/type"
 	matcher "envoyproxy.io/envoy-cue/spec/type/matcher"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 // Endpoint health status.
@@ -131,10 +131,10 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	//
 	// .. attention::
 	//
-	//   This field has been deprecated in favor of `service_name_matcher` for better flexibility
-	//   over matching with service-cluster name.
+	//	This field has been deprecated in favor of `service_name_matcher` for better flexibility
+	//	over matching with service-cluster name.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/api/v2/core/health_check.proto.
 	service_name?: string
 	// Specifies a list of HTTP headers that should be added to each request that is sent to the
 	// health checked cluster. For more information, including details on header value syntax, see
@@ -148,7 +148,7 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// Deprecated, use :ref:`codec_client_type
 	// <envoy_api_field_core.HealthCheck.HttpHealthCheck.codec_client_type>` instead.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/api/v2/core/health_check.proto.
 	use_http2?: bool
 	// Specifies a list of HTTP response statuses considered healthy. If provided, replaces default
 	// 200-only policy - 200 must be included explicitly as needed. Ranges follow half-open
@@ -176,7 +176,7 @@ HealthStatus_DEGRADED:  "DEGRADED"
 
 #HealthCheck_RedisHealthCheck: {
 	"@type": "type.googleapis.com/envoy.api.v2.core.HealthCheck_RedisHealthCheck"
-	// If set, optionally perform ``EXISTS <key>`` instead of ``PING``. A return value
+	// If set, optionally perform “EXISTS <key>“ instead of “PING“. A return value
 	// from Redis of 0 (does not exist) is considered a passing healthcheck. A return value other
 	// than 0 is considered a failure. This allows the user to mark a Redis instance for maintenance
 	// by setting the specified key to any value and waiting for traffic to drain.
@@ -207,8 +207,8 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	"@type": "type.googleapis.com/envoy.api.v2.core.HealthCheck_CustomHealthCheck"
 	// The registered name of the custom health checker.
 	name?: string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/core/health_check.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }
 

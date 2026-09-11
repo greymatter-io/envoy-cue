@@ -1,10 +1,10 @@
 package v2
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
 	_type "envoyproxy.io/envoy-cue/spec/type"
 	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
 	route "envoyproxy.io/envoy-cue/spec/api/v2/route"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 #ComparisonFilter_Op: "EQ" | "GE" | "LE"
@@ -44,8 +44,8 @@ GrpcStatusFilter_Status_UNAUTHENTICATED:     "UNAUTHENTICATED"
 	name?: string
 	// Filter which is used to determine if the access log needs to be written.
 	filter?: #AccessLogFilter
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/config/filter/accesslog/v2/accesslog.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }
 
@@ -186,7 +186,7 @@ GrpcStatusFilter_Status_UNAUTHENTICATED:     "UNAUTHENTICATED"
 	// The name of the filter implementation to instantiate. The name must
 	// match a statically registered filter.
 	name?: string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/config/filter/accesslog/v2/accesslog.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }

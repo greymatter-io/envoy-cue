@@ -4,7 +4,14 @@ import (
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
-// Metrics Service is configured as a built-in ``envoy.stat_sinks.metrics_service`` :ref:`StatsSink
+// HistogramEmitMode is used to configure which metric types should be emitted for histograms.
+#HistogramEmitMode: "SUMMARY_AND_HISTOGRAM" | "SUMMARY" | "HISTOGRAM"
+
+HistogramEmitMode_SUMMARY_AND_HISTOGRAM: "SUMMARY_AND_HISTOGRAM"
+HistogramEmitMode_SUMMARY:               "SUMMARY"
+HistogramEmitMode_HISTOGRAM:             "HISTOGRAM"
+
+// Metrics Service is configured as a built-in “envoy.stat_sinks.metrics_service“ :ref:`StatsSink
 // <envoy_v3_api_msg_config.metrics.v3.StatsSink>`. This opaque configuration will be used to create
 // Metrics Service.
 //
@@ -12,13 +19,13 @@ import (
 //
 // .. code-block:: yaml
 //
-//     stats_sinks:
-//       - name: envoy.stat_sinks.metrics_service
-//         typed_config:
-//           "@type": type.googleapis.com/envoy.config.metrics.v3.MetricsServiceConfig
-//           transport_api_version: V3
+//	stats_sinks:
+//	  - name: envoy.stat_sinks.metrics_service
+//	    typed_config:
+//	      "@type": type.googleapis.com/envoy.config.metrics.v3.MetricsServiceConfig
 //
 // [#extension: envoy.stat_sinks.metrics_service]
+// [#next-free-field: 7]
 #MetricsServiceConfig: {
 	"@type": "type.googleapis.com/envoy.config.metrics.v3.MetricsServiceConfig"
 	// The upstream gRPC cluster that hosts the metrics service.
@@ -35,4 +42,12 @@ import (
 	// and the tag extracted name will be used instead of the full name, which may contain values used by the tag
 	// extractor or additional tags added during stats creation.
 	emit_tags_as_labels?: bool
+	// Specify which metrics types to emit for histograms. Defaults to SUMMARY_AND_HISTOGRAM.
+	histogram_emit_mode?: #HistogramEmitMode
+	// The maximum number of metrics to send in a single gRPC message. If not set or set to 0,
+	// all metrics will be sent in a single message (current behavior). When set to a positive value,
+	// metrics will be batched into multiple messages, with each message containing at most batch_size
+	// metric families. This helps avoid hitting gRPC message size limits (typically 4MB) when sending
+	// large numbers of metrics.
+	batch_size?: uint32
 }

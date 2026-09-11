@@ -16,12 +16,14 @@ import (
 	// the connection will be immediately closed.
 	//
 	// .. note::
-	//   In the current implementation each filter and filter chain has an independent rate limit.
+	//
+	//	In the current implementation each filter and filter chain has an independent rate limit.
 	//
 	// .. note::
-	//   In the current implementation the token bucket's :ref:`fill_interval
-	//   <envoy_api_field_type.TokenBucket.fill_interval>` must be >= 50ms to avoid too aggressive
-	//   refills.
+	//
+	//	In the current implementation the token bucket's :ref:`fill_interval
+	//	<envoy_api_field_type.TokenBucket.fill_interval>` must be >= 50ms to avoid too aggressive
+	//	refills.
 	token_bucket?: _type.#TokenBucket
 	// Runtime flag that controls whether the filter is enabled or not. If not specified, defaults
 	// to enabled.

@@ -6,37 +6,47 @@ import (
 )
 
 // RBAC filter config.
-// [#next-free-field: 6]
+// [#next-free-field: 8]
 #RBAC: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.rbac.v3.RBAC"
-	// Specify the RBAC rules to be applied globally.
-	// If absent, no enforcing RBAC policy will be applied.
-	// If present and empty, DENY.
-	// If both rules and matcher are configured, rules will be ignored.
+	// The primary RBAC policy which will be applied globally, to all the incoming requests.
+	//
+	// * If absent, no RBAC enforcement occurs.
+	// * If set but empty, all requests are denied.
+	//
+	// .. note::
+	//
+	//	When both ``rules`` and ``matcher`` are configured, ``rules`` will be ignored.
 	rules?: v3.#RBAC
-	// The match tree to use when resolving RBAC action for incoming requests. Requests do not
-	// match any matcher will be denied.
-	// If absent, no enforcing RBAC matcher will be applied.
-	// If present and empty, deny all requests.
+	// If specified, rules will emit stats with the given prefix.
+	// This is useful for distinguishing metrics when multiple RBAC filters are configured.
+	rules_stat_prefix?: string
+	// Match tree for evaluating RBAC actions on incoming requests. Requests not matching any matcher will be denied.
+	//
+	// * If absent, no RBAC enforcement occurs.
+	// * If set but empty, all requests are denied.
 	matcher?: v31.#Matcher
-	// Shadow rules are not enforced by the filter (i.e., returning a 403)
-	// but will emit stats and logs and can be used for rule testing.
-	// If absent, no shadow RBAC policy will be applied.
-	// If both shadow rules and shadow matcher are configured, shadow rules will be ignored.
+	// Shadow policy for testing RBAC rules without enforcing them. These rules generate stats and logs but do not deny
+	// requests. If absent, no shadow RBAC policy will be applied.
+	//
+	// .. note::
+	//
+	//	When both ``shadow_rules`` and ``shadow_matcher`` are configured, ``shadow_rules`` will be ignored.
 	shadow_rules?: v3.#RBAC
-	// The match tree to use for emitting stats and logs which can be used for rule testing for
-	// incoming requests.
 	// If absent, no shadow matcher will be applied.
+	// Match tree for testing RBAC rules through stats and logs without enforcing them.
+	// If absent, no shadow matching occurs.
 	shadow_matcher?: v31.#Matcher
 	// If specified, shadow rules will emit stats with the given prefix.
-	// This is useful to distinguish the stat when there are more than 1 RBAC filter configured with
-	// shadow rules.
+	// This is useful for distinguishing metrics when multiple RBAC filters use shadow rules.
 	shadow_rules_stat_prefix?: string
+	// If “track_per_rule_stats“ is “true“, counters will be published for each rule and shadow rule.
+	track_per_rule_stats?: bool
 }
 
 #RBACPerRoute: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.rbac.v3.RBACPerRoute"
-	// Override the global configuration of the filter with this new config.
-	// If absent, the global RBAC policy will be disabled for this route.
+	// Per-route specific RBAC configuration that overrides the global RBAC configuration.
+	// If absent, RBAC policy will be disabled for this route.
 	rbac?: #RBAC
 }

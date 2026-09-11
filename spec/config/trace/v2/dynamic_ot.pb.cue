@@ -1,7 +1,7 @@
 package v2
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 // DynamicOtConfig is used to dynamically load a tracer from a shared library
@@ -15,5 +15,5 @@ import (
 	library?: string
 	// The configuration to use when creating a tracer from the given dynamic
 	// library.
-	config?: _struct.#Struct
+	config?: structpb.#Struct
 }

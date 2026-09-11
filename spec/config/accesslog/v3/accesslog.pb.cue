@@ -5,13 +5,15 @@ import (
 	v31 "envoyproxy.io/envoy-cue/spec/type/v3"
 	v32 "envoyproxy.io/envoy-cue/spec/config/route/v3"
 	v33 "envoyproxy.io/envoy-cue/spec/type/matcher/v3"
+	v34 "envoyproxy.io/envoy-cue/spec/data/accesslog/v3"
 )
 
-#ComparisonFilter_Op: "EQ" | "GE" | "LE"
+#ComparisonFilter_Op: "EQ" | "GE" | "LE" | "NE"
 
 ComparisonFilter_Op_EQ: "EQ"
 ComparisonFilter_Op_GE: "GE"
 ComparisonFilter_Op_LE: "LE"
+ComparisonFilter_Op_NE: "NE"
 
 #GrpcStatusFilter_Status: "OK" | "CANCELED" | "UNKNOWN" | "INVALID_ARGUMENT" | "DEADLINE_EXCEEDED" | "NOT_FOUND" | "ALREADY_EXISTS" | "PERMISSION_DENIED" | "RESOURCE_EXHAUSTED" | "FAILED_PRECONDITION" | "ABORTED" | "OUT_OF_RANGE" | "UNIMPLEMENTED" | "INTERNAL" | "UNAVAILABLE" | "DATA_LOSS" | "UNAUTHENTICATED"
 
@@ -42,7 +44,7 @@ GrpcStatusFilter_Status_UNAUTHENTICATED:     "UNAUTHENTICATED"
 	typed_config?: _
 }
 
-// [#next-free-field: 13]
+// [#next-free-field: 14]
 #AccessLogFilter: {
 	"@type": "type.googleapis.com/envoy.config.accesslog.v3.AccessLogFilter"
 	// Status code filter.
@@ -70,6 +72,8 @@ GrpcStatusFilter_Status_UNAUTHENTICATED:     "UNAUTHENTICATED"
 	extension_filter?: #ExtensionFilter
 	// Metadata Filter
 	metadata_filter?: #MetadataFilter
+	// Log Type Filter
+	log_type_filter?: #LogTypeFilter
 }
 
 // Filter on an integer comparison.
@@ -88,7 +92,10 @@ GrpcStatusFilter_Status_UNAUTHENTICATED:     "UNAUTHENTICATED"
 	comparison?: #ComparisonFilter
 }
 
-// Filters on total request duration in milliseconds.
+// Filters based on the duration of the request or stream, in milliseconds.
+// For end of stream access logs, the total duration of the stream will be used.
+// For :ref:`periodic access logs<arch_overview_access_log_periodic>`,
+// the duration of the stream at the time of log recording will be used.
 #DurationFilter: {
 	"@type": "type.googleapis.com/envoy.config.accesslog.v3.DurationFilter"
 	// Comparison.
@@ -107,31 +114,33 @@ GrpcStatusFilter_Status_UNAUTHENTICATED:     "UNAUTHENTICATED"
 	"@type": "type.googleapis.com/envoy.config.accesslog.v3.TraceableFilter"
 }
 
-// Filters for random sampling of requests.
+// Filters requests based on runtime-configurable sampling rates.
 #RuntimeFilter: {
 	"@type": "type.googleapis.com/envoy.config.accesslog.v3.RuntimeFilter"
-	// Runtime key to get an optional overridden numerator for use in the
-	// ``percent_sampled`` field. If found in runtime, this value will replace the
-	// default numerator.
+	// Specifies a key used to look up a custom sampling rate from the runtime configuration. If a value is found for this
+	// key, it will override the default sampling rate specified in “percent_sampled“.
 	runtime_key?: string
-	// The default sampling percentage. If not specified, defaults to 0% with
-	// denominator of 100.
+	// Defines the default sampling percentage when no runtime override is present. If not specified, the default is
+	// **0%** (with a denominator of 100).
 	percent_sampled?: v31.#FractionalPercent
-	// By default, sampling pivots on the header
-	// :ref:`x-request-id<config_http_conn_man_headers_x-request-id>` being
-	// present. If :ref:`x-request-id<config_http_conn_man_headers_x-request-id>`
-	// is present, the filter will consistently sample across multiple hosts based
-	// on the runtime key value and the value extracted from
-	// :ref:`x-request-id<config_http_conn_man_headers_x-request-id>`. If it is
-	// missing, or ``use_independent_randomness`` is set to true, the filter will
-	// randomly sample based on the runtime key value alone.
-	// ``use_independent_randomness`` can be used for logging kill switches within
-	// complex nested :ref:`AndFilter
-	// <envoy_v3_api_msg_config.accesslog.v3.AndFilter>` and :ref:`OrFilter
-	// <envoy_v3_api_msg_config.accesslog.v3.OrFilter>` blocks that are easier to
-	// reason about from a probability perspective (i.e., setting to true will
-	// cause the filter to behave like an independent random variable when
-	// composed within logical operator filters).
+	// Controls how sampling decisions are made.
+	//
+	// - Default behavior (“false“):
+	//
+	//   - Uses the :ref:`x-request-id<config_http_conn_man_headers_x-request-id>` as a consistent sampling pivot.
+	//   - When :ref:`x-request-id<config_http_conn_man_headers_x-request-id>` is present, sampling will be consistent
+	//     across multiple hosts based on both the “runtime_key“ and
+	//     :ref:`x-request-id<config_http_conn_man_headers_x-request-id>`.
+	//   - Useful for tracking related requests across a distributed system.
+	//
+	// - When set to “true“ or :ref:`x-request-id<config_http_conn_man_headers_x-request-id>` is missing:
+	//
+	//   - Sampling decisions are made randomly based only on the “runtime_key“.
+	//   - Useful in complex filter configurations (like nested
+	//     :ref:`AndFilter<envoy_v3_api_msg_config.accesslog.v3.AndFilter>`/
+	//     :ref:`OrFilter<envoy_v3_api_msg_config.accesslog.v3.OrFilter>` blocks) where independent probability
+	//     calculations are desired.
+	//   - Can be used to implement logging kill switches with predictable probability distributions.
 	use_independent_randomness?: bool
 }
 
@@ -198,6 +207,16 @@ GrpcStatusFilter_Status_UNAUTHENTICATED:     "UNAUTHENTICATED"
 	// Default result if the key does not exist in dynamic metadata: if unset or
 	// true, then log; if false, then don't log.
 	match_if_key_not_found?: bool
+}
+
+// Filters based on access log type.
+#LogTypeFilter: {
+	"@type": "type.googleapis.com/envoy.config.accesslog.v3.LogTypeFilter"
+	// Logs only records which their type is one of the types defined in this field.
+	types?: [...v34.#AccessLogType]
+	// If this field is set to true, the filter will instead block all records
+	// with a access log type in types field, and allow all other records.
+	exclude?: bool
 }
 
 // Extension filter is statically registered at runtime.

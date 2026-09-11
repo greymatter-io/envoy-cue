@@ -26,30 +26,30 @@ RateLimitStrategy_BlanketRule_DENY_ALL:  "DENY_ALL"
 // Allows to specify the desired requests per second (RPS, QPS), requests per minute (QPM, RPM),
 // etc., without specifying a rate limiting algorithm implementation.
 //
-// ``RequestsPerTimeUnit`` strategy does not demand any specific rate limiting algorithm to be
+// “RequestsPerTimeUnit“ strategy does not demand any specific rate limiting algorithm to be
 // used (in contrast to the :ref:`TokenBucket <envoy_v3_api_msg_type.v3.TokenBucket>`,
 // for example). It implies that the implementation details of rate limiting algorithm are
 // irrelevant as long as the configured number of "requests per time unit" is achieved.
 //
-// Note that the ``TokenBucket`` is still a valid implementation of the ``RequestsPerTimeUnit``
+// Note that the “TokenBucket“ is still a valid implementation of the “RequestsPerTimeUnit“
 // strategy, and may be chosen to enforce the rate limit. However, there's no guarantee it will be
-// the ``TokenBucket`` in particular, and not the Leaky Bucket, the Sliding Window, or any other
+// the “TokenBucket“ in particular, and not the Leaky Bucket, the Sliding Window, or any other
 // rate limiting algorithm that fulfills the requirements.
 #RateLimitStrategy_RequestsPerTimeUnit: {
 	"@type": "type.googleapis.com/envoy.type.v3.RateLimitStrategy_RequestsPerTimeUnit"
 	// The desired number of requests per :ref:`time_unit
 	// <envoy_v3_api_field_type.v3.RateLimitStrategy.RequestsPerTimeUnit.time_unit>` to allow.
-	// If set to ``0``, deny all (equivalent to ``BlanketRule.DENY_ALL``).
+	// If set to “0“, deny all (equivalent to “BlanketRule.DENY_ALL“).
 	//
 	// .. note::
-	//   Note that the algorithm implementation determines the course of action for the requests
-	//   over the limit. As long as the ``requests_per_time_unit`` converges on the desired value,
-	//   it's allowed to treat this field as a soft-limit: allow bursts, redistribute the allowance
-	//   over time, etc.
 	//
+	//	Note that the algorithm implementation determines the course of action for the requests
+	//	over the limit. As long as the ``requests_per_time_unit`` converges on the desired value,
+	//	it's allowed to treat this field as a soft-limit: allow bursts, redistribute the allowance
+	//	over time, etc.
 	requests_per_time_unit?: uint64
 	// The unit of time. Ignored when :ref:`requests_per_time_unit
 	// <envoy_v3_api_field_type.v3.RateLimitStrategy.RequestsPerTimeUnit.requests_per_time_unit>`
-	// is ``0`` (deny all).
+	// is “0“ (deny all).
 	time_unit?: #RateLimitUnit
 }

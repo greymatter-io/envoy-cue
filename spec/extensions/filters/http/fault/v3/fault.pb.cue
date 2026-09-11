@@ -1,6 +1,7 @@
 package v3
 
 import (
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 	v3 "envoyproxy.io/envoy-cue/spec/type/v3"
 	v31 "envoyproxy.io/envoy-cue/spec/extensions/filters/common/fault/v3"
 	v32 "envoyproxy.io/envoy-cue/spec/config/route/v3"
@@ -20,14 +21,14 @@ import (
 	percentage?: v3.#FractionalPercent
 }
 
-// [#next-free-field: 16]
+// [#next-free-field: 17]
 #HTTPFault: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.fault.v3.HTTPFault"
 	// If specified, the filter will inject delays based on the values in the
 	// object.
 	delay?: v31.#FaultDelay
 	// If specified, the filter will abort requests based on the values in
-	// the object. At least ``abort`` or ``delay`` must be specified.
+	// the object. At least “abort“ or “delay“ must be specified.
 	abort?: #FaultAbort
 	// Specifies the name of the (destination) upstream cluster that the
 	// filter should match on. Fault injection will be restricted to requests
@@ -41,7 +42,7 @@ import (
 	// The filter will check the request's headers against all the specified
 	// headers in the filter config. A match will happen if all the headers in the
 	// config are present in the request with the same values (or based on
-	// presence if the ``value`` field is not in the config).
+	// presence if the “value“ field is not in the config).
 	headers?: [...v32.#HeaderMatcher]
 	// Faults are injected for the specified list of downstream hosts. If this
 	// setting is not set, faults are injected for all downstream nodes.
@@ -54,22 +55,24 @@ import (
 	// filter. Note that because this setting can be overridden at the route level, it's possible
 	// for the number of active faults to be greater than this value (if injected via a different
 	// route). If not specified, defaults to unlimited. This setting can be overridden via
-	// ``runtime <config_http_filters_fault_injection_runtime>`` and any faults that are not injected
-	// due to overflow will be indicated via the ``faults_overflow
-	// <config_http_filters_fault_injection_stats>`` stat.
+	// “runtime <config_http_filters_fault_injection_runtime>“ and any faults that are not injected
+	// due to overflow will be indicated via the “faults_overflow
+	// <config_http_filters_fault_injection_stats>“ stat.
 	//
 	// .. attention::
-	//   Like other :ref:`circuit breakers <arch_overview_circuit_break>` in Envoy, this is a fuzzy
-	//   limit. It's possible for the number of active faults to rise slightly above the configured
-	//   amount due to the implementation details.
+	//
+	//	Like other :ref:`circuit breakers <arch_overview_circuit_break>` in Envoy, this is a fuzzy
+	//	limit. It's possible for the number of active faults to rise slightly above the configured
+	//	amount due to the implementation details.
 	max_active_faults?: uint32
 	// The response rate limit to be applied to the response body of the stream. When configured,
 	// the percentage can be overridden by the :ref:`fault.http.rate_limit.response_percent
 	// <config_http_filters_fault_injection_runtime>` runtime key.
 	//
 	// .. attention::
-	//  This is a per-stream limit versus a connection level limit. This means that concurrent streams
-	//  will each get an independent limit.
+	//
+	//	This is a per-stream limit versus a connection level limit. This means that concurrent streams
+	//	will each get an independent limit.
 	response_rate_limit?: v31.#FaultRateLimit
 	// The runtime key to override the :ref:`default <config_http_filters_fault_injection_runtime>`
 	// runtime. The default is: fault.http.delay.fixed_delay_percent
@@ -97,6 +100,12 @@ import (
 	// If set to false, dynamic stats storage will be allocated for the downstream cluster name.
 	// Default value is false.
 	disable_downstream_cluster_stats?: bool
+	// When an abort or delay fault is executed, the metadata struct provided here will be added to the
+	// request's dynamic metadata under the namespace corresponding to the name of the fault filter.
+	// This data can be logged as part of Access Logs using the :ref:`command operator
+	// <config_access_log_command_operators>` %DYNAMIC_METADATA(NAMESPACE)%, where NAMESPACE is the name of
+	// the fault filter.
+	filter_metadata?: structpb.#Struct
 }
 
 // Fault aborts are controlled via an HTTP header (if applicable). See the

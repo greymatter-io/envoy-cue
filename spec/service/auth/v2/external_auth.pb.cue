@@ -3,7 +3,7 @@ package v2
 import (
 	_type "envoyproxy.io/envoy-cue/spec/type"
 	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
-	status "envoyproxy.io/envoy-cue/spec/deps/genproto/googleapis/rpc/status"
+	statuspb "envoyproxy.io/envoy-cue/spec/deps/genproto/googleapis/rpc/status"
 )
 
 #CheckRequest: {
@@ -44,22 +44,9 @@ import (
 #CheckResponse: {
 	"@type": "type.googleapis.com/envoy.service.auth.v2.CheckResponse"
 	// Status `OK` allows the request. Any other status indicates the request should be denied.
-	status?: status.#Status
+	status?: statuspb.#Status
 	// Supplies http attributes for a denied response.
 	denied_response?: #DeniedHttpResponse
 	// Supplies http attributes for an ok response.
 	ok_response?: #OkHttpResponse
-}
-
-// AuthorizationClient is the client API for Authorization service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-#AuthorizationClient: _
-
-// AuthorizationServer is the server API for Authorization service.
-#AuthorizationServer: _
-
-// UnimplementedAuthorizationServer can be embedded to have forward compatible implementations.
-#UnimplementedAuthorizationServer: {
-	"@type": "type.googleapis.com/envoy.service.auth.v2.UnimplementedAuthorizationServer"
 }

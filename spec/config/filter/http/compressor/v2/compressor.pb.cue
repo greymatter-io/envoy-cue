@@ -22,8 +22,8 @@ import (
 	// so that responses do not get compressed before reaching the filter.
 	// .. attention:
 	//
-	//    To avoid interfering with other compression filters in the same chain use this option in
-	//    the filter closest to the upstream.
+	//	To avoid interfering with other compression filters in the same chain use this option in
+	//	the filter closest to the upstream.
 	remove_accept_encoding_header?: bool
 	// Runtime flag that controls whether the filter is enabled or not. If set to false, the
 	// filter will operate as a pass-through filter. If not specified, defaults to enabled.

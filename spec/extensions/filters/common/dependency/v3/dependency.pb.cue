@@ -21,9 +21,9 @@ Dependency_DependencyType_DYNAMIC_METADATA: "DYNAMIC_METADATA"
 	"@type": "type.googleapis.com/envoy.extensions.filters.common.dependency.v3.FilterDependencies"
 	// A list of dependencies required on the decode path.
 	decode_required?: [...#Dependency]
-	// A list of dependencies provided on the encode path.
+	// A list of dependencies provided on the decode path.
 	decode_provided?: [...#Dependency]
-	// A list of dependencies required on the decode path.
+	// A list of dependencies required on the encode path.
 	encode_required?: [...#Dependency]
 	// A list of dependencies provided on the encode path.
 	encode_provided?: [...#Dependency]

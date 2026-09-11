@@ -32,8 +32,8 @@ ApiConfigSource_ApiType_DELTA_GRPC:              "DELTA_GRPC"
 	//
 	// .. note::
 	//
-	//  The cluster with name ``cluster_name`` must be statically defined and its
-	//  type must not be ``EDS``.
+	//	The cluster with name ``cluster_name`` must be statically defined and its
+	//	type must not be ``EDS``.
 	cluster_names?: [...string]
 	// Multiple gRPC services be provided for GRPC. If > 1 cluster is defined,
 	// services will be cycled through if any kind of failure occurs.
@@ -93,13 +93,13 @@ ApiConfigSource_ApiType_DELTA_GRPC:              "DELTA_GRPC"
 	//
 	// .. note::
 	//
-	//  The path to the source must exist at config load time.
+	//	The path to the source must exist at config load time.
 	//
 	// .. note::
 	//
-	//   Envoy will only watch the file path for *moves.* This is because in general only moves
-	//   are atomic. The same method of swapping files as is demonstrated in the
-	//   :ref:`runtime documentation <config_runtime_symbolic_link_swap>` can be used here also.
+	//	Envoy will only watch the file path for *moves.* This is because in general only moves
+	//	are atomic. The same method of swapping files as is demonstrated in the
+	//	:ref:`runtime documentation <config_runtime_symbolic_link_swap>` can be used here also.
 	path?: string
 	// API configuration source.
 	api_config_source?: #ApiConfigSource

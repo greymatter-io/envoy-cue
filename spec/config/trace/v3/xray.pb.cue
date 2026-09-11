@@ -1,7 +1,7 @@
 package v3
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
@@ -30,5 +30,5 @@ import (
 	origin?: string
 	// AWS resource metadata dictionary.
 	// See: `X-Ray Segment Document documentation <https://docs.aws.amazon.com/xray/latest/devguide/xray-api-segmentdocuments.html#api-segmentdocuments-aws>`__
-	aws?: _struct.#Struct
+	aws?: structpb.#Struct
 }

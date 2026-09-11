@@ -1,6 +1,6 @@
 package v3
 
-// [#next-free-field: 7]
+// [#next-free-field: 8]
 #RedisClusterConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.clusters.redis.v3.RedisClusterConfig"
 	// Interval between successive topology refresh requests. If not set, this defaults to 5s.
@@ -22,4 +22,13 @@ package v3
 	// If not set, this defaults to 0, which disables the topology refresh due to degraded or
 	// unhealthy host.
 	host_degraded_refresh_threshold?: uint32
+	// Enable zone discovery via INFO command. When enabled, the cluster will
+	// send INFO command to each node to discover its availability_zone field,
+	// which is then used for zone-aware routing.
+	//
+	// Note: This feature currently works with Valkey only. Valkey exposes
+	// availability_zone in its INFO response. Standard Redis does not support this field.
+	//
+	// If not set, this defaults to false.
+	enable_zone_discovery?: bool
 }

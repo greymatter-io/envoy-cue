@@ -39,15 +39,15 @@ Listener_DrainType_MODIFY_ONLY: "MODIFY_ONLY"
 	//
 	// .. attention::
 	//
-	//   This field is deprecated. Use :ref:`an original_dst <config_listener_filters_original_dst>`
-	//   :ref:`listener filter <envoy_api_field_Listener.listener_filters>` instead.
+	//	This field is deprecated. Use :ref:`an original_dst <config_listener_filters_original_dst>`
+	//	:ref:`listener filter <envoy_api_field_Listener.listener_filters>` instead.
 	//
-	//   Note that hand off to another listener is *NOT* performed without this flag. Once
-	//   :ref:`FilterChainMatch <envoy_api_msg_listener.FilterChainMatch>` is implemented this flag
-	//   will be removed, as filter chain matching can be used to select a filter chain based on the
-	//   restored destination address.
+	//	Note that hand off to another listener is *NOT* performed without this flag. Once
+	//	:ref:`FilterChainMatch <envoy_api_msg_listener.FilterChainMatch>` is implemented this flag
+	//	will be removed, as filter chain matching can be used to select a filter chain based on the
+	//	restored destination address.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/api/v2/listener.proto.
 	use_original_dst?: bool
 	// Soft limit on size of the listener’s new connection read and write buffers.
 	// If unspecified, an implementation defined default is applied (1MiB).
@@ -77,9 +77,9 @@ Listener_DrainType_MODIFY_ONLY: "MODIFY_ONLY"
 	//
 	// .. attention::
 	//
-	//   Some listener filters, such as :ref:`Proxy Protocol filter
-	//   <config_listener_filters_proxy_protocol>`, should not be used with this option. It will cause
-	//   unexpected behavior when a connection is created.
+	//	Some listener filters, such as :ref:`Proxy Protocol filter
+	//	<config_listener_filters_proxy_protocol>`, should not be used with this option. It will cause
+	//	unexpected behavior when a connection is created.
 	continue_on_listener_filters_timeout?: bool
 	// Whether the listener should be set as a transparent socket.
 	// When this flag is set to true, connections can be redirected to the listener using an
@@ -139,8 +139,8 @@ Listener_DrainType_MODIFY_ONLY: "MODIFY_ONLY"
 	//
 	// .. note::
 	//
-	//  Currently only one ApiListener can be installed; and it can only be done via bootstrap config,
-	//  not LDS.
+	//	Currently only one ApiListener can be installed; and it can only be done via bootstrap config,
+	//	not LDS.
 	//
 	// [#next-major-version: In the v3 API, instead of this messy approach where the socket
 	// listener fields are directly in the top-level Listener message and the API listener types

@@ -41,20 +41,3 @@ import (
 	"@type": "type.googleapis.com/envoy.service.accesslog.v3.StreamAccessLogsMessage_TCPAccessLogEntries"
 	log_entry?: [...v31.#TCPAccessLogEntry]
 }
-
-// AccessLogServiceClient is the client API for AccessLogService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-#AccessLogServiceClient: _
-
-#AccessLogService_StreamAccessLogsClient: _
-
-// AccessLogServiceServer is the server API for AccessLogService service.
-#AccessLogServiceServer: _
-
-// UnimplementedAccessLogServiceServer can be embedded to have forward compatible implementations.
-#UnimplementedAccessLogServiceServer: {
-	"@type": "type.googleapis.com/envoy.service.accesslog.v3.UnimplementedAccessLogServiceServer"
-}
-
-#AccessLogService_StreamAccessLogsServer: _

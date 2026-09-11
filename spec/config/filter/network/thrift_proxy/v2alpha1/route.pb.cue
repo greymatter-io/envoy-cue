@@ -2,7 +2,7 @@ package v2alpha1
 
 import (
 	core "envoyproxy.io/envoy-cue/spec/api/v2/core"
-	route "envoyproxy.io/envoy-cue/spec/api/v2/route"
+	routepb "envoyproxy.io/envoy-cue/spec/api/v2/route"
 )
 
 #RouteConfiguration: {
@@ -39,17 +39,17 @@ import (
 	//
 	// .. note::
 	//
-	//   This does not invert matching done as part of the :ref:`headers field
-	//   <envoy_api_field_config.filter.network.thrift_proxy.v2alpha1.RouteMatch.headers>` field. To
-	//   invert header matching, see :ref:`invert_match
-	//   <envoy_api_field_route.HeaderMatcher.invert_match>`.
+	//	This does not invert matching done as part of the :ref:`headers field
+	//	<envoy_api_field_config.filter.network.thrift_proxy.v2alpha1.RouteMatch.headers>` field. To
+	//	invert header matching, see :ref:`invert_match
+	//	<envoy_api_field_route.HeaderMatcher.invert_match>`.
 	invert?: bool
 	// Specifies a set of headers that the route should match on. The router will check the request’s
 	// headers against all the specified headers in the route config. A match will happen if all the
 	// headers in the route are present in the request with the same values (or based on presence if
 	// the value field is not in the config). Note that this only applies for Thrift transports and/or
 	// protocols that support headers.
-	headers?: [...route.#HeaderMatcher]
+	headers?: [...routepb.#HeaderMatcher]
 }
 
 // [#next-free-field: 7]
@@ -78,7 +78,7 @@ import (
 	// Specifies a set of rate limit configurations that could be applied to the route.
 	// N.B. Thrift service or method name matching can be achieved by specifying a RequestHeaders
 	// action with the header name ":method-name".
-	rate_limits?: [...route.#RateLimit]
+	rate_limits?: [...routepb.#RateLimit]
 	// Strip the service prefix from the method name, if there's a prefix. For
 	// example, the method call Service:method would end up being just method.
 	strip_service_name?: bool

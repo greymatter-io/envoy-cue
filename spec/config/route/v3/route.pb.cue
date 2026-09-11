@@ -4,7 +4,7 @@ import (
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
-// [#next-free-field: 17]
+// [#next-free-field: 19]
 #RouteConfiguration: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RouteConfiguration"
 	// The name of the route configuration. For example, it might match
@@ -15,10 +15,10 @@ import (
 	// An array of virtual hosts that make up the route table.
 	virtual_hosts?: [...#VirtualHost]
 	// An array of virtual hosts will be dynamically loaded via the VHDS API.
-	// Both ``virtual_hosts`` and ``vhds`` fields will be used when present. ``virtual_hosts`` can be used
-	// for a base routing table or for infrequently changing virtual hosts. ``vhds`` is used for
+	// Both “virtual_hosts“ and “vhds“ fields will be used when present. “virtual_hosts“ can be used
+	// for a base routing table or for infrequently changing virtual hosts. “vhds“ is used for
 	// on-demand discovery of virtual hosts. The contents of these two fields will be merged to
-	// generate a routing table for a given RouteConfiguration, with ``vhds`` derived configuration
+	// generate a routing table for a given RouteConfiguration, with “vhds“ derived configuration
 	// taking precedence.
 	vhds?: #Vhds
 	// Optionally specifies a list of HTTP headers that the connection manager
@@ -46,15 +46,11 @@ import (
 	// Specifies a list of HTTP headers that should be removed from each request
 	// routed by the HTTP connection manager.
 	request_headers_to_remove?: [...string]
-	// By default, headers that should be added/removed are evaluated from most to least specific:
-	//
-	// * route level
-	// * virtual host level
-	// * connection manager level
-	//
-	// To allow setting overrides at the route or virtual host level, this order can be reversed
-	// by setting this option to true. Defaults to false.
-	//
+	// Headers mutations at all levels are evaluated, if specified. By default, the order is from most
+	// specific (i.e. route entry level) to least specific (i.e. route configuration level). Later header
+	// mutations may override earlier mutations.
+	// This order can be reversed by setting this field to true. In other words, most specific level mutation
+	// is evaluated last.
 	most_specific_header_mutations_wins?: bool
 	// An optional boolean that specifies whether the clusters that the route
 	// table refers to will be validated by the cluster manager. If set to true
@@ -76,42 +72,50 @@ import (
 	//
 	// .. warning::
 	//
-	//   Envoy currently holds the content of :ref:`direct response body
-	//   <envoy_v3_api_field_config.route.v3.DirectResponseAction.body>` in memory. Be careful setting
-	//   this to be larger than the default 4KB, since the allocated memory for direct response body
-	//   is not subject to data plane buffering controls.
-	//
+	//	Envoy currently holds the content of :ref:`direct response body
+	//	<envoy_v3_api_field_config.route.v3.DirectResponseAction.body>` in memory. Be careful setting
+	//	this to be larger than the default 4KB, since the allocated memory for direct response body
+	//	is not subject to data plane buffering controls.
 	max_direct_response_body_size_bytes?: uint32
 	// A list of plugins and their configurations which may be used by a
 	// :ref:`cluster specifier plugin name <envoy_v3_api_field_config.route.v3.RouteAction.cluster_specifier_plugin>`
-	// within the route. All ``extension.name`` fields in this list must be unique.
+	// within the route. All “extension.name“ fields in this list must be unique.
 	cluster_specifier_plugins?: [...#ClusterSpecifierPlugin]
 	// Specify a set of default request mirroring policies which apply to all routes under its virtual hosts.
 	// Note that policies are not merged, the most specific non-empty one becomes the mirror policies.
 	request_mirror_policies?: [...#RouteAction_RequestMirrorPolicy]
 	// By default, port in :authority header (if any) is used in host matching.
 	// With this option enabled, Envoy will ignore the port number in the :authority header (if any) when picking VirtualHost.
-	// NOTE: this option will not strip the port number (if any) contained in route config
-	// :ref:`envoy_v3_api_msg_config.route.v3.VirtualHost`.domains field.
+	//
+	// .. note::
+	//
+	//	This option will not strip the port number (if any) contained in route config
+	//	:ref:`envoy_v3_api_msg_config.route.v3.VirtualHost`.domains field.
 	ignore_port_in_host_matching?: bool
+	// Normally, virtual host matching is done using the :authority (or
+	// Host: in HTTP < 2) HTTP header. Setting this will instead, use a
+	// different HTTP header for this purpose.
+	vhost_header?: string
 	// Ignore path-parameters in path-matching.
 	// Before RFC3986, URI were like(RFC1808): <scheme>://<net_loc>/<path>;<params>?<query>#<fragment>
 	// Envoy by default takes ":path" as "<path>;<params>".
 	// For users who want to only match path on the "<path>" portion, this option should be true.
 	ignore_path_parameters_in_path_matching?: bool
-	// The typed_per_filter_config field can be used to provide RouteConfiguration level per filter config.
-	// The key should match the :ref:`filter config name
+	// This field can be used to provide RouteConfiguration level per filter config. The key should match the
+	// :ref:`filter config name
 	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpFilter.name>`.
-	// The canonical filter name (e.g., ``envoy.filters.http.buffer`` for the HTTP buffer filter) can also
-	// be used for the backwards compatibility. If there is no entry referred by the filter config name, the
-	// entry referred by the canonical filter name will be provided to the filters as fallback.
-	//
-	// Use of this field is filter specific;
-	// see the :ref:`HTTP filter documentation <config_http_filters>` for if and how it is utilized.
+	// See :ref:`Http filter route specific config <arch_overview_http_filters_per_filter_config>`
+	// for details.
 	// [#comment: An entry's value may be wrapped in a
 	// :ref:`FilterConfig<envoy_v3_api_msg_config.route.v3.FilterConfig>`
 	// message to specify additional options.]
 	typed_per_filter_config?: [string]: _
+	// The metadata field can be used to provide additional information
+	// about the route configuration. It can be used for configuration, stats, and logging.
+	// The metadata should go under the filter namespace that will need it.
+	// For instance, if the metadata is intended for the Router filter,
+	// the filter name should be specified as “envoy.filters.http.router“.
+	metadata?: v3.#Metadata
 }
 
 #Vhds: {

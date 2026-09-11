@@ -1,13 +1,19 @@
 package v3
 
+import (
+	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+)
+
 // See the :ref:`architecture overview <arch_overview_outlier_detection>` for
 // more information on outlier detection.
-// [#next-free-field: 23]
+// [#next-free-field: 27]
 #OutlierDetection: {
 	"@type": "type.googleapis.com/envoy.config.cluster.v3.OutlierDetection"
 	// The number of consecutive server-side error responses (for HTTP traffic,
 	// 5xx responses; for TCP traffic, connection failures; for Redis, failure to
 	// respond PONG; etc.) before a consecutive 5xx ejection occurs. Defaults to 5.
+	//
+	// If set to 0 explicitly, consecutive 5xx ejection will be disabled.
 	consecutive_5xx?: uint32
 	// The time interval between ejection analysis sweeps. This can result in
 	// both new ejections as well as hosts being returned to service. Defaults
@@ -18,8 +24,8 @@ package v3
 	// capped by :ref:`max_ejection_time<envoy_v3_api_field_config.cluster.v3.OutlierDetection.max_ejection_time>`.
 	// Defaults to 30000ms or 30s.
 	base_ejection_time?: string
-	// The maximum % of an upstream cluster that can be ejected due to outlier
-	// detection. Defaults to 10% but will eject at least one host regardless of the value.
+	// The maximum % of an upstream cluster that can be ejected due to outlier detection. Defaults to 10% .
+	// Will eject at least one host regardless of the value if :ref:`always_eject_one_host<envoy_v3_api_field_config.cluster.v3.OutlierDetection.always_eject_one_host>` is enabled.
 	max_ejection_percent?: uint32
 	// The % chance that a host will be actually ejected when an outlier status
 	// is detected through consecutive 5xx. This setting can be used to disable
@@ -50,6 +56,8 @@ package v3
 	success_rate_stdev_factor?: uint32
 	// The number of consecutive gateway failures (502, 503, 504 status codes)
 	// before a consecutive gateway failure ejection occurs. Defaults to 5.
+	//
+	// If set to 0 explicitly, consecutive gateway failure ejection will be disabled.
 	consecutive_gateway_failure?: uint32
 	// The % chance that a host will be actually ejected when an outlier status
 	// is detected through consecutive gateway failures. This setting can be
@@ -67,6 +75,8 @@ package v3
 	// occurs. Defaults to 5. Parameter takes effect only when
 	// :ref:`split_external_local_origin_errors<envoy_v3_api_field_config.cluster.v3.OutlierDetection.split_external_local_origin_errors>`
 	// is set to true.
+	//
+	// If set to 0 explicitly, consecutive locally originated failure ejection will be disabled.
 	consecutive_local_origin_failure?: uint32
 	// The % chance that a host will be actually ejected when an outlier status
 	// is detected through consecutive locally originated failures. This setting can be
@@ -115,4 +125,23 @@ package v3
 	// See :ref:`max_ejection_time_jitter<envoy_v3_api_field_config.cluster.v3.OutlierDetection.base_ejection_time>`
 	// Defaults to 0s.
 	max_ejection_time_jitter?: string
+	// If active health checking is enabled and a host is ejected by outlier detection, a successful active health check
+	// unejects the host by default and considers it as healthy. Unejection also clears all the outlier detection counters.
+	// To change this default behavior set this config to “false“ where active health checking will not uneject the host.
+	// Defaults to true.
+	successful_active_health_check_uneject_host?: bool
+	// Set of host's passive monitors.
+	// [#not-implemented-hide:]
+	monitors?: [...v3.#TypedExtensionConfig]
+	// If enabled, at least one host is ejected regardless of the value of :ref:`max_ejection_percent<envoy_v3_api_field_config.cluster.v3.OutlierDetection.max_ejection_percent>`.
+	// Defaults to false.
+	always_eject_one_host?: bool
+	// If set to true, outlier detection will mark hosts as degraded when they return
+	// the “x-envoy-degraded“ header.
+	// Degraded hosts are deprioritized in load balancing but are not ejected from the cluster.
+	// The degraded state is cleared using the same backoff algorithm as ejection, with the degradation
+	// period calculated as “base_ejection_time“ multiplied by the number of times the host
+	// has been marked as degraded, capped by “max_ejection_time“.
+	// Defaults to false.
+	detect_degraded_hosts?: bool
 }

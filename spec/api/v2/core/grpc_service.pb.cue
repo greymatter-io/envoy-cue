@@ -1,8 +1,8 @@
 package core
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
 	emptypb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/emptypb"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 // gRPC service configuration. This is used by :ref:`ApiConfigSource
@@ -23,7 +23,7 @@ import (
 	timeout?: string
 	// Additional metadata to include in streams initiated to the GrpcService.
 	// This can be used for scenarios in which additional ad hoc authorization
-	// headers (e.g. ``x-foo-bar: baz-key``) are to be injected.
+	// headers (e.g. “x-foo-bar: baz-key“) are to be injected.
 	initial_metadata?: [...#HeaderValue]
 }
 
@@ -50,11 +50,12 @@ import (
 	// service.
 	//
 	// .. csv-table::
-	//    :header: Name, Type, Description
-	//    :widths: 1, 1, 2
 	//
-	//    streams_total, Counter, Total number of streams opened
-	//    streams_closed_<gRPC status code>, Counter, Total streams closed with <gRPC status code>
+	//	:header: Name, Type, Description
+	//	:widths: 1, 1, 2
+	//
+	//	streams_total, Counter, Total number of streams opened
+	//	streams_closed_<gRPC status code>, Counter, Total streams closed with <gRPC status code>
 	stat_prefix?: string
 	// The name of the Google gRPC credentials factory to use. This must have been registered with
 	// Envoy. If this is empty, a default credentials factory will be used that sets up channel
@@ -62,7 +63,7 @@ import (
 	credentials_factory_name?: string
 	// Additional configuration for site-specific customizations of the Google
 	// gRPC library.
-	config?: _struct.#Struct
+	config?: structpb.#Struct
 }
 
 // See https://grpc.io/grpc/cpp/structgrpc_1_1_ssl_credentials_options.html.
@@ -135,8 +136,8 @@ import (
 #GrpcService_GoogleGrpc_CallCredentials_MetadataCredentialsFromPlugin: {
 	"@type": "type.googleapis.com/envoy.api.v2.core.GrpcService_GoogleGrpc_CallCredentials_MetadataCredentialsFromPlugin"
 	name?:   string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/core/grpc_service.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }
 
@@ -149,7 +150,7 @@ import (
 	"@type": "type.googleapis.com/envoy.api.v2.core.GrpcService_GoogleGrpc_CallCredentials_StsService"
 	// URI of the token exchange service that handles token exchange requests.
 	// [#comment:TODO(asraa): Add URI validation when implemented. Tracked by
-	// https://github.com/envoyproxy/protoc-gen-validate/issues/303]
+	// https://github.com/bufbuild/protoc-gen-validate/issues/303]
 	token_exchange_service_uri?: string
 	// Location of the target service or resource where the client
 	// intends to use the requested security token.

@@ -1,43 +1,45 @@
 package v3
 
-// MetadataKey provides a general interface using ``key`` and ``path`` to retrieve value from
-// :ref:`Metadata <envoy_v3_api_msg_config.core.v3.Metadata>`.
+// MetadataKey provides a way to retrieve values from
+// :ref:`Metadata <envoy_v3_api_msg_config.core.v3.Metadata>` using a “key“ and a “path“.
 //
-// For example, for the following Metadata:
-//
-// .. code-block:: yaml
-//
-//    filter_metadata:
-//      envoy.xxx:
-//        prop:
-//          foo: bar
-//          xyz:
-//            hello: envoy
-//
-// The following MetadataKey will retrieve a string value "bar" from the Metadata.
+// For example, consider the following Metadata:
 //
 // .. code-block:: yaml
 //
-//    key: envoy.xxx
-//    path:
-//    - key: prop
-//    - key: foo
+//	filter_metadata:
+//	  envoy.xxx:
+//	    prop:
+//	      foo: bar
+//	      xyz:
+//	        hello: envoy
 //
+// The following MetadataKey would retrieve the string value "bar" from the Metadata:
+//
+// .. code-block:: yaml
+//
+//	key: envoy.xxx
+//	path:
+//	- key: prop
+//	- key: foo
 #MetadataKey: {
 	"@type": "type.googleapis.com/envoy.type.metadata.v3.MetadataKey"
-	// The key name of Metadata to retrieve the Struct from the metadata.
-	// Typically, it represents a builtin subsystem or custom extension.
+	// The key name of the Metadata from which to retrieve the Struct.
+	// This typically represents a builtin subsystem or custom extension.
 	key?: string
-	// The path to retrieve the Value from the Struct. It can be a prefix or a full path,
-	// e.g. ``[prop, xyz]`` for a struct or ``[prop, foo]`` for a string in the example,
-	// which depends on the particular scenario.
+	// The path used to retrieve a specific Value from the Struct.
+	// This can be either a prefix or a full path, depending on the use case.
+	// For example, “[prop, xyz]“ would retrieve a struct or “[prop, foo]“ would retrieve a string
+	// in the example above.
 	//
-	// Note: Due to that only the key type segment is supported, the path can not specify a list
-	// unless the list is the last segment.
+	// .. note::
+	//
+	//	Since only key-type segments are supported, a path cannot specify a list
+	//	unless the list is the last segment.
 	path?: [...#MetadataKey_PathSegment]
 }
 
-// Describes what kind of metadata.
+// Describes different types of metadata sources.
 #MetadataKind: {
 	"@type": "type.googleapis.com/envoy.type.metadata.v3.MetadataKind"
 	// Request kind of metadata.
@@ -50,11 +52,11 @@ package v3
 	host?: #MetadataKind_Host
 }
 
-// Specifies the segment in a path to retrieve value from Metadata.
-// Currently it is only supported to specify the key, i.e. field name, as one segment of a path.
+// Specifies a segment in a path for retrieving values from Metadata.
+// Currently, only key-based segments (field names) are supported.
 #MetadataKey_PathSegment: {
 	"@type": "type.googleapis.com/envoy.type.metadata.v3.MetadataKey_PathSegment"
-	// If specified, use the key to retrieve the value in a Struct.
+	// If specified, use this key to retrieve the value in a Struct.
 	key?: string
 }
 

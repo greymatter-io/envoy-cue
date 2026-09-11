@@ -3,7 +3,7 @@ package v2alpha1
 import (
 	_type "envoyproxy.io/envoy-cue/spec/type"
 	matcher "envoyproxy.io/envoy-cue/spec/type/matcher"
-	route "envoyproxy.io/envoy-cue/spec/api/v2/route"
+	routepb "envoyproxy.io/envoy-cue/spec/api/v2/route"
 )
 
 // [#next-free-field: 6]
@@ -38,7 +38,7 @@ import (
 	// headers against all the specified headers in the route config. A match will happen if all the
 	// headers in the route are present in the request with the same values (or based on presence if
 	// the value field is not in the config).
-	headers?: [...route.#HeaderMatcher]
+	headers?: [...routepb.#HeaderMatcher]
 }
 
 #RouteAction: {
@@ -49,7 +49,7 @@ import (
 	// request is routed to one of the upstream clusters based on weights
 	// assigned to each cluster.
 	// Currently ClusterWeight only supports the name and weight fields.
-	weighted_clusters?: route.#WeightedCluster
+	weighted_clusters?: routepb.#WeightedCluster
 }
 
 #MethodMatch: {
@@ -76,7 +76,7 @@ import (
 	//
 	// Examples:
 	//
-	// * For range [-10,0), route will match for header value -1, but not for 0,
-	//   "somestring", 10.9, "-1somestring"
+	//   - For range [-10,0), route will match for header value -1, but not for 0,
+	//     "somestring", 10.9, "-1somestring"
 	range_match?: _type.#Int64Range
 }

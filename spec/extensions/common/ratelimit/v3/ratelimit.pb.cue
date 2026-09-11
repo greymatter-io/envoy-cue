@@ -22,7 +22,7 @@ VhRateLimitsOptions_IGNORE:   "IGNORE"
 //
 // .. code-block:: cpp
 //
-//   ["authenticated": "false"], ["remote_address": "10.0.0.1"]
+//	["authenticated": "false"], ["remote_address": "10.0.0.1"]
 //
 // What it does: Limits all unauthenticated traffic for the IP address 10.0.0.1. The
 // configuration supplies a default limit for the *remote_address* key. If there is a desire to
@@ -31,27 +31,27 @@ VhRateLimitsOptions_IGNORE:   "IGNORE"
 //
 // .. code-block:: cpp
 //
-//   ["authenticated": "false"], ["path": "/foo/bar"]
+//	["authenticated": "false"], ["path": "/foo/bar"]
 //
 // What it does: Limits all unauthenticated traffic globally for a specific path (or prefix if
 // configured that way in the service).
 //
 // .. code-block:: cpp
 //
-//   ["authenticated": "false"], ["path": "/foo/bar"], ["remote_address": "10.0.0.1"]
+//	["authenticated": "false"], ["path": "/foo/bar"], ["remote_address": "10.0.0.1"]
 //
 // What it does: Limits unauthenticated traffic to a specific path for a specific IP address.
 // Like (1) we can raise/block specific IP addresses if we want with an override configuration.
 //
 // .. code-block:: cpp
 //
-//   ["authenticated": "true"], ["client_id": "foo"]
+//	["authenticated": "true"], ["client_id": "foo"]
 //
 // What it does: Limits all traffic for an authenticated client "foo"
 //
 // .. code-block:: cpp
 //
-//   ["authenticated": "true"], ["client_id": "foo"], ["path": "/foo/bar"]
+//	["authenticated": "true"], ["client_id": "foo"], ["path": "/foo/bar"]
 //
 // What it does: Limits traffic to a specific path for an authenticated client "foo"
 //
@@ -67,21 +67,52 @@ VhRateLimitsOptions_IGNORE:   "IGNORE"
 	entries?: [...#RateLimitDescriptor_Entry]
 	// Optional rate limit override to supply to the ratelimit service.
 	limit?: #RateLimitDescriptor_RateLimitOverride
+	// Optional hits_addend for the rate limit descriptor. If set the value will override the
+	// request level hits_addend.
+	hits_addend?: uint64
+	// If true, the hits_addend value will be treated as negative, effectively adding to
+	// the rate limit budget instead of consuming from it. This can be used to refill previously consumed
+	// rate limit tokens.
+	is_negative_hits?: bool
 }
 
+// Configuration used to enable local rate limiting.
+//
+// .. note::
+//
+//	The ``LocalRateLimitDescriptor`` is used to configure a local rate limit rule with a token
+//	bucket algorithm. The ``RateLimitDescriptor`` is used to represent a list of symbols that
+//	are used to match against the rate limit rule.
 #LocalRateLimitDescriptor: {
 	"@type": "type.googleapis.com/envoy.extensions.common.ratelimit.v3.LocalRateLimitDescriptor"
 	// Descriptor entries.
 	entries?: [...#RateLimitDescriptor_Entry]
 	// Token Bucket algorithm for local ratelimiting.
 	token_bucket?: v3.#TokenBucket
+	// Mark the descriptor as shadow. When the values is true, envoy allow requests to the backend.
+	shadow_mode?: bool
+}
+
+// Configuration used to enable local cluster level rate limiting where the token buckets
+// will be shared across all the Envoy instances in the local cluster.
+// A share will be calculated based on the membership of the local cluster dynamically
+// and the configuration. When the limiter refilling the token bucket, the share will be
+// applied. By default, the token bucket will be shared evenly.
+//
+// See :ref:`local cluster name
+// <envoy_v3_api_field_config.bootstrap.v3.ClusterManager.local_cluster_name>` for more context
+// about local cluster.
+#LocalClusterRateLimit: {
+	"@type": "type.googleapis.com/envoy.extensions.common.ratelimit.v3.LocalClusterRateLimit"
 }
 
 #RateLimitDescriptor_Entry: {
 	"@type": "type.googleapis.com/envoy.extensions.common.ratelimit.v3.RateLimitDescriptor_Entry"
 	// Descriptor key.
 	key?: string
-	// Descriptor value.
+	// Descriptor value. Blank value is treated as wildcard to create dynamic token buckets for each unique value.
+	// Blank Values as wild card is currently supported only with envoy server instance level HTTP local rate limiting
+	// and will not work if HTTP local rate limiting is enabled per connection level.
 	value?: string
 }
 

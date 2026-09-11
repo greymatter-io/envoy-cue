@@ -1,19 +1,23 @@
 package v3
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
-// DynamicOtConfig is used to dynamically load a tracer from a shared library
+// DynamicOtConfig was used to dynamically load a tracer from a shared library
 // that implements the `OpenTracing dynamic loading API
 // <https://github.com/opentracing/opentracing-cpp>`_.
-// [#extension: envoy.tracers.dynamic_ot]
+// [#not-implemented-hide:]
 #DynamicOtConfig: {
 	"@type": "type.googleapis.com/envoy.config.trace.v3.DynamicOtConfig"
 	// Dynamic library implementing the `OpenTracing API
 	// <https://github.com/opentracing/opentracing-cpp>`_.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/trace/v3/dynamic_ot.proto.
 	library?: string
 	// The configuration to use when creating a tracer from the given dynamic
 	// library.
-	config?: _struct.#Struct
+	//
+	// Deprecated: Marked as deprecated in envoy/config/trace/v3/dynamic_ot.proto.
+	config?: structpb.#Struct
 }

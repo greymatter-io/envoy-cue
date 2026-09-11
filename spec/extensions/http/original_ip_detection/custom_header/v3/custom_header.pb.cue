@@ -26,6 +26,7 @@ import (
 	// If this is set, the request will be rejected when detection fails using it as the HTTP response status.
 	//
 	// .. note::
-	//   If this is set to < 400 or > 511, the default status 403 will be used instead.
+	//
+	//	If this is set to < 400 or > 511, the default status 403 will be used instead.
 	reject_with_status?: v3.#HttpStatus
 }

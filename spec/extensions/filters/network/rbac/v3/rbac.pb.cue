@@ -14,7 +14,7 @@ RBAC_EnforcementType_CONTINUOUS:             "CONTINUOUS"
 //
 // Header should not be used in rules/shadow_rules in RBAC network filter as
 // this information is only available in :ref:`RBAC http filter <config_http_filters_rbac>`.
-// [#next-free-field: 8]
+// [#next-free-field: 9]
 #RBAC: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.rbac.v3.RBAC"
 	// Specify the RBAC rules to be applied globally.
@@ -48,4 +48,9 @@ RBAC_EnforcementType_CONTINUOUS:             "CONTINUOUS"
 	// every payload (e.g., Mongo, MySQL, Kafka) set the enforcement type to
 	// CONTINUOUS to enforce RBAC policies on every message boundary.
 	enforcement_type?: #RBAC_EnforcementType
+	// Delay the specified duration before closing the connection when the policy evaluation
+	// result is “DENY“. If this is not present, the connection will be closed immediately.
+	// This is useful to provide a better protection for Envoy against clients that retries
+	// aggressively when the connection is rejected by the RBAC filter.
+	delay_deny?: string
 }

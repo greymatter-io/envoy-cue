@@ -1,19 +1,7 @@
 package v3
 
-import (
-	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
-)
-
-// Connection properties.
-#Connection: {
-	"@type": "type.googleapis.com/envoy.data.tap.v3.Connection"
-	// Local address.
-	local_address?: v3.#Address
-	// Remote address.
-	remote_address?: v3.#Address
-}
-
 // Event in a socket trace.
+// [#next-free-field: 7]
 #SocketEvent: {
 	"@type": "type.googleapis.com/envoy.data.tap.v3.SocketEvent"
 	// Timestamp for event.
@@ -21,6 +9,10 @@ import (
 	read?:      #SocketEvent_Read
 	write?:     #SocketEvent_Write
 	closed?:    #SocketEvent_Closed
+	// Connection information per event
+	connection?: #Connection
+	// Data sequence number
+	seq_num?: uint64
 }
 
 // Sequence of read/write events that constitute a buffered trace on a socket.
@@ -42,6 +34,12 @@ import (
 	write_truncated?: bool
 }
 
+// A message for the sequence of observed events
+#SocketEvents: {
+	"@type": "type.googleapis.com/envoy.data.tap.v3.SocketEvents"
+	events?: [...#SocketEvent]
+}
+
 // A streamed socket trace segment. Multiple segments make up a full trace.
 #SocketStreamedTraceSegment: {
 	"@type": "type.googleapis.com/envoy.data.tap.v3.SocketStreamedTraceSegment"
@@ -52,6 +50,8 @@ import (
 	connection?: #Connection
 	// Socket event.
 	event?: #SocketEvent
+	// Sequence of observed events.
+	events?: #SocketEvents
 }
 
 // Data read by Envoy from the transport socket.

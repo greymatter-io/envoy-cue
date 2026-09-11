@@ -6,7 +6,8 @@ import (
 	v32 "envoyproxy.io/envoy-cue/spec/type/matcher/v3"
 	v33 "envoyproxy.io/envoy-cue/spec/type/v3"
 	v34 "envoyproxy.io/envoy-cue/spec/type/tracing/v3"
-	v35 "envoyproxy.io/envoy-cue/spec/type/metadata/v3"
+	v35 "envoyproxy.io/envoy-cue/spec/config/common/mutation_rules/v3"
+	v36 "envoyproxy.io/envoy-cue/spec/type/metadata/v3"
 )
 
 #VirtualHost_TlsRequirementType: "NONE" | "EXTERNAL_ONLY" | "ALL"
@@ -24,7 +25,7 @@ RouteAction_ClusterNotFoundResponseCode_INTERNAL_SERVER_ERROR: "INTERNAL_SERVER_
 // Configures :ref:`internal redirect <arch_overview_internal_redirects>` behavior.
 // [#next-major-version: remove this definition - it's defined in the InternalRedirectPolicy message.]
 //
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 #RouteAction_InternalRedirectAction: "PASS_THROUGH_INTERNAL_REDIRECT" | "HANDLE_INTERNAL_REDIRECT"
 
 RouteAction_InternalRedirectAction_PASS_THROUGH_INTERNAL_REDIRECT: "PASS_THROUGH_INTERNAL_REDIRECT"
@@ -43,17 +44,25 @@ RedirectAction_RedirectResponseCode_SEE_OTHER:          "SEE_OTHER"
 RedirectAction_RedirectResponseCode_TEMPORARY_REDIRECT: "TEMPORARY_REDIRECT"
 RedirectAction_RedirectResponseCode_PERMANENT_REDIRECT: "PERMANENT_REDIRECT"
 
-#RateLimit_Action_MetaData_Source: "DYNAMIC" | "ROUTE_ENTRY"
+#RateLimit_XRateLimitOption: "UNSPECIFIED" | "OFF" | "DRAFT_VERSION_03"
 
-RateLimit_Action_MetaData_Source_DYNAMIC:     "DYNAMIC"
-RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
+RateLimit_XRateLimitOption_UNSPECIFIED:      "UNSPECIFIED"
+RateLimit_XRateLimitOption_OFF:              "OFF"
+RateLimit_XRateLimitOption_DRAFT_VERSION_03: "DRAFT_VERSION_03"
+
+#RateLimit_Action_MetaData_Source: "DYNAMIC" | "ROUTE_ENTRY" | "CLUSTER_ENTRY" | "CLUSTER_LOCALITY_ENTRY"
+
+RateLimit_Action_MetaData_Source_DYNAMIC:                "DYNAMIC"
+RateLimit_Action_MetaData_Source_ROUTE_ENTRY:            "ROUTE_ENTRY"
+RateLimit_Action_MetaData_Source_CLUSTER_ENTRY:          "CLUSTER_ENTRY"
+RateLimit_Action_MetaData_Source_CLUSTER_LOCALITY_ENTRY: "CLUSTER_LOCALITY_ENTRY"
 
 // The top level element in the routing configuration is a virtual host. Each virtual host has
 // a logical name as well as a set of domains that get routed to it based on the incoming request's
 // host header. This allows a single listener to service multiple top level domain path trees. Once
 // a virtual host is selected based on the domain, the routes are processed in order to see which
 // upstream cluster to route to or whether to perform a redirect.
-// [#next-free-field: 23]
+// [#next-free-field: 26]
 #VirtualHost: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.VirtualHost"
 	// The logical name of the virtual host. This is used when emitting certain
@@ -63,27 +72,26 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// virtual host. Wildcard hosts are supported in the suffix or prefix form.
 	//
 	// Domain search order:
-	//  1. Exact domain names: ``www.foo.com``.
-	//  2. Suffix domain wildcards: ``*.foo.com`` or ``*-bar.foo.com``.
-	//  3. Prefix domain wildcards: ``foo.*`` or ``foo-*``.
-	//  4. Special wildcard ``*`` matching any domain.
+	//  1. Exact domain names: “www.foo.com“.
+	//  2. Suffix domain wildcards: “*.foo.com“ or “*-bar.foo.com“.
+	//  3. Prefix domain wildcards: “foo.*“ or “foo-*“.
+	//  4. Special wildcard “*“ matching any domain.
 	//
 	// .. note::
 	//
-	//   The wildcard will not match the empty string.
-	//   e.g. ``*-bar.foo.com`` will match ``baz-bar.foo.com`` but not ``-bar.foo.com``.
-	//   The longest wildcards match first.
-	//   Only a single virtual host in the entire route configuration can match on ``*``. A domain
-	//   must be unique across all virtual hosts or the config will fail to load.
+	//	The wildcard will not match the empty string.
+	//	For example, ``*-bar.foo.com`` will match ``baz-bar.foo.com`` but not ``-bar.foo.com``.
+	//	The longest wildcards match first.
+	//	Only a single virtual host in the entire route configuration can match on ``*``. A domain
+	//	must be unique across all virtual hosts or the config will fail to load.
 	//
 	// Domains cannot contain control characters. This is validated by the well_known_regex HTTP_HEADER_VALUE.
 	domains?: [...string]
 	// The list of routes that will be matched, in order, for incoming requests.
 	// The first route that matches will be used.
-	// Only one of this and ``matcher`` can be specified.
+	// Only one of this and “matcher“ can be specified.
 	routes?: [...#Route]
-	// [#next-major-version: This should be included in a oneof with routes wrapped in a message.]
-	// The match tree to use when resolving route actions for incoming requests. Only one of this and ``routes``
+	// The match tree to use when resolving route actions for incoming requests. Only one of this and “routes“
 	// can be specified.
 	matcher?: v3.#Matcher
 	// Specifies the type of TLS enforcement the virtual host expects. If this option is not
@@ -121,21 +129,17 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. attention::
 	//
-	//   This option has been deprecated. Please use
-	//   :ref:`VirtualHost.typed_per_filter_config<envoy_v3_api_field_config.route.v3.VirtualHost.typed_per_filter_config>`
-	//   to configure the CORS HTTP filter.
+	//	This option has been deprecated. Please use
+	//	:ref:`VirtualHost.typed_per_filter_config<envoy_v3_api_field_config.route.v3.VirtualHost.typed_per_filter_config>`
+	//	to configure the CORS HTTP filter.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	cors?: #CorsPolicy
-	// The per_filter_config field can be used to provide virtual host-specific configurations for filters.
-	// The key should match the :ref:`filter config name
+	// This field can be used to provide virtual host level per filter config. The key should match the
+	// :ref:`filter config name
 	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpFilter.name>`.
-	// The canonical filter name (e.g., ``envoy.filters.http.buffer`` for the HTTP buffer filter) can also
-	// be used for the backwards compatibility. If there is no entry referred by the filter config name, the
-	// entry referred by the canonical filter name will be provided to the filters as fallback.
-	//
-	// Use of this field is filter specific;
-	// see the :ref:`HTTP filter documentation <config_http_filters>` for if and how it is utilized.
+	// See :ref:`HTTP filter route-specific config <arch_overview_http_filters_per_filter_config>`
+	// for details.
 	// [#comment: An entry's value may be wrapped in a
 	// :ref:`FilterConfig<envoy_v3_api_msg_config.route.v3.FilterConfig>`
 	// message to specify additional options.]
@@ -144,7 +148,10 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// <config_http_filters_router_x-envoy-attempt-count>` header should be included
 	// in the upstream request. Setting this option will cause it to override any existing header
 	// value, so in the case of two Envoys on the request path with this option enabled, the upstream
-	// will see the attempt count as perceived by the second Envoy. Defaults to false.
+	// will see the attempt count as perceived by the second Envoy.
+	//
+	// Defaults to “false“.
+	//
 	// This header is unaffected by the
 	// :ref:`suppress_envoy_headers
 	// <envoy_v3_api_field_extensions.filters.http.router.v3.Router.suppress_envoy_headers>` flag.
@@ -155,33 +162,71 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// <config_http_filters_router_x-envoy-attempt-count>` header should be included
 	// in the downstream response. Setting this option will cause the router to override any existing header
 	// value, so in the case of two Envoys on the request path with this option enabled, the downstream
-	// will see the attempt count as perceived by the Envoy closest upstream from itself. Defaults to false.
+	// will see the attempt count as perceived by the Envoy closest upstream from itself.
+	//
+	// Defaults to “false“.
+	//
 	// This header is unaffected by the
 	// :ref:`suppress_envoy_headers
 	// <envoy_v3_api_field_extensions.filters.http.router.v3.Router.suppress_envoy_headers>` flag.
 	include_attempt_count_in_response?: bool
 	// Indicates the retry policy for all routes in this virtual host. Note that setting a
 	// route level entry will take precedence over this config and it'll be treated
-	// independently (e.g.: values are not inherited).
+	// independently (e.g., values are not inherited).
 	retry_policy?: #RetryPolicy
 	// [#not-implemented-hide:]
 	// Specifies the configuration for retry policy extension. Note that setting a route level entry
-	// will take precedence over this config and it'll be treated independently (e.g.: values are not
+	// will take precedence over this config and it'll be treated independently (e.g., values are not
 	// inherited). :ref:`Retry policy <envoy_v3_api_field_config.route.v3.VirtualHost.retry_policy>` should not be
 	// set if this field is used.
 	retry_policy_typed_config?: _
 	// Indicates the hedge policy for all routes in this virtual host. Note that setting a
 	// route level entry will take precedence over this config and it'll be treated
-	// independently (e.g.: values are not inherited).
+	// independently (e.g., values are not inherited).
 	hedge_policy?: #HedgePolicy
-	// The maximum bytes which will be buffered for retries and shadowing.
-	// If set and a route-specific limit is not set, the bytes actually buffered will be the minimum
-	// value of this and the listener per_connection_buffer_limit_bytes.
+	// Decides whether to include the :ref:`x-envoy-is-timeout-retry <config_http_filters_router_x-envoy-is-timeout-retry>`
+	// request header in retries initiated by per-try timeouts.
+	include_is_timeout_retry_header?: bool
+	// The maximum bytes which will be buffered for retries and shadowing. If set, the bytes actually buffered will be
+	// the minimum value of this and the listener “per_connection_buffer_limit_bytes“.
+	//
+	// .. attention::
+	//
+	//	This field has been deprecated. Please use :ref:`request_body_buffer_limit
+	//	<envoy_v3_api_field_config.route.v3.VirtualHost.request_body_buffer_limit>` instead.
+	//	Only one of ``per_request_buffer_limit_bytes`` and ``request_body_buffer_limit`` could be set.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	per_request_buffer_limit_bytes?: uint32
+	// The maximum bytes which will be buffered for request bodies to support large request body
+	// buffering beyond the “per_connection_buffer_limit_bytes“.
+	//
+	// This limit is specifically for the request body buffering and allows buffering larger payloads while maintaining
+	// flow control.
+	//
+	// Buffer limit precedence (from highest to lowest priority):
+	//
+	//  1. If “request_body_buffer_limit“ is set, then “request_body_buffer_limit“ will be used.
+	//  2. If :ref:`per_request_buffer_limit_bytes <envoy_v3_api_field_config.route.v3.VirtualHost.per_request_buffer_limit_bytes>`
+	//     is set but “request_body_buffer_limit“ is not, then “min(per_request_buffer_limit_bytes, per_connection_buffer_limit_bytes)“
+	//     will be used.
+	//  3. If neither is set, then “per_connection_buffer_limit_bytes“ will be used.
+	//
+	// For flow control chunk sizes, “min(per_connection_buffer_limit_bytes, 16KB)“ will be used.
+	//
+	// Only one of :ref:`per_request_buffer_limit_bytes <envoy_v3_api_field_config.route.v3.VirtualHost.per_request_buffer_limit_bytes>`
+	// and “request_body_buffer_limit“ could be set.
+	request_body_buffer_limit?: uint64
 	// Specify a set of default request mirroring policies for every route under this virtual host.
 	// It takes precedence over the route config mirror policy entirely.
 	// That is, policies are not merged, the most specific non-empty one becomes the mirror policies.
 	request_mirror_policies?: [...#RouteAction_RequestMirrorPolicy]
+	// The metadata field can be used to provide additional information
+	// about the virtual host. It can be used for configuration, stats, and logging.
+	// The metadata should go under the filter namespace that will need it.
+	// For instance, if the metadata is intended for the Router filter,
+	// the filter name should be specified as “envoy.filters.http.router“.
+	metadata?: v31.#Metadata
 }
 
 // A filter-defined action type.
@@ -190,14 +235,23 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	action?: _
 }
 
+// This can be used in route matcher :ref:`VirtualHost.matcher <envoy_v3_api_field_config.route.v3.VirtualHost.matcher>`.
+// When the matcher matches, routes will be matched and run.
+#RouteList: {
+	"@type": "type.googleapis.com/envoy.config.route.v3.RouteList"
+	// The list of routes that will be matched and run, in order. The first route that matches will be used.
+	routes?: [...#Route]
+}
+
 // A route is both a specification of how to match a request as well as an indication of what to do
 // next (e.g., redirect, forward, rewrite, etc.).
 //
 // .. attention::
 //
-//   Envoy supports routing on HTTP method via :ref:`header matching
-//   <envoy_v3_api_msg_config.route.v3.HeaderMatcher>`.
-// [#next-free-field: 20]
+//	Envoy supports routing on HTTP method via :ref:`header matching
+//	<envoy_v3_api_msg_config.route.v3.HeaderMatcher>`.
+//
+// [#next-free-field: 21]
 #Route: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.Route"
 	// Name for the route.
@@ -225,19 +279,15 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// about the route. It can be used for configuration, stats, and logging.
 	// The metadata should go under the filter namespace that will need it.
 	// For instance, if the metadata is intended for the Router filter,
-	// the filter name should be specified as ``envoy.filters.http.router``.
+	// the filter name should be specified as “envoy.filters.http.router“.
 	metadata?: v31.#Metadata
 	// Decorator for the matched route.
 	decorator?: #Decorator
-	// The per_filter_config field can be used to provide route-specific configurations for filters.
-	// The key should match the :ref:`filter config name
+	// This field can be used to provide route specific per filter config. The key should match the
+	// :ref:`filter config name
 	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpFilter.name>`.
-	// The canonical filter name (e.g., ``envoy.filters.http.buffer`` for the HTTP buffer filter) can also
-	// be used for the backwards compatibility. If there is no entry referred by the filter config name, the
-	// entry referred by the canonical filter name will be provided to the filters as fallback.
-	//
-	// Use of this field is filter specific;
-	// see the :ref:`HTTP filter documentation <config_http_filters>` for if and how it is utilized.
+	// See :ref:`HTTP filter route-specific config <arch_overview_http_filters_per_filter_config>`
+	// for details.
 	// [#comment: An entry's value may be wrapped in a
 	// :ref:`FilterConfig<envoy_v3_api_msg_config.route.v3.FilterConfig>`
 	// message to specify additional options.]
@@ -268,6 +318,14 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// The maximum bytes which will be buffered for retries and shadowing.
 	// If set, the bytes actually buffered will be the minimum value of this and the
 	// listener per_connection_buffer_limit_bytes.
+	//
+	// .. attention::
+	//
+	//	This field has been deprecated. Please use :ref:`request_body_buffer_limit
+	//	<envoy_v3_api_field_config.route.v3.Route.request_body_buffer_limit>` instead.
+	//	Only one of ``per_request_buffer_limit_bytes`` and ``request_body_buffer_limit`` may be set.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	per_request_buffer_limit_bytes?: uint32
 	// The human readable prefix to use when emitting statistics for this endpoint.
 	// The statistics are rooted at vhost.<virtual host name>.route.<stat_prefix>.
@@ -279,10 +337,28 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. warning::
 	//
-	//    We do not recommend setting up a stat prefix for
-	//    every application endpoint. This is both not easily maintainable and
-	//    statistics use a non-trivial amount of memory(approximately 1KiB per route).
+	//	We do not recommend setting up a stat prefix for
+	//	every application endpoint. This is both not easily maintainable and
+	//	statistics use a non-trivial amount of memory (approximately 1KiB per route).
 	stat_prefix?: string
+	// The maximum bytes which will be buffered for request bodies to support large request body
+	// buffering beyond the “per_connection_buffer_limit_bytes“.
+	//
+	// This limit is specifically for the request body buffering and allows buffering larger payloads while maintaining
+	// flow control.
+	//
+	// Buffer limit precedence (from highest to lowest priority):
+	//
+	//  1. If “request_body_buffer_limit“ is set: use “request_body_buffer_limit“
+	//  2. If :ref:`per_request_buffer_limit_bytes <envoy_v3_api_field_config.route.v3.Route.per_request_buffer_limit_bytes>`
+	//     is set but “request_body_buffer_limit“ is not: use “min(per_request_buffer_limit_bytes, per_connection_buffer_limit_bytes)“
+	//  3. If neither is set: use “per_connection_buffer_limit_bytes“
+	//
+	// For flow control chunk sizes, use “min(per_connection_buffer_limit_bytes, 16KB)“.
+	//
+	// Only one of :ref:`per_request_buffer_limit_bytes <envoy_v3_api_field_config.route.v3.Route.per_request_buffer_limit_bytes>`
+	// and “request_body_buffer_limit“ may be set.
+	request_body_buffer_limit?: uint64
 }
 
 // Compared to the :ref:`cluster <envoy_v3_api_field_config.route.v3.RouteAction.cluster>` field that specifies a
@@ -291,6 +367,7 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 // multiple upstream clusters along with weights that indicate the percentage of
 // traffic to be forwarded to each cluster. The router selects an upstream cluster based on the
 // weights.
+// [#next-free-field: 6]
 #WeightedCluster: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.WeightedCluster"
 	// Specifies one or more upstream clusters associated with the route.
@@ -300,13 +377,13 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// This field is now deprecated, and the client will use the sum of all
 	// cluster weights. It is up to the management server to supply the correct weights.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	total_weight?: uint32
 	// Specifies the runtime key prefix that should be used to construct the
-	// runtime keys associated with each cluster. When the ``runtime_key_prefix`` is
+	// runtime keys associated with each cluster. When the “runtime_key_prefix“ is
 	// specified, the router will look for weights associated with each upstream
-	// cluster under the key ``runtime_key_prefix`` + ``.`` + ``cluster[i].name`` where
-	// ``cluster[i]`` denotes an entry in the clusters array field. If the runtime
+	// cluster under the key “runtime_key_prefix“ + “.“ + “cluster[i].name“ where
+	// “cluster[i]“ denotes an entry in the clusters array field. If the runtime
 	// key for the cluster does not exist, the value specified in the
 	// configuration file will be used as the default weight. See the :ref:`runtime documentation
 	// <operations_runtime>` for how key names map to the underlying implementation.
@@ -317,12 +394,17 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// This header is expected to be single-valued header as we only want to have one selected value throughout
 	// the process for the consistency. And the value is a unsigned number between 0 and UINT64_MAX.
 	header_name?: string
+	// When set to true, the hash policies will be used to generate the random value for weighted cluster selection.
+	// This could ensure consistent cluster picking across multiple proxy levels for weighted traffic.
+	use_hash_policy?: bool
 }
 
 // Configuration for a cluster specifier plugin.
 #ClusterSpecifierPlugin: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.ClusterSpecifierPlugin"
 	// The name of the plugin and its opaque configuration.
+	//
+	// [#extension-category: envoy.router.cluster_specifier_plugin]
 	extension?: v31.#TypedExtensionConfig
 	// If is_optional is not set or is set to false and the plugin defined by this message is not a
 	// supported type, the containing resource is NACKed. If is_optional is set to true, the resource
@@ -332,51 +414,50 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	is_optional?: bool
 }
 
-// [#next-free-field: 16]
+// [#next-free-field: 18]
 #RouteMatch: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RouteMatch"
 	// If specified, the route is a prefix rule meaning that the prefix must
-	// match the beginning of the ``:path`` header.
+	// match the beginning of the “:path“ header.
 	prefix?: string
 	// If specified, the route is an exact path rule meaning that the path must
-	// exactly match the ``:path`` header once the query string is removed.
+	// exactly match the “:path“ header once the query string is removed.
 	path?: string
 	// If specified, the route is a regular expression rule meaning that the
-	// regex must match the ``:path`` header once the query string is removed. The entire path
+	// regex must match the “:path“ header once the query string is removed. The entire path
 	// (without the query string) must match the regex. The rule will not match if only a
-	// subsequence of the ``:path`` header matches the regex.
+	// subsequence of the “:path“ header matches the regex.
 	//
 	// [#next-major-version: In the v3 API we should redo how path specification works such
 	// that we utilize StringMatcher, and additionally have consistent options around whether we
-	// strip query strings, do a case sensitive match, etc. In the interim it will be too disruptive
+	// strip query strings, do a case-sensitive match, etc. In the interim it will be too disruptive
 	// to deprecate the existing options. We should even consider whether we want to do away with
 	// path_specifier entirely and just rely on a set of header matchers which can already match
 	// on :path, etc. The issue with that is it is unclear how to generically deal with query string
 	// stripping. This needs more thought.]
 	safe_regex?: v32.#RegexMatcher
-	// If this is used as the matcher, the matcher will only match CONNECT requests.
-	// Note that this will not match HTTP/2 upgrade-style CONNECT requests
-	// (WebSocket and the like) as they are normalized in Envoy as HTTP/1.1 style
-	// upgrades.
-	// This is the only way to match CONNECT requests for HTTP/1.1. For HTTP/2,
+	// If this is used as the matcher, the matcher will only match CONNECT or CONNECT-UDP requests.
+	// Note that this will not match other Extended CONNECT requests (WebSocket and the like) as
+	// they are normalized in Envoy as HTTP/1.1 style upgrades.
+	// This is the only way to match CONNECT requests for HTTP/1.1. For HTTP/2 and HTTP/3,
 	// where Extended CONNECT requests may have a path, the path matchers will work if
 	// there is a path present.
 	// Note that CONNECT support is currently considered alpha in Envoy.
 	// [#comment: TODO(htuch): Replace the above comment with an alpha tag.]
 	connect_matcher?: #RouteMatch_ConnectMatcher
 	// If specified, the route is a path-separated prefix rule meaning that the
-	// ``:path`` header (without the query string) must either exactly match the
-	// ``path_separated_prefix`` or have it as a prefix, followed by ``/``
+	// “:path“ header (without the query string) must either exactly match the
+	// “path_separated_prefix“ or have it as a prefix, followed by “/“
 	//
-	// For example, ``/api/dev`` would match
-	// ``/api/dev``, ``/api/dev/``, ``/api/dev/v1``, and ``/api/dev?param=true``
-	// but would not match ``/api/developer``
+	// For example, “/api/dev“ would match
+	// “/api/dev“, “/api/dev/“, “/api/dev/v1“, and “/api/dev?param=true“
+	// but would not match “/api/developer“
 	//
-	// Expect the value to not contain ``?`` or ``#`` and not to end in ``/``
+	// Expect the value to not contain “?“ or “#“ and not to end in “/“
 	path_separated_prefix?: string
 	// [#extension-category: envoy.path.match]
 	path_match_policy?: v31.#TypedExtensionConfig
-	// Indicates that prefix/path matching should be case sensitive. The default
+	// Indicates that prefix/path matching should be case-sensitive. The default
 	// is true. Ignored for safe_regex matching.
 	case_sensitive?: bool
 	// Indicates that the route should additionally match on a runtime key. Every time the route
@@ -390,11 +471,11 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. note::
 	//
-	//    Parsing this field is implemented such that the runtime key's data may be represented
-	//    as a FractionalPercent proto represented as JSON/YAML and may also be represented as an
-	//    integer with the assumption that the value is an integral percentage out of 100. For
-	//    instance, a runtime key lookup returning the value "42" would parse as a FractionalPercent
-	//    whose numerator is 42 and denominator is HUNDRED. This preserves legacy semantics.
+	//	Parsing this field is implemented such that the runtime key's data may be represented
+	//	as a FractionalPercent proto represented as JSON/YAML and may also be represented as an
+	//	integer with the assumption that the value is an integral percentage out of 100. For
+	//	instance, a runtime key lookup returning the value "42" would parse as a FractionalPercent
+	//	whose numerator is 42 and denominator is HUNDRED. This preserves legacy semantics.
 	runtime_fraction?: v31.#RuntimeFractionalPercent
 	// Specifies a set of headers that the route should match on. The router will
 	// check the request’s headers against all the specified headers in the route
@@ -403,22 +484,27 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// is not in the config).
 	headers?: [...#HeaderMatcher]
 	// Specifies a set of URL query parameters on which the route should
-	// match. The router will check the query string from the ``path`` header
+	// match. The router will check the query string from the “path“ header
 	// against all the specified query parameters. If the number of specified
-	// query parameters is nonzero, they all must match the ``path`` header's
-	// query string for a match to occur.
+	// query parameters is nonzero, they all must match the “path“ header's
+	// query string for a match to occur. In the event query parameters are
+	// repeated, only the first value for each key will be considered.
 	//
 	// .. note::
 	//
-	//    If query parameters are used to pass request message fields when
-	//    `grpc_json_transcoder <https://www.envoyproxy.io/envoy-cue/spec/docs/envoy/latest/configuration/http/http_filters/grpc_json_transcoder_filter>`_
-	//    is used, the transcoded message fields maybe different. The query parameters are
-	//    url encoded, but the message fields are not. For example, if a query
-	//    parameter is "foo%20bar", the message field will be "foo bar".
+	//	If query parameters are used to pass request message fields when
+	//	`grpc_json_transcoder <https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/grpc_json_transcoder_filter>`_
+	//	is used, the transcoded message fields may be different. The query parameters are
+	//	URL-encoded, but the message fields are not. For example, if a query
+	//	parameter is "foo%20bar", the message field will be "foo bar".
 	query_parameters?: [...#QueryParameterMatcher]
+	// Specifies a set of cookies on which the route should match. The router parses the “Cookie“
+	// header and evaluates the named cookie against each matcher. If the number of specified cookie
+	// matchers is nonzero, they all must match for the route to be selected.
+	cookies?: [...#CookieMatcher]
 	// If specified, only gRPC requests will be matched. The router will check
-	// that the content-type header has a application/grpc or one of the various
-	// application/grpc+ values.
+	// that the “Content-Type“ header has “application/grpc“ or one of the various
+	// “application/grpc+“ values.
 	grpc?: #RouteMatch_GrpcRouteMatchOptions
 	// If specified, the client tls context will be matched against the defined
 	// match options.
@@ -430,35 +516,40 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// If the number of specified dynamic metadata matchers is nonzero, they all must match the
 	// dynamic metadata for a match to occur.
 	dynamic_metadata?: [...v32.#MetadataMatcher]
+	// Specifies a set of filter state matchers on which the route should match.
+	// The router will check the filter state against all the specified filter state matchers.
+	// If the number of specified filter state matchers is nonzero, they all must match the
+	// filter state for a match to occur.
+	filter_state?: [...v32.#FilterStateMatcher]
 }
 
 // Cors policy configuration.
 //
 // .. attention::
 //
-//   This message has been deprecated. Please use
-//   :ref:`CorsPolicy in filter extension <envoy_v3_api_msg_extensions.filters.http.cors.v3.CorsPolicy>`
-//   as as alternative.
+//	This message has been deprecated. Please use
+//	:ref:`CorsPolicy in filter extension <envoy_v3_api_msg_extensions.filters.http.cors.v3.CorsPolicy>`
+//	as as alternative.
 //
-// [#next-free-field: 13]
+// [#next-free-field: 14]
 #CorsPolicy: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.CorsPolicy"
 	// Specifies string patterns that match allowed origins. An origin is allowed if any of the
 	// string matchers match.
 	allow_origin_string_match?: [...v32.#StringMatcher]
-	// Specifies the content for the ``access-control-allow-methods`` header.
+	// Specifies the content for the “access-control-allow-methods“ header.
 	allow_methods?: string
-	// Specifies the content for the ``access-control-allow-headers`` header.
+	// Specifies the content for the “access-control-allow-headers“ header.
 	allow_headers?: string
-	// Specifies the content for the ``access-control-expose-headers`` header.
+	// Specifies the content for the “access-control-expose-headers“ header.
 	expose_headers?: string
-	// Specifies the content for the ``access-control-max-age`` header.
+	// Specifies the content for the “access-control-max-age“ header.
 	max_age?: string
 	// Specifies whether the resource allows credentials.
 	allow_credentials?: bool
 	// Specifies the % of requests for which the CORS filter is enabled.
 	//
-	// If neither ``enabled``, ``filter_enabled``, nor ``shadow_enabled`` are specified, the CORS
+	// If neither “enabled“, “filter_enabled“, nor “shadow_enabled“ are specified, the CORS
 	// filter will be enabled for 100% of the requests.
 	//
 	// If :ref:`runtime_key <envoy_v3_api_field_config.core.v3.RuntimeFractionalPercent.runtime_key>` is
@@ -467,21 +558,24 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// Specifies the % of requests for which the CORS policies will be evaluated and tracked, but not
 	// enforced.
 	//
-	// This field is intended to be used when ``filter_enabled`` and ``enabled`` are off. One of those
+	// This field is intended to be used when “filter_enabled“ and “enabled“ are off. One of those
 	// fields have to explicitly disable the filter in order for this setting to take effect.
 	//
 	// If :ref:`runtime_key <envoy_v3_api_field_config.core.v3.RuntimeFractionalPercent.runtime_key>` is specified,
 	// Envoy will lookup the runtime key to get the percentage of requests for which it will evaluate
-	// and track the request's ``Origin`` to determine if it's valid but will not enforce any policies.
+	// and track the request's “Origin“ to determine if it's valid but will not enforce any policies.
 	shadow_enabled?: v31.#RuntimeFractionalPercent
 	// Specify whether allow requests whose target server's IP address is more private than that from
 	// which the request initiator was fetched.
 	//
 	// More details refer to https://developer.chrome.com/blog/private-network-access-preflight.
 	allow_private_network_access?: bool
+	// Specifies if preflight requests not matching the configured allowed origin should be forwarded
+	// to the upstream. Default is “true“.
+	forward_not_matching_preflights?: bool
 }
 
-// [#next-free-field: 42]
+// [#next-free-field: 46]
 #RouteAction: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RouteAction"
 	// Indicates the upstream cluster to which the request should be routed
@@ -494,12 +588,12 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. attention::
 	//
-	//   Internally, Envoy always uses the HTTP/2 ``:authority`` header to represent the HTTP/1
-	//   ``Host`` header. Thus, if attempting to match on ``Host``, match on ``:authority`` instead.
+	//	Internally, Envoy always uses the HTTP/2 ``:authority`` header to represent the HTTP/1
+	//	``Host`` header. Thus, if attempting to match on ``Host``, match on ``:authority`` instead.
 	//
 	// .. note::
 	//
-	//   If the header appears multiple times only the first value is used.
+	//	If the header appears multiple times only the first value is used.
 	cluster_header?: string
 	// Multiple upstream clusters can be specified for a given route. The
 	// request is routed to one of the upstream clusters based on weights
@@ -522,7 +616,7 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// in the upstream cluster with metadata matching what's set in this field will be considered
 	// for load balancing. If using :ref:`weighted_clusters
 	// <envoy_v3_api_field_config.route.v3.RouteAction.weighted_clusters>`, metadata will be merged, with values
-	// provided there taking precedence. The filter name should be specified as ``envoy.lb``.
+	// provided there taking precedence. The filter name should be specified as “envoy.lb“.
 	metadata_match?: v31.#Metadata
 	// Indicates that during forwarding, the matched prefix (or path) should be
 	// swapped with this value. This option allows application URLs to be rooted
@@ -530,31 +624,33 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// place the original path before rewrite into the :ref:`x-envoy-original-path
 	// <config_http_filters_router_x-envoy-original-path>` header.
 	//
-	// Only one of :ref:`regex_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.regex_rewrite>`
+	// Only one of :ref:`regex_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.regex_rewrite>`,
 	// :ref:`path_rewrite_policy <envoy_v3_api_field_config.route.v3.RouteAction.path_rewrite_policy>`,
-	// or :ref:`prefix_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.prefix_rewrite>` may be specified.
+	// :ref:`path_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.path_rewrite>`,
+	// or :ref:`prefix_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.prefix_rewrite>`
+	// may be specified.
 	//
 	// .. attention::
 	//
-	//   Pay careful attention to the use of trailing slashes in the
-	//   :ref:`route's match <envoy_v3_api_field_config.route.v3.Route.match>` prefix value.
-	//   Stripping a prefix from a path requires multiple Routes to handle all cases. For example,
-	//   rewriting ``/prefix`` to ``/`` and ``/prefix/etc`` to ``/etc`` cannot be done in a single
-	//   :ref:`Route <envoy_v3_api_msg_config.route.v3.Route>`, as shown by the below config entries:
+	//	Pay careful attention to the use of trailing slashes in the
+	//	:ref:`route's match <envoy_v3_api_field_config.route.v3.Route.match>` prefix value.
+	//	Stripping a prefix from a path requires multiple Routes to handle all cases. For example,
+	//	rewriting ``/prefix`` to ``/`` and ``/prefix/etc`` to ``/etc`` cannot be done in a single
+	//	:ref:`Route <envoy_v3_api_msg_config.route.v3.Route>`, as shown by the below config entries:
 	//
-	//   .. code-block:: yaml
+	//	.. code-block:: yaml
 	//
-	//     - match:
-	//         prefix: "/prefix/"
-	//       route:
-	//         prefix_rewrite: "/"
-	//     - match:
-	//         prefix: "/prefix"
-	//       route:
-	//         prefix_rewrite: "/"
+	//	  - match:
+	//	      prefix: "/prefix/"
+	//	    route:
+	//	      prefix_rewrite: "/"
+	//	  - match:
+	//	      prefix: "/prefix"
+	//	    route:
+	//	      prefix_rewrite: "/"
 	//
-	//   Having above entries in the config, requests to ``/prefix`` will be stripped to ``/``, while
-	//   requests to ``/prefix/etc`` will be stripped to ``/etc``.
+	//	Having above entries in the config, requests to ``/prefix`` will be stripped to ``/``, while
+	//	requests to ``/prefix/etc`` will be stripped to ``/etc``.
 	prefix_rewrite?: string
 	// Indicates that during forwarding, portions of the path that match the
 	// pattern should be rewritten, even allowing the substitution of capture
@@ -566,87 +662,120 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// <config_http_filters_router_x-envoy-original-path>` header.
 	//
 	// Only one of :ref:`regex_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.regex_rewrite>`,
-	// :ref:`prefix_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.prefix_rewrite>`, or
-	// :ref:`path_rewrite_policy <envoy_v3_api_field_config.route.v3.RouteAction.path_rewrite_policy>`]
+	// :ref:`path_rewrite_policy <envoy_v3_api_field_config.route.v3.RouteAction.path_rewrite_policy>`,
+	// :ref:`path_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.path_rewrite>`,
+	// or :ref:`prefix_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.prefix_rewrite>`
 	// may be specified.
 	//
 	// Examples using Google's `RE2 <https://github.com/google/re2>`_ engine:
 	//
-	// * The path pattern ``^/service/([^/]+)(/.*)$`` paired with a substitution
-	//   string of ``\2/instance/\1`` would transform ``/service/foo/v1/api``
-	//   into ``/v1/api/instance/foo``.
+	//   - The path pattern “^/service/([^/]+)(/.*)$“ paired with a substitution
+	//     string of “\2/instance/\1“ would transform “/service/foo/v1/api“
+	//     into “/v1/api/instance/foo“.
 	//
-	// * The pattern ``one`` paired with a substitution string of ``two`` would
-	//   transform ``/xxx/one/yyy/one/zzz`` into ``/xxx/two/yyy/two/zzz``.
+	//   - The pattern “one“ paired with a substitution string of “two“ would
+	//     transform “/xxx/one/yyy/one/zzz“ into “/xxx/two/yyy/two/zzz“.
 	//
-	// * The pattern ``^(.*?)one(.*)$`` paired with a substitution string of
-	//   ``\1two\2`` would replace only the first occurrence of ``one``,
-	//   transforming path ``/xxx/one/yyy/one/zzz`` into ``/xxx/two/yyy/one/zzz``.
+	//   - The pattern “^(.*?)one(.*)$“ paired with a substitution string of
+	//     “\1two\2“ would replace only the first occurrence of “one“,
+	//     transforming path “/xxx/one/yyy/one/zzz“ into “/xxx/two/yyy/one/zzz“.
 	//
-	// * The pattern ``(?i)/xxx/`` paired with a substitution string of ``/yyy/``
-	//   would do a case-insensitive match and transform path ``/aaa/XxX/bbb`` to
-	//   ``/aaa/yyy/bbb``.
+	//   - The pattern “(?i)/xxx/“ paired with a substitution string of “/yyy/“
+	//     would do a case-insensitive match and transform path “/aaa/XxX/bbb“ to
+	//     “/aaa/yyy/bbb“.
 	regex_rewrite?: v32.#RegexMatchAndSubstitute
 	// [#extension-category: envoy.path.rewrite]
 	path_rewrite_policy?: v31.#TypedExtensionConfig
+	// Rewrites the whole path (without query parameters) with the given path value.
+	// The router filter will
+	// place the original path before rewrite into the :ref:`x-envoy-original-path
+	// <config_http_filters_router_x-envoy-original-path>` header.
+	//
+	// Only one of :ref:`regex_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.regex_rewrite>`,
+	// :ref:`path_rewrite_policy <envoy_v3_api_field_config.route.v3.RouteAction.path_rewrite_policy>`,
+	// :ref:`path_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.path_rewrite>`,
+	// or :ref:`prefix_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.prefix_rewrite>`
+	// may be specified.
+	//
+	// The :ref:`substitution format specifier <config_access_log_format>` could be applied here.
+	// For example, with the following config:
+	//
+	//	.. code-block:: yaml
+	//
+	//	  path_rewrite: "/new_path_prefix%REQ(custom-path-header-name)%"
+	//
+	// Would rewrite the path to “/new_path_prefix/some_value“ given the header
+	// “custom-path-header-name: some_value“. If the header is not present, the path will be
+	// rewritten to “/new_path_prefix“.
+	//
+	// If the final output of the path rewrite is empty, then the update will be ignored and the
+	// original path will be preserved.
+	path_rewrite?: string
 	// Indicates that during forwarding, the host header will be swapped with
-	// this value. Using this option will append the
-	// :ref:`config_http_conn_man_headers_x-forwarded-host` header if
-	// :ref:`append_x_forwarded_host <envoy_v3_api_field_config.route.v3.RouteAction.append_x_forwarded_host>`
-	// is set.
+	// this value.
 	host_rewrite_literal?: string
 	// Indicates that during forwarding, the host header will be swapped with
 	// the hostname of the upstream host chosen by the cluster manager. This
 	// option is applicable only when the destination cluster for a route is of
-	// type ``strict_dns`` or ``logical_dns``. Setting this to true with other cluster types
-	// has no effect. Using this option will append the
-	// :ref:`config_http_conn_man_headers_x-forwarded-host` header if
-	// :ref:`append_x_forwarded_host <envoy_v3_api_field_config.route.v3.RouteAction.append_x_forwarded_host>`
-	// is set.
+	// type “strict_dns“ or “logical_dns“,
+	// or when :ref:`hostname <envoy_v3_api_field_config.endpoint.v3.Endpoint.hostname>`
+	// field is not empty. Setting this to true with other cluster types
+	// has no effect.
 	auto_host_rewrite?: bool
 	// Indicates that during forwarding, the host header will be swapped with the content of given
 	// downstream or :ref:`custom <config_http_conn_man_headers_custom_request_headers>` header.
-	// If header value is empty, host header is left intact. Using this option will append the
-	// :ref:`config_http_conn_man_headers_x-forwarded-host` header if
-	// :ref:`append_x_forwarded_host <envoy_v3_api_field_config.route.v3.RouteAction.append_x_forwarded_host>`
-	// is set.
+	// If header value is empty, host header is left intact.
 	//
 	// .. attention::
 	//
-	//   Pay attention to the potential security implications of using this option. Provided header
-	//   must come from trusted source.
+	//	Pay attention to the potential security implications of using this option. Provided header
+	//	must come from trusted source.
 	//
 	// .. note::
 	//
-	//   If the header appears multiple times only the first value is used.
+	//	If the header appears multiple times only the first value is used.
 	host_rewrite_header?: string
 	// Indicates that during forwarding, the host header will be swapped with
 	// the result of the regex substitution executed on path value with query and fragment removed.
 	// This is useful for transitioning variable content between path segment and subdomain.
-	// Using this option will append the
-	// :ref:`config_http_conn_man_headers_x-forwarded-host` header if
-	// :ref:`append_x_forwarded_host <envoy_v3_api_field_config.route.v3.RouteAction.append_x_forwarded_host>`
-	// is set.
 	//
 	// For example with the following config:
 	//
-	//   .. code-block:: yaml
+	//	.. code-block:: yaml
 	//
-	//     host_rewrite_path_regex:
-	//       pattern:
-	//         google_re2: {}
-	//         regex: "^/(.+)/.+$"
-	//       substitution: \1
+	//	  host_rewrite_path_regex:
+	//	    pattern:
+	//	      google_re2: {}
+	//	      regex: "^/(.+)/.+$"
+	//	    substitution: \1
 	//
-	// Would rewrite the host header to ``envoyproxy.io/envoy-cue/spec`` given the path ``/envoyproxy.io/envoy-cue/spec/some/path``.
+	// Would rewrite the host header to “envoyproxy.io“ given the path “/envoyproxy.io/some/path“.
 	host_rewrite_path_regex?: v32.#RegexMatchAndSubstitute
+	// Rewrites the host header with the value of this field. The router filter will
+	// place the original host header value before rewriting into the :ref:`x-envoy-original-host
+	// <config_http_filters_router_x-envoy-original-host>` header.
+	//
+	// The :ref:`substitution format specifier <config_access_log_format>` could be applied here.
+	// For example, with the following config:
+	//
+	//	.. code-block:: yaml
+	//
+	//	  host_rewrite: "prefix-%REQ(custom-host-header-name)%"
+	//
+	// Would rewrite the host header to “prefix-some_value“ given the header
+	// “custom-host-header-name: some_value“. If the header is not present, the host header will
+	// be rewritten to an value of “prefix-“.
+	//
+	// If the final output of the host rewrite is empty, then the update will be ignored and the
+	// original host header will be preserved.
+	host_rewrite?: string
 	// If set, then a host rewrite action (one of
 	// :ref:`host_rewrite_literal <envoy_v3_api_field_config.route.v3.RouteAction.host_rewrite_literal>`,
 	// :ref:`auto_host_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.auto_host_rewrite>`,
 	// :ref:`host_rewrite_header <envoy_v3_api_field_config.route.v3.RouteAction.host_rewrite_header>`, or
 	// :ref:`host_rewrite_path_regex <envoy_v3_api_field_config.route.v3.RouteAction.host_rewrite_path_regex>`)
 	// causes the original value of the host header, if any, to be appended to the
-	// :ref:`config_http_conn_man_headers_x-forwarded-host` HTTP header.
+	// :ref:`config_http_conn_man_headers_x-forwarded-host` HTTP header if it is different to the last value appended.
 	append_x_forwarded_host?: bool
 	// Specifies the upstream timeout for the route. If not specified, the default is 15s. This
 	// spans between the point at which the entire downstream request (i.e. end-of-stream) has been
@@ -655,10 +784,10 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. note::
 	//
-	//   This timeout includes all retries. See also
-	//   :ref:`config_http_filters_router_x-envoy-upstream-rq-timeout-ms`,
-	//   :ref:`config_http_filters_router_x-envoy-upstream-rq-per-try-timeout-ms`, and the
-	//   :ref:`retry overview <arch_overview_http_routing_retry>`.
+	//	This timeout includes all retries. See also
+	//	:ref:`config_http_filters_router_x-envoy-upstream-rq-timeout-ms`,
+	//	:ref:`config_http_filters_router_x-envoy-upstream-rq-per-try-timeout-ms`, and the
+	//	:ref:`retry overview <arch_overview_http_routing_retry>`.
 	timeout?: string
 	// Specifies the idle timeout for the route. If not specified, there is no per-route idle timeout,
 	// although the connection manager wide :ref:`stream_idle_timeout
@@ -682,19 +811,38 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// If the :ref:`overload action <config_overload_manager_overload_actions>` "envoy.overload_actions.reduce_timeouts"
 	// is configured, this timeout is scaled according to the value for
 	// :ref:`HTTP_DOWNSTREAM_STREAM_IDLE <envoy_v3_api_enum_value_config.overload.v3.ScaleTimersOverloadActionConfig.TimerType.HTTP_DOWNSTREAM_STREAM_IDLE>`.
+	//
+	// This timeout may also be used in place of “flush_timeout“ in very specific cases. See the
+	// documentation for “flush_timeout“ for more details.
 	idle_timeout?: string
+	// Specifies the codec stream flush timeout for the route.
+	//
+	// If not specified, the first preference is the global :ref:`stream_flush_timeout
+	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.stream_flush_timeout>`,
+	// but only if explicitly configured.
+	//
+	// If neither the explicit HCM-wide flush timeout nor this route-specific flush timeout is configured,
+	// the route's stream idle timeout is reused for this timeout. This is for
+	// backwards compatibility since both behaviors were historically controlled by the one timeout.
+	//
+	// If the route also does not have an idle timeout configured, the global :ref:`stream_idle_timeout
+	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.stream_idle_timeout>`. used, again
+	// for backwards compatibility. That timeout defaults to 5 minutes.
+	//
+	// A value of 0 via any of the above paths will completely disable the timeout for a given route.
+	flush_timeout?: string
 	// Specifies how to send request over TLS early data.
 	// If absent, allows `safe HTTP requests <https://www.rfc-editor.org/rfc/rfc7231#section-4.2.1>`_ to be sent on early data.
 	// [#extension-category: envoy.route.early_data_policy]
 	early_data_policy?: v31.#TypedExtensionConfig
 	// Indicates that the route has a retry policy. Note that if this is set,
 	// it'll take precedence over the virtual host level retry policy entirely
-	// (e.g.: policies are not merged, most internal one becomes the enforced policy).
+	// (e.g., policies are not merged, the most internal one becomes the enforced policy).
 	retry_policy?: #RetryPolicy
 	// [#not-implemented-hide:]
 	// Specifies the configuration for retry policy extension. Note that if this is set, it'll take
-	// precedence over the virtual host level retry policy entirely (e.g.: policies are not merged,
-	// most internal one becomes the enforced policy). :ref:`Retry policy <envoy_v3_api_field_config.route.v3.VirtualHost.retry_policy>`
+	// precedence over the virtual host level retry policy entirely (e.g., policies are not merged,
+	// the most internal one becomes the enforced policy). :ref:`Retry policy <envoy_v3_api_field_config.route.v3.VirtualHost.retry_policy>`
 	// should not be set if this field is used.
 	retry_policy_typed_config?: _
 	// Specify a set of route request mirroring policies.
@@ -711,9 +859,11 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// :ref:`rate_limits <envoy_v3_api_field_config.route.v3.VirtualHost.rate_limits>` are not applied to the
 	// request.
 	//
-	// This field is deprecated. Please use :ref:`vh_rate_limits <envoy_v3_api_field_extensions.filters.http.ratelimit.v3.RateLimitPerRoute.vh_rate_limits>`
+	// .. attention::
 	//
-	// Deprecated: Do not use.
+	//	This field is deprecated. Please use :ref:`vh_rate_limits <envoy_v3_api_field_extensions.filters.http.ratelimit.v3.RateLimitPerRoute.vh_rate_limits>`
+	//
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	include_vh_rate_limits?: bool
 	// Specifies a list of hash policies to use for ring hash load balancing. Each
 	// hash policy is evaluated individually and the combined result is used to
@@ -734,12 +884,12 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. attention::
 	//
-	//   This option has been deprecated. Please use
-	//   :ref:`Route.typed_per_filter_config<envoy_v3_api_field_config.route.v3.Route.typed_per_filter_config>` or
-	//   :ref:`WeightedCluster.ClusterWeight.typed_per_filter_config<envoy_v3_api_field_config.route.v3.WeightedCluster.ClusterWeight.typed_per_filter_config>`
-	//   to configure the CORS HTTP filter.
+	//	This option has been deprecated. Please use
+	//	:ref:`Route.typed_per_filter_config<envoy_v3_api_field_config.route.v3.Route.typed_per_filter_config>` or
+	//	:ref:`WeightedCluster.ClusterWeight.typed_per_filter_config<envoy_v3_api_field_config.route.v3.WeightedCluster.ClusterWeight.typed_per_filter_config>`
+	//	to configure the CORS HTTP filter.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	cors?: #CorsPolicy
 	// Deprecated by :ref:`grpc_timeout_header_max <envoy_v3_api_field_config.route.v3.RouteAction.MaxStreamDuration.grpc_timeout_header_max>`
 	// If present, and the request is a gRPC request, use the
@@ -747,7 +897,7 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// or its default value (infinity) instead of
 	// :ref:`timeout <envoy_v3_api_field_config.route.v3.RouteAction.timeout>`, but limit the applied timeout
 	// to the maximum value specified here. If configured as 0, the maximum allowed timeout for
-	// gRPC requests is infinity. If not configured at all, the ``grpc-timeout`` header is not used
+	// gRPC requests is infinity. If not configured at all, the “grpc-timeout“ header is not used
 	// and gRPC requests time out like any other requests using
 	// :ref:`timeout <envoy_v3_api_field_config.route.v3.RouteAction.timeout>` or its default.
 	// This can be used to prevent unexpected upstream request timeouts due to potentially long
@@ -755,17 +905,17 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. note::
 	//
-	//    If a timeout is specified using :ref:`config_http_filters_router_x-envoy-upstream-rq-timeout-ms`, it takes
-	//    precedence over `grpc-timeout header <https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md>`_, when
-	//    both are present. See also
-	//    :ref:`config_http_filters_router_x-envoy-upstream-rq-timeout-ms`,
-	//    :ref:`config_http_filters_router_x-envoy-upstream-rq-per-try-timeout-ms`, and the
-	//    :ref:`retry overview <arch_overview_http_routing_retry>`.
+	//	If a timeout is specified using :ref:`config_http_filters_router_x-envoy-upstream-rq-timeout-ms`, it takes
+	//	precedence over `grpc-timeout header <https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md>`_, when
+	//	both are present. See also
+	//	:ref:`config_http_filters_router_x-envoy-upstream-rq-timeout-ms`,
+	//	:ref:`config_http_filters_router_x-envoy-upstream-rq-per-try-timeout-ms`, and the
+	//	:ref:`retry overview <arch_overview_http_routing_retry>`.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	max_grpc_timeout?: string
 	// Deprecated by :ref:`grpc_timeout_header_offset <envoy_v3_api_field_config.route.v3.RouteAction.MaxStreamDuration.grpc_timeout_header_offset>`.
-	// If present, Envoy will adjust the timeout provided by the ``grpc-timeout`` header by subtracting
+	// If present, Envoy will adjust the timeout provided by the “grpc-timeout“ header by subtracting
 	// the provided duration from the header. This is useful in allowing Envoy to set its global
 	// timeout to be less than that of the deadline imposed by the calling client, which makes it more
 	// likely that Envoy will handle the timeout instead of having the call canceled by the client.
@@ -773,7 +923,7 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// ensures that the offset will only ever decrease the timeout and never set it to 0 (meaning
 	// infinity).
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	grpc_timeout_offset?: string
 	upgrade_configs?: [...#RouteAction_UpgradeConfig]
 	// If present, Envoy will try to follow an upstream redirect response instead of proxying the
@@ -781,7 +931,7 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// by :ref:`redirect_response_codes
 	// <envoy_v3_api_field_config.route.v3.InternalRedirectPolicy.redirect_response_codes>`.
 	internal_redirect_policy?: #InternalRedirectPolicy
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	internal_redirect_action?: #RouteAction_InternalRedirectAction
 	// An internal redirect is handled, iff the number of previous internal redirects that a
 	// downstream request has encountered is lower than this value, and
@@ -798,18 +948,18 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// If not specified, at most one redirect will be followed.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	max_internal_redirects?: uint32
 	// Indicates that the route has a hedge policy. Note that if this is set,
 	// it'll take precedence over the virtual host level hedge policy entirely
-	// (e.g.: policies are not merged, most internal one becomes the enforced policy).
+	// (e.g., policies are not merged, the most internal one becomes the enforced policy).
 	hedge_policy?: #HedgePolicy
 	// Specifies the maximum stream duration for this route.
 	max_stream_duration?: #RouteAction_MaxStreamDuration
 }
 
 // HTTP retry :ref:`architecture overview <arch_overview_http_routing_retry>`.
-// [#next-free-field: 14]
+// [#next-free-field: 15]
 #RetryPolicy: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RetryPolicy"
 	// Specifies the conditions under which retry takes place. These are the same
@@ -826,14 +976,14 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. note::
 	//
-	//   If left unspecified, Envoy will use the global
-	//   :ref:`route timeout <envoy_v3_api_field_config.route.v3.RouteAction.timeout>` for the request.
-	//   Consequently, when using a :ref:`5xx <config_http_filters_router_x-envoy-retry-on>` based
-	//   retry policy, a request that times out will not be retried as the total timeout budget
-	//   would have been exhausted.
+	//	If left unspecified, Envoy will use the global
+	//	:ref:`route timeout <envoy_v3_api_field_config.route.v3.RouteAction.timeout>` for the request.
+	//	Consequently, when using a :ref:`5xx <config_http_filters_router_x-envoy-retry-on>` based
+	//	retry policy, a request that times out will not be retried as the total timeout budget
+	//	would have been exhausted.
 	per_try_timeout?: string
 	// Specifies an upstream idle timeout per retry attempt (including the initial attempt). This
-	// parameter is optional and if absent there is no per try idle timeout. The semantics of the per
+	// parameter is optional and if absent there is no per-try idle timeout. The semantics of the per-
 	// try idle timeout are similar to the
 	// :ref:`route idle timeout <envoy_v3_api_field_config.route.v3.RouteAction.timeout>` and
 	// :ref:`stream idle timeout
@@ -873,16 +1023,16 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	retriable_status_codes?: [...uint32]
 	// Specifies parameters that control exponential retry back off. This parameter is optional, in which case the
 	// default base interval is 25 milliseconds or, if set, the current value of the
-	// ``upstream.base_retry_backoff_ms`` runtime parameter. The default maximum interval is 10 times
+	// “upstream.base_retry_backoff_ms“ runtime parameter. The default maximum interval is 10 times
 	// the base interval. The documentation for :ref:`config_http_filters_router_x-envoy-max-retries`
 	// describes Envoy's back-off algorithm.
 	retry_back_off?: #RetryPolicy_RetryBackOff
 	// Specifies parameters that control a retry back-off strategy that is used
 	// when the request is rate limited by the upstream server. The server may
-	// return a response header like ``Retry-After`` or ``X-RateLimit-Reset`` to
+	// return a response header like “Retry-After“ or “X-RateLimit-Reset“ to
 	// provide feedback to the client on how long to wait before retrying. If
 	// configured, this back-off strategy will be used instead of the
-	// default exponential back off strategy (configured using ``retry_back_off``)
+	// default exponential back off strategy (configured using “retry_back_off“)
 	// whenever a response includes the matching headers.
 	rate_limited_retry_back_off?: #RetryPolicy_RateLimitedRetryBackOff
 	// HTTP response headers that trigger a retry if present in the response. A retry will be
@@ -891,6 +1041,18 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	retriable_headers?: [...#HeaderMatcher]
 	// HTTP headers which must be present in the request for retries to be attempted.
 	retriable_request_headers?: [...#HeaderMatcher]
+	// By default, the target upstream cluster of a retry request is the same as the original request,
+	// and Envoy will not try to refresh it when retrying.
+	// If this field is set to true, Envoy will try to refresh the target upstream cluster when
+	// retrying a request. This is useful when users want to try different upstream cluster for
+	// each retry attempt.
+	//
+	// .. note::
+	//
+	//	This currently works when the route cluster specifier support the dynamic refresh,
+	//	e.g. :ref:`matcher cluster specifier
+	//	<envoy_v3_api_msg_extensions.router.cluster_specifiers.matcher.v3.MatcherClusterSpecifier>`.
+	refresh_cluster_on_retry?: bool
 }
 
 // HTTP request hedging :ref:`architecture overview <arch_overview_http_routing_hedging>`.
@@ -898,11 +1060,13 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	"@type": "type.googleapis.com/envoy.config.route.v3.HedgePolicy"
 	// Specifies the number of initial requests that should be sent upstream.
 	// Must be at least 1.
+	//
 	// Defaults to 1.
 	// [#not-implemented-hide:]
 	initial_requests?: uint32
 	// Specifies a probability that an additional upstream request should be sent
 	// on top of what is specified by initial_requests.
+	//
 	// Defaults to 0.
 	// [#not-implemented-hide:]
 	additional_request_chance?: v33.#FractionalPercent
@@ -910,19 +1074,21 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// This means that a retry will be issued without resetting the original request, leaving multiple upstream requests in flight.
 	// The first request to complete successfully will be the one returned to the caller.
 	//
-	// * At any time, a successful response (i.e. not triggering any of the retry-on conditions) would be returned to the client.
-	// * Before per-try timeout, an error response (per retry-on conditions) would be retried immediately or returned ot the client
-	//   if there are no more retries left.
-	// * After per-try timeout, an error response would be discarded, as a retry in the form of a hedged request is already in progress.
+	//   - At any time, a successful response (i.e. not triggering any of the retry-on conditions) would be returned to the client.
+	//   - Before per-try timeout, an error response (per retry-on conditions) would be retried immediately or returned to the client
+	//     if there are no more retries left.
+	//   - After per-try timeout, an error response would be discarded, as a retry in the form of a hedged request is already in progress.
 	//
-	// Note: For this to have effect, you must have a :ref:`RetryPolicy <envoy_v3_api_msg_config.route.v3.RetryPolicy>` that retries at least
-	// one error code and specifies a maximum number of retries.
+	// .. note::
 	//
-	// Defaults to false.
+	//	For this to have effect, you must have a :ref:`RetryPolicy <envoy_v3_api_msg_config.route.v3.RetryPolicy>` that retries at least
+	//	one error code and specifies a maximum number of retries.
+	//
+	// Defaults to “false“.
 	hedge_on_per_try_timeout?: bool
 }
 
-// [#next-free-field: 10]
+// [#next-free-field: 11]
 #RedirectAction: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RedirectAction"
 	// The scheme portion of the URL will be swapped with "https".
@@ -939,12 +1105,12 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// For example, let's say we have the following routes:
 	//
-	// - match: { path: "/old-path-1" }
-	//   redirect: { path_redirect: "/new-path-1" }
-	// - match: { path: "/old-path-2" }
-	//   redirect: { path_redirect: "/new-path-2", strip-query: "true" }
-	// - match: { path: "/old-path-3" }
-	//   redirect: { path_redirect: "/new-path-3?foo=1", strip_query: "true" }
+	//   - match: { path: "/old-path-1" }
+	//     redirect: { path_redirect: "/new-path-1" }
+	//   - match: { path: "/old-path-2" }
+	//     redirect: { path_redirect: "/new-path-2", strip-query: "true" }
+	//   - match: { path: "/old-path-3" }
+	//     redirect: { path_redirect: "/new-path-3?foo=1", strip_query: "true" }
 	//
 	// 1. if request uri is "/old-path-1?bar=1", users will be redirected to "/new-path-1?bar=1"
 	// 2. if request uri is "/old-path-2?bar=1", users will be redirected to "/new-path-2"
@@ -956,8 +1122,8 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. attention::
 	//
-	//   Pay attention to the use of trailing slashes as mentioned in
-	//   :ref:`RouteAction's prefix_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.prefix_rewrite>`.
+	//	Pay attention to the use of trailing slashes as mentioned in
+	//	:ref:`RouteAction's prefix_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.prefix_rewrite>`.
 	prefix_rewrite?: string
 	// Indicates that during redirect, portions of the path that match the
 	// pattern should be rewritten, even allowing the substitution of capture
@@ -968,21 +1134,35 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// Examples using Google's `RE2 <https://github.com/google/re2>`_ engine:
 	//
-	// * The path pattern ``^/service/([^/]+)(/.*)$`` paired with a substitution
-	//   string of ``\2/instance/\1`` would transform ``/service/foo/v1/api``
-	//   into ``/v1/api/instance/foo``.
+	//   - The path pattern “^/service/([^/]+)(/.*)$“ paired with a substitution
+	//     string of “\2/instance/\1“ would transform “/service/foo/v1/api“
+	//     into “/v1/api/instance/foo“.
 	//
-	// * The pattern ``one`` paired with a substitution string of ``two`` would
-	//   transform ``/xxx/one/yyy/one/zzz`` into ``/xxx/two/yyy/two/zzz``.
+	//   - The pattern “one“ paired with a substitution string of “two“ would
+	//     transform “/xxx/one/yyy/one/zzz“ into “/xxx/two/yyy/two/zzz“.
 	//
-	// * The pattern ``^(.*?)one(.*)$`` paired with a substitution string of
-	//   ``\1two\2`` would replace only the first occurrence of ``one``,
-	//   transforming path ``/xxx/one/yyy/one/zzz`` into ``/xxx/two/yyy/one/zzz``.
+	//   - The pattern “^(.*?)one(.*)$“ paired with a substitution string of
+	//     “\1two\2“ would replace only the first occurrence of “one“,
+	//     transforming path “/xxx/one/yyy/one/zzz“ into “/xxx/two/yyy/one/zzz“.
 	//
-	// * The pattern ``(?i)/xxx/`` paired with a substitution string of ``/yyy/``
-	//   would do a case-insensitive match and transform path ``/aaa/XxX/bbb`` to
-	//   ``/aaa/yyy/bbb``.
+	//   - The pattern “(?i)/xxx/“ paired with a substitution string of “/yyy/“
+	//     would do a case-insensitive match and transform path “/aaa/XxX/bbb“ to
+	//     “/aaa/yyy/bbb“.
 	regex_rewrite?: v32.#RegexMatchAndSubstitute
+	// The path portion of the URL will be set to this value and supports
+	// :ref:`substitution format specifiers <config_access_log_format>` and CEL
+	// expressions.
+	//
+	// For example, with the following config:
+	//
+	// .. code-block:: yaml
+	//
+	//	path_rewrite: "/new/%REQ(x-version)%"
+	//
+	// Would redirect to “/new/v2“ given a request header “x-version: v2“.
+	// If the substitution produces an empty string the path redirect is ignored
+	// and the original path is preserved.
+	path_rewrite?: string
 	// The HTTP status code to use in the redirect response. The default response
 	// code is MOVED_PERMANENTLY (301).
 	response_code?: #RedirectAction_RedirectResponseCode
@@ -1000,10 +1180,15 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. note::
 	//
-	//   Headers can be specified using ``response_headers_to_add`` in the enclosing
-	//   :ref:`envoy_v3_api_msg_config.route.v3.Route`, :ref:`envoy_v3_api_msg_config.route.v3.RouteConfiguration` or
-	//   :ref:`envoy_v3_api_msg_config.route.v3.VirtualHost`.
+	//	Headers can be specified using ``response_headers_to_add`` in the enclosing
+	//	:ref:`envoy_v3_api_msg_config.route.v3.Route`, :ref:`envoy_v3_api_msg_config.route.v3.RouteConfiguration` or
+	//	:ref:`envoy_v3_api_msg_config.route.v3.VirtualHost`.
 	body?: v31.#DataSource
+	// Specifies a format string for the response body. If present, the contents of
+	// “body_format“ will be formatted and used as the response body, where the
+	// contents of “body“ (may be empty) will be passed as the variable “%LOCAL_REPLY_BODY%“.
+	// If neither are provided, no body is included in the generated response.
+	body_format?: v31.#SubstitutionFormatString
 }
 
 // [#not-implemented-hide:]
@@ -1018,20 +1203,21 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. note::
 	//
-	//   For ingress (inbound) requests, or egress (outbound) responses, this value may be overridden
-	//   by the :ref:`x-envoy-decorator-operation
-	//   <config_http_filters_router_x-envoy-decorator-operation>` header.
+	//	For ingress (inbound) requests, or egress (outbound) responses, this value may be overridden
+	//	by the :ref:`x-envoy-decorator-operation
+	//	<config_http_filters_router_x-envoy-decorator-operation>` header.
 	operation?: string
-	// Whether the decorated details should be propagated to the other party. The default is true.
+	// Whether the decorated details should be propagated to the other party. The default is “true“.
 	propagate?: bool
 }
 
+// [#next-free-field: 7]
 #Tracing: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.Tracing"
 	// Target percentage of requests managed by this HTTP connection manager that will be force
 	// traced if the :ref:`x-client-trace-id <config_http_conn_man_headers_x-client-trace-id>`
 	// header is set. This field is a direct analog for the runtime variable
-	// 'tracing.client_sampling' in the :ref:`HTTP Connection Manager
+	// 'tracing.client_enabled' in the :ref:`HTTP Connection Manager
 	// <config_http_conn_man_runtime>`.
 	// Default: 100%
 	client_sampling?: v33.#FractionalPercent
@@ -1057,6 +1243,32 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// each in the HTTP connection manager and the route level, the one configured here takes
 	// priority.
 	custom_tags?: [...v34.#CustomTag]
+	// The operation name of the span which will be used for tracing.
+	//
+	// The same :ref:`format specifier <config_access_log_format>` as used for
+	// :ref:`HTTP access logging <config_access_log>` applies here, however
+	// unknown specifier values are replaced with the empty string instead of “-“.
+	//
+	// This field will take precedence over and make following settings ineffective:
+	//
+	//   - :ref:`route decorator <envoy_v3_api_field_config.route.v3.Route.decorator>`.
+	//   - :ref:`x-envoy-decorator-operation <config_http_filters_router_x-envoy-decorator-operation>`.
+	//   - :ref:`HCM tracing operation
+	//     <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.Tracing.operation>`.
+	operation?: string
+	// The operation name of the upstream span which will be used for tracing.
+	// This only takes effect when “spawn_upstream_span“ is set to true and the upstream
+	// span is created.
+	//
+	// The same :ref:`format specifier <config_access_log_format>` as used for
+	// :ref:`HTTP access logging <config_access_log>` applies here, however
+	// unknown specifier values are replaced with the empty string instead of “-“.
+	//
+	// This field will take precedence over and make following settings ineffective:
+	//
+	//   - :ref:`HCM tracing upstream operation
+	//     <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.Tracing.upstream_operation>`
+	upstream_operation?: string
 }
 
 // A virtual cluster is a way of specifying a regex matching rule against
@@ -1073,13 +1285,13 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 //
 // .. note::
 //
-//    Virtual clusters are a useful tool, but we do not recommend setting up a virtual cluster for
-//    every application endpoint. This is both not easily maintainable and as well the matching and
-//    statistics output are not free.
+//	Virtual clusters are a useful tool, but we do not recommend setting up a virtual cluster for
+//	every application endpoint. This is both not easily maintainable and as well the matching and
+//	statistics output are not free.
 #VirtualCluster: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.VirtualCluster"
 	// Specifies a list of header matchers to use for matching requests. Each specified header must
-	// match. The pseudo-headers ``:path`` and ``:method`` can be used to match the request path and
+	// match. The pseudo-headers “:path“ and “:method“ can be used to match the request path and
 	// method, respectively.
 	headers?: [...#HeaderMatcher]
 	// Specifies the name of the virtual cluster. The virtual cluster name as well
@@ -1090,6 +1302,7 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 
 // Global rate limiting :ref:`architecture overview <arch_overview_global_rate_limit>`.
 // Also applies to Local rate limiting :ref:`using descriptors <config_http_filters_local_rate_limit_descriptors>`.
+// [#next-free-field: 8]
 #RateLimit: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit"
 	// Refers to the stage set in the filter. The rate limit configuration only
@@ -1098,9 +1311,21 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. note::
 	//
-	//   The filter supports a range of 0 - 10 inclusively for stage numbers.
+	//	The filter supports a range of 0 - 10 inclusively for stage numbers.
+	//
+	// .. note::
+	//
+	//	This is not supported if the rate limit action is configured in the ``typed_per_filter_config`` like
+	//	:ref:`VirtualHost.typed_per_filter_config<envoy_v3_api_field_config.route.v3.VirtualHost.typed_per_filter_config>` or
+	//	:ref:`Route.typed_per_filter_config<envoy_v3_api_field_config.route.v3.Route.typed_per_filter_config>`, etc.
 	stage?: uint32
 	// The key to be set in runtime to disable this rate limit configuration.
+	//
+	// .. note::
+	//
+	//	This is not supported if the rate limit action is configured in the ``typed_per_filter_config`` like
+	//	:ref:`VirtualHost.typed_per_filter_config<envoy_v3_api_field_config.route.v3.VirtualHost.typed_per_filter_config>` or
+	//	:ref:`Route.typed_per_filter_config<envoy_v3_api_field_config.route.v3.Route.typed_per_filter_config>`, etc.
 	disable_key?: string
 	// A list of actions that are to be applied for this rate limit configuration.
 	// Order matters as the actions are processed sequentially and the descriptor
@@ -1113,49 +1338,96 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// rate limit configuration. If the override value is invalid or cannot be resolved
 	// from metadata, no override is provided. See :ref:`rate limit override
 	// <config_http_filters_rate_limit_rate_limit_override>` for more information.
+	//
+	// .. note::
+	//
+	//	For the global HTTP :ref:`rate limit filter
+	//	<config_http_filters_rate_limit>`, this is supported both at the route/virtual host
+	//	level and when the rate limit configuration is supplied via the filter's
+	//	``rate_limits`` field or the ``typed_per_filter_config``
+	//	(:ref:`RateLimitPerRoute <envoy_v3_api_msg_extensions.filters.http.ratelimit.v3.RateLimitPerRoute>`).
+	//	This is not supported by the :ref:`local rate limit filter
+	//	<config_http_filters_local_rate_limit>`.
 	limit?: #RateLimit_Override
+	// An optional hits addend to be appended to the descriptor produced by this rate limit
+	// configuration.
+	//
+	// .. note::
+	//
+	//	This is only supported if the rate limit action is configured in the ``typed_per_filter_config`` like
+	//	:ref:`VirtualHost.typed_per_filter_config<envoy_v3_api_field_config.route.v3.VirtualHost.typed_per_filter_config>` or
+	//	:ref:`Route.typed_per_filter_config<envoy_v3_api_field_config.route.v3.Route.typed_per_filter_config>`, etc.
+	hits_addend?: #RateLimit_HitsAddend
+	// If true, the rate limit request will be applied when the stream completes. The default value is false.
+	// This is useful when the rate limit budget needs to reflect the response context that is not available
+	// on the request path.
+	//
+	// For example, let's say the upstream service calculates the usage statistics and returns them in the response body
+	// and we want to utilize these numbers to apply the rate limit action for the subsequent requests.
+	// Combined with another filter that can set the desired addend based on the response (e.g. Lua filter),
+	// this can be used to subtract the usage statistics from the rate limit budget.
+	//
+	// A rate limit applied on the stream completion is "fire-and-forget" by nature, and rate limit is not enforced by this config.
+	// In other words, the current request won't be blocked when this is true, but the budget will be updated for the subsequent
+	// requests based on the action with this field set to true. Users should ensure that the rate limit is enforced by the actions
+	// applied on the request path, i.e. the ones with this field set to false.
+	//
+	// Currently, this is only supported by the HTTP global rate filter.
+	apply_on_stream_done?: bool
+	// Descriptor level X-RateLimit headers options which may override the filter level setting.
+	x_ratelimit_option?: #RateLimit_XRateLimitOption
 }
 
 // .. attention::
 //
-//   Internally, Envoy always uses the HTTP/2 ``:authority`` header to represent the HTTP/1 ``Host``
-//   header. Thus, if attempting to match on ``Host``, match on ``:authority`` instead.
+//	Internally, Envoy always uses the HTTP/2 ``:authority`` header to represent the HTTP/1 ``Host``
+//	header. Thus, if attempting to match on ``Host``, match on ``:authority`` instead.
 //
 // .. attention::
 //
-//   To route on HTTP method, use the special HTTP/2 ``:method`` header. This works for both
-//   HTTP/1 and HTTP/2 as Envoy normalizes headers. E.g.,
+//	To route on HTTP method, use the special HTTP/2 ``:method`` header. This works for both
+//	HTTP/1 and HTTP/2 as Envoy normalizes headers. E.g.,
 //
-//   .. code-block:: json
+//	.. code-block:: json
 //
-//     {
-//       "name": ":method",
-//       "exact_match": "POST"
-//     }
+//	  {
+//	    "name": ":method",
+//	    "string_match": {
+//	      "exact": "POST"
+//	    }
+//	  }
 //
 // .. attention::
-//   In the absence of any header match specifier, match will default to :ref:`present_match
-//   <envoy_v3_api_field_config.route.v3.HeaderMatcher.present_match>`. i.e, a request that has the :ref:`name
-//   <envoy_v3_api_field_config.route.v3.HeaderMatcher.name>` header will match, regardless of the header's
-//   value.
 //
-//  [#next-major-version: HeaderMatcher should be refactored to use StringMatcher.]
+//	 In the absence of any header match specifier, match will default to :ref:`present_match
+//	 <envoy_v3_api_field_config.route.v3.HeaderMatcher.present_match>`. i.e, a request that has the :ref:`name
+//	 <envoy_v3_api_field_config.route.v3.HeaderMatcher.name>` header will match, regardless of the header's
+//	 value.
+//
+//	[#next-major-version: HeaderMatcher should be refactored to use StringMatcher.]
+//
 // [#next-free-field: 15]
 #HeaderMatcher: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.HeaderMatcher"
 	// Specifies the name of the header in the request.
 	name?: string
 	// If specified, header match will be performed based on the value of the header.
-	// This field is deprecated. Please use :ref:`string_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.string_match>`.
 	//
-	// Deprecated: Do not use.
+	// .. attention::
+	//
+	//	This field is deprecated. Please use :ref:`string_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.string_match>`.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	exact_match?: string
 	// If specified, this regex string is a regular expression rule which implies the entire request
 	// header value must match the regex. The rule will not match if only a subsequence of the
 	// request header value matches the regex.
-	// This field is deprecated. Please use :ref:`string_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.string_match>`.
 	//
-	// Deprecated: Do not use.
+	// .. attention::
+	//
+	//	This field is deprecated. Please use :ref:`string_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.string_match>`.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	safe_regex_match?: v32.#RegexMatcher
 	// If specified, header match will be performed based on range.
 	// The rule will match if the request header value is within this range.
@@ -1166,78 +1438,100 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// Examples:
 	//
-	// * For range [-10,0), route will match for header value -1, but not for 0, ``somestring``, 10.9,
-	//   ``-1somestring``
+	//   - For range [-10,0), route will match for header value -1, but not for 0, “somestring“, 10.9,
+	//     “-1somestring“
 	range_match?: v33.#Int64Range
 	// If specified as true, header match will be performed based on whether the header is in the
 	// request. If specified as false, header match will be performed based on whether the header is absent.
 	present_match?: bool
 	// If specified, header match will be performed based on the prefix of the header value.
-	// Note: empty prefix is not allowed, please use present_match instead.
-	// This field is deprecated. Please use :ref:`string_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.string_match>`.
+	//
+	// .. note::
+	//
+	//	Empty prefix is not allowed. Please use ``present_match`` instead.
+	//
+	// .. attention::
+	//
+	//	This field is deprecated. Please use :ref:`string_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.string_match>`.
 	//
 	// Examples:
 	//
-	// * The prefix ``abcd`` matches the value ``abcdxyz``, but not for ``abcxyz``.
+	// * The prefix “abcd“ matches the value “abcdxyz“, but not for “abcxyz“.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	prefix_match?: string
 	// If specified, header match will be performed based on the suffix of the header value.
-	// Note: empty suffix is not allowed, please use present_match instead.
-	// This field is deprecated. Please use :ref:`string_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.string_match>`.
+	//
+	// .. note::
+	//
+	//	Empty suffix is not allowed. Please use ``present_match`` instead.
+	//
+	// .. attention::
+	//
+	//	This field is deprecated. Please use :ref:`string_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.string_match>`.
 	//
 	// Examples:
 	//
-	// * The suffix ``abcd`` matches the value ``xyzabcd``, but not for ``xyzbcd``.
+	// * The suffix “abcd“ matches the value “xyzabcd“, but not for “xyzbcd“.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	suffix_match?: string
 	// If specified, header match will be performed based on whether the header value contains
 	// the given value or not.
-	// Note: empty contains match is not allowed, please use present_match instead.
-	// This field is deprecated. Please use :ref:`string_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.string_match>`.
+	//
+	// .. note::
+	//
+	//	Empty contains match is not allowed. Please use ``present_match`` instead.
+	//
+	// .. attention::
+	//
+	//	This field is deprecated. Please use :ref:`string_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.string_match>`.
 	//
 	// Examples:
 	//
-	// * The value ``abcd`` matches the value ``xyzabcdpqr``, but not for ``xyzbcdpqr``.
+	// * The value “abcd“ matches the value “xyzabcdpqr“, but not for “xyzbcdpqr“.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	contains_match?: string
 	// If specified, header match will be performed based on the string match of the header value.
 	string_match?: v32.#StringMatcher
-	// If specified, the match result will be inverted before checking. Defaults to false.
+	// If specified, the match result will be inverted before checking.
+	//
+	// Defaults to “false“.
 	//
 	// Examples:
 	//
-	// * The regex ``\d{3}`` does not match the value ``1234``, so it will match when inverted.
+	// * The regex “\d{3}“ does not match the value “1234“, so it will match when inverted.
 	// * The range [-10,0) will match the value -1, so it will not match when inverted.
 	invert_match?: bool
 	// If specified, for any header match rule, if the header match rule specified header
-	// does not exist, this header value will be treated as empty. Defaults to false.
+	// does not exist, this header value will be treated as empty.
+	//
+	// Defaults to “false“.
 	//
 	// Examples:
 	//
-	// * The header match rule specified header "header1" to range match of [0, 10],
-	//   :ref:`invert_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.invert_match>`
-	//   is set to true and :ref:`treat_missing_header_as_empty <envoy_v3_api_field_config.route.v3.HeaderMatcher.treat_missing_header_as_empty>`
-	//   is set to true; The "header1" header is not present. The match rule will
-	//   treat the "header1" as an empty header. The empty header does not match the range,
-	//   so it will match when inverted.
-	// * The header match rule specified header "header2" to range match of [0, 10],
-	//   :ref:`invert_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.invert_match>`
-	//   is set to true and :ref:`treat_missing_header_as_empty <envoy_v3_api_field_config.route.v3.HeaderMatcher.treat_missing_header_as_empty>`
-	//   is set to false; The "header2" header is not present and the header
-	//   matcher rule for "header2" will be ignored so it will not match.
-	// * The header match rule specified header "header3" to a string regex match
-	//   ``^$`` which means an empty string, and
-	//   :ref:`treat_missing_header_as_empty <envoy_v3_api_field_config.route.v3.HeaderMatcher.treat_missing_header_as_empty>`
-	//   is set to true; The "header3" header is not present.
-	//   The match rule will treat the "header3" header as an empty header so it will match.
-	// * The header match rule specified header "header4" to a string regex match
-	//   ``^$`` which means an empty string, and
-	//   :ref:`treat_missing_header_as_empty <envoy_v3_api_field_config.route.v3.HeaderMatcher.treat_missing_header_as_empty>`
-	//   is set to false; The "header4" header is not present.
-	//   The match rule for "header4" will be ignored so it will not match.
+	//   - The header match rule specified header "header1" to range match of [0, 10],
+	//     :ref:`invert_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.invert_match>`
+	//     is set to true and :ref:`treat_missing_header_as_empty <envoy_v3_api_field_config.route.v3.HeaderMatcher.treat_missing_header_as_empty>`
+	//     is set to true; The "header1" header is not present. The match rule will
+	//     treat the "header1" as an empty header. The empty header does not match the range,
+	//     so it will match when inverted.
+	//   - The header match rule specified header "header2" to range match of [0, 10],
+	//     :ref:`invert_match <envoy_v3_api_field_config.route.v3.HeaderMatcher.invert_match>`
+	//     is set to true and :ref:`treat_missing_header_as_empty <envoy_v3_api_field_config.route.v3.HeaderMatcher.treat_missing_header_as_empty>`
+	//     is set to false; The "header2" header is not present and the header
+	//     matcher rule for "header2" will be ignored so it will not match.
+	//   - The header match rule specified header "header3" to a string regex match
+	//     “^$“ which means an empty string, and
+	//     :ref:`treat_missing_header_as_empty <envoy_v3_api_field_config.route.v3.HeaderMatcher.treat_missing_header_as_empty>`
+	//     is set to true; The "header3" header is not present.
+	//     The match rule will treat the "header3" header as an empty header so it will match.
+	//   - The header match rule specified header "header4" to a string regex match
+	//     “^$“ which means an empty string, and
+	//     :ref:`treat_missing_header_as_empty <envoy_v3_api_field_config.route.v3.HeaderMatcher.treat_missing_header_as_empty>`
+	//     is set to false; The "header4" header is not present.
+	//     The match rule for "header4" will be ignored so it will not match.
 	treat_missing_header_as_empty?: bool
 }
 
@@ -1247,7 +1541,7 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 #QueryParameterMatcher: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.QueryParameterMatcher"
 	// Specifies the name of a key that must be present in the requested
-	// ``path``'s query string.
+	// “path“'s query string.
 	name?: string
 	// Specifies whether a query parameter value should match against a string.
 	string_match?: v32.#StringMatcher
@@ -1255,7 +1549,21 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	present_match?: bool
 }
 
+// Cookie matching inspects individual name/value pairs parsed from the “Cookie“ header.
+#CookieMatcher: {
+	"@type": "type.googleapis.com/envoy.config.route.v3.CookieMatcher"
+	// Specifies the cookie name to evaluate.
+	name?: string
+	// Match the cookie value using :ref:`StringMatcher
+	// <envoy_v3_api_msg_type.matcher.v3.StringMatcher>` semantics.
+	string_match?: v32.#StringMatcher
+	// Invert the match result. If the cookie is not present, the match result is false, so
+	// “invert_match“ will cause the matcher to succeed when the cookie is absent.
+	invert_match?: bool
+}
+
 // HTTP Internal Redirect :ref:`architecture overview <arch_overview_internal_redirects>`.
+// [#next-free-field: 6]
 #InternalRedirectPolicy: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.InternalRedirectPolicy"
 	// An internal redirect is not handled, unless the number of previous internal redirects that a
@@ -1277,8 +1585,12 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// [#extension-category: envoy.internal_redirect_predicates]
 	predicates?: [...v31.#TypedExtensionConfig]
 	// Allow internal redirect to follow a target URI with a different scheme than the value of
-	// x-forwarded-proto. The default is false.
+	// x-forwarded-proto. The default is “false“.
 	allow_cross_scheme_redirect?: bool
+	// Specifies a list of headers, by name, to copy from the internal redirect into the subsequent
+	// request. If a header is specified here but not present in the redirect, it will be cleared in
+	// the subsequent request.
+	response_headers_to_copy?: [...string]
 }
 
 // A simple wrapper for an HTTP filter config. This is intended to be used as a wrapper for the
@@ -1287,7 +1599,6 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 // :ref:`Route.typed_per_filter_config<envoy_v3_api_field_config.route.v3.Route.typed_per_filter_config>`,
 // or :ref:`WeightedCluster.ClusterWeight.typed_per_filter_config<envoy_v3_api_field_config.route.v3.WeightedCluster.ClusterWeight.typed_per_filter_config>`
 // to add additional flags to the filter.
-// [#not-implemented-hide:]
 #FilterConfig: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.FilterConfig"
 	// The filter config.
@@ -1296,17 +1607,30 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// not support the specified filter, it may ignore the map entry rather
 	// than rejecting the config.
 	is_optional?: bool
+	// If true, the filter is disabled in the route or virtual host and the “config“ field is ignored.
+	// See :ref:`route based filter chain <arch_overview_http_filters_route_based_filter_chain>`
+	// for more details.
+	//
+	// .. note::
+	//
+	//	This field will take effect when the request arrive and filter chain is created for the request.
+	//	If initial route is selected for the request and a filter is disabled in the initial route, then
+	//	the filter will not be added to the filter chain.
+	//	And if the request is mutated later and re-match to another route, the disabled filter by the
+	//	initial route will not be added back to the filter chain because the filter chain is already
+	//	created and it is too late to change the chain.
+	disabled?: bool
 }
 
 // [#next-free-field: 13]
 #WeightedCluster_ClusterWeight: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.WeightedCluster_ClusterWeight"
-	// Only one of ``name`` and ``cluster_header`` may be specified.
+	// Only one of “name“ and “cluster_header“ may be specified.
 	// [#next-major-version: Need to add back the validation rule: (validate.rules).string = {min_len: 1}]
 	// Name of the upstream cluster. The cluster must exist in the
 	// :ref:`cluster manager configuration <config_cluster_manager>`.
 	name?: string
-	// Only one of ``name`` and ``cluster_header`` may be specified.
+	// Only one of “name“ and “cluster_header“ may be specified.
 	// [#next-major-version: Need to add back the validation rule: (validate.rules).string = {min_len: 1 }]
 	// Envoy will determine the cluster to route to by reading the value of the
 	// HTTP header named by cluster_header from the request headers. If the
@@ -1315,23 +1639,24 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. attention::
 	//
-	//   Internally, Envoy always uses the HTTP/2 ``:authority`` header to represent the HTTP/1
-	//   ``Host`` header. Thus, if attempting to match on ``Host``, match on ``:authority`` instead.
+	//	Internally, Envoy always uses the HTTP/2 ``:authority`` header to represent the HTTP/1
+	//	``Host`` header. Thus, if attempting to match on ``Host``, match on ``:authority`` instead.
 	//
 	// .. note::
 	//
-	//   If the header appears multiple times only the first value is used.
+	//	If the header appears multiple times only the first value is used.
 	cluster_header?: string
 	// The weight of the cluster. This value is relative to the other clusters'
 	// weights. When a request matches the route, the choice of an upstream cluster
 	// is determined by its weight. The sum of weights across all
-	// entries in the clusters array must be greater than 0.
+	// entries in the clusters array must be greater than 0, and must not exceed
+	// uint32_t maximal value (4294967295).
 	weight?: uint32
 	// Optional endpoint metadata match criteria used by the subset load balancer. Only endpoints in
 	// the upstream cluster with metadata matching what is set in this field will be considered for
 	// load balancing. Note that this will be merged with what's provided in
 	// :ref:`RouteAction.metadata_match <envoy_v3_api_field_config.route.v3.RouteAction.metadata_match>`, with
-	// values here taking precedence. The filter name should be specified as ``envoy.lb``.
+	// values here taking precedence. The filter name should be specified as “envoy.lb“.
 	metadata_match?: v31.#Metadata
 	// Specifies a list of headers to be added to requests when this cluster is selected
 	// through the enclosing :ref:`envoy_v3_api_msg_config.route.v3.RouteAction`.
@@ -1355,16 +1680,11 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// Specifies a list of headers to be removed from responses when this cluster is selected
 	// through the enclosing :ref:`envoy_v3_api_msg_config.route.v3.RouteAction`.
 	response_headers_to_remove?: [...string]
-	// The per_filter_config field can be used to provide weighted cluster-specific configurations
-	// for filters.
-	// The key should match the :ref:`filter config name
+	// This field can be used to provide weighted cluster specific per filter config. The key should match the
+	// :ref:`filter config name
 	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpFilter.name>`.
-	// The canonical filter name (e.g., ``envoy.filters.http.buffer`` for the HTTP buffer filter) can also
-	// be used for the backwards compatibility. If there is no entry referred by the filter config name, the
-	// entry referred by the canonical filter name will be provided to the filters as fallback.
-	//
-	// Use of this field is filter specific;
-	// see the :ref:`HTTP filter documentation <config_http_filters>` for if and how it is utilized.
+	// See :ref:`HTTP filter route-specific config <arch_overview_http_filters_per_filter_config>`
+	// for details.
 	// [#comment: An entry's value may be wrapped in a
 	// :ref:`FilterConfig<envoy_v3_api_msg_config.route.v3.FilterConfig>`
 	// message to specify additional options.]
@@ -1385,10 +1705,20 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	presented?: bool
 	// If specified, the route will match against whether or not a certificate is validated.
 	// If not specified, certificate validation status (true or false) will not be considered when route matching.
+	//
+	// .. warning::
+	//
+	//	Client certificate validation is not currently performed upon TLS session resumption. For
+	//	a resumed TLS session the route will match only when ``validated`` is false, regardless of
+	//	whether the client TLS certificate is valid.
+	//
+	//	The only known workaround for this issue is to disable TLS session resumption entirely, by
+	//	setting both :ref:`disable_stateless_session_resumption <envoy_v3_api_field_extensions.transport_sockets.tls.v3.DownstreamTlsContext.disable_stateless_session_resumption>`
+	//	and :ref:`disable_stateful_session_resumption <envoy_v3_api_field_extensions.transport_sockets.tls.v3.DownstreamTlsContext.disable_stateful_session_resumption>` on the DownstreamTlsContext.
 	validated?: bool
 }
 
-// An extensible message for matching CONNECT requests.
+// An extensible message for matching CONNECT or CONNECT-UDP requests.
 #RouteMatch_ConnectMatcher: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RouteMatch_ConnectMatcher"
 }
@@ -1398,25 +1728,27 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 // respond before returning the response from the primary cluster. All normal statistics are
 // collected for the shadow cluster making this feature useful for testing.
 //
-// During shadowing, the host/authority header is altered such that ``-shadow`` is appended. This is
-// useful for logging. For example, ``cluster1`` becomes ``cluster1-shadow``.
+// During shadowing, the host/authority header is altered such that “-shadow“ is appended. This is
+// useful for logging. For example, “cluster1“ becomes “cluster1-shadow“. This behavior can be
+// disabled by setting “disable_shadow_host_suffix_append“ to “true“.
 //
 // .. note::
 //
-//   Shadowing will not be triggered if the primary cluster does not exist.
+//	Shadowing will not be triggered if the primary cluster does not exist.
 //
 // .. note::
 //
-//   Shadowing doesn't support Http CONNECT and upgrades.
-// [#next-free-field: 6]
+//	Shadowing doesn't support HTTP CONNECT and upgrades.
+//
+// [#next-free-field: 9]
 #RouteAction_RequestMirrorPolicy: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RouteAction_RequestMirrorPolicy"
-	// Only one of ``cluster`` and ``cluster_header`` can be specified.
+	// Only one of “cluster“ and “cluster_header“ can be specified.
 	// [#next-major-version: Need to add back the validation rule: (validate.rules).string = {min_len: 1}]
 	// Specifies the cluster that requests will be mirrored to. The cluster must
 	// exist in the cluster manager configuration.
 	cluster?: string
-	// Only one of ``cluster`` and ``cluster_header`` can be specified.
+	// Only one of “cluster“ and “cluster_header“ can be specified.
 	// Envoy will determine the cluster to route to by reading the value of the
 	// HTTP header named by cluster_header from the request headers. Only the first value in header is used,
 	// and no shadow request will happen if the value is not found in headers. Envoy will not wait for
@@ -1424,24 +1756,41 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. attention::
 	//
-	//   Internally, Envoy always uses the HTTP/2 ``:authority`` header to represent the HTTP/1
-	//   ``Host`` header. Thus, if attempting to match on ``Host``, match on ``:authority`` instead.
+	//	Internally, Envoy always uses the HTTP/2 ``:authority`` header to represent the HTTP/1
+	//	``Host`` header. Thus, if attempting to match on ``Host``, match on ``:authority`` instead.
 	//
 	// .. note::
 	//
-	//   If the header appears multiple times only the first value is used.
+	//	If the header appears multiple times only the first value is used.
 	cluster_header?: string
 	// If not specified, all requests to the target cluster will be mirrored.
 	//
-	// If specified, this field takes precedence over the ``runtime_key`` field and requests must also
+	// If specified, this field takes precedence over the “runtime_key“ field and requests must also
 	// fall under the percentage of matches indicated by this field.
 	//
 	// For some fraction N/D, a random number in the range [0,D) is selected. If the
 	// number is <= the value of the numerator N, or if the key is not present, the default
 	// value, the request will be mirrored.
 	runtime_fraction?: v31.#RuntimeFractionalPercent
-	// Determines if the trace span should be sampled. Defaults to true.
+	// Specifies whether the trace span for the shadow request should be sampled. If this field is not explicitly set,
+	// the shadow request will inherit the sampling decision of its parent span. This ensures consistency with the trace
+	// sampling policy of the original request and prevents oversampling, especially in scenarios where runtime sampling
+	// is disabled.
 	trace_sampled?: bool
+	// Disables appending the “-shadow“ suffix to the shadowed “Host“ header.
+	//
+	// Defaults to “false“.
+	disable_shadow_host_suffix_append?: bool
+	// Specifies a list of header mutations that should be applied to each mirrored request.
+	// Header mutations are applied in the order they are specified. For more information, including
+	// details on header value syntax, see the documentation on :ref:`custom request headers
+	// <config_http_conn_man_headers_custom_request_headers>`.
+	request_headers_mutations?: [...v35.#HeaderMutation]
+	// Indicates that during mirroring, the host header will be swapped with this value.
+	// :ref:`disable_shadow_host_suffix_append
+	// <envoy_v3_api_field_config.route.v3.RouteAction.RequestMirrorPolicy.disable_shadow_host_suffix_append>`
+	// is implicitly enabled if this field is set.
+	host_rewrite_literal?: string
 }
 
 // Specifies the route's hashing policy if the upstream cluster uses a hashing :ref:`load balancer
@@ -1468,13 +1817,13 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// list of hash polices.
 	// For example, if the following hash methods are configured:
 	//
-	//  ========= ========
-	//  specifier terminal
-	//  ========= ========
-	//  Header A  true
-	//  Header B  false
-	//  Header C  false
-	//  ========= ========
+	//	========= ========
+	//	specifier terminal
+	//	========= ========
+	//	Header A  true
+	//	Header B  false
+	//	Header C  false
+	//	========= ========
 	//
 	// The generateHash process ends if policy "header A" generates a hash, as
 	// it's a terminal policy.
@@ -1489,11 +1838,13 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 // but does not affect any custom filter chain specified there.
 #RouteAction_UpgradeConfig: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RouteAction_UpgradeConfig"
-	// The case-insensitive name of this upgrade, e.g. "websocket".
+	// The case-insensitive name of this upgrade, for example, "websocket".
 	// For each upgrade type present in upgrade_configs, requests with
 	// Upgrade: [upgrade_type] will be proxied upstream.
 	upgrade_type?: string
-	// Determines if upgrades are available on this route. Defaults to true.
+	// Determines if upgrades are available on this route.
+	//
+	// Defaults to “true“.
 	enabled?: bool
 	// Configuration for sending data upstream as a raw data payload. This is used for
 	// CONNECT requests, when forwarding CONNECT payload as raw TCP.
@@ -1515,10 +1866,10 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	max_stream_duration?: string
 	// If present, and the request contains a `grpc-timeout header
 	// <https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md>`_, use that value as the
-	// ``max_stream_duration``, but limit the applied timeout to the maximum value specified here.
-	// If set to 0, the ``grpc-timeout`` header is used without modification.
+	// “max_stream_duration“, but limit the applied timeout to the maximum value specified here.
+	// If set to 0, the “grpc-timeout“ header is used without modification.
 	grpc_timeout_header_max?: string
-	// If present, Envoy will adjust the timeout provided by the ``grpc-timeout`` header by
+	// If present, Envoy will adjust the timeout provided by the “grpc-timeout“ header by
 	// subtracting the provided duration from the header. This is useful for allowing Envoy to set
 	// its global timeout to be less than that of the deadline imposed by the calling client, which
 	// makes it more likely that Envoy will handle the timeout instead of having the call canceled
@@ -1537,20 +1888,29 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	regex_rewrite?: v32.#RegexMatchAndSubstitute
 }
 
+// CookieAttribute defines an API for adding additional attributes for a HTTP cookie.
+#RouteAction_HashPolicy_CookieAttribute: {
+	"@type": "type.googleapis.com/envoy.config.route.v3.RouteAction_HashPolicy_CookieAttribute"
+	// The name of the cookie attribute.
+	name?: string
+	// The optional value of the cookie attribute.
+	value?: string
+}
+
 // Envoy supports two types of cookie affinity:
 //
-// 1. Passive. Envoy takes a cookie that's present in the cookies header and
-//    hashes on its value.
+//  1. Passive. Envoy takes a cookie that's present in the cookies header and
+//     hashes on its value.
 //
-// 2. Generated. Envoy generates and sets a cookie with an expiration (TTL)
-//    on the first request from the client in its response to the client,
-//    based on the endpoint the request gets sent to. The client then
-//    presents this on the next and all subsequent requests. The hash of
-//    this is sufficient to ensure these requests get sent to the same
-//    endpoint. The cookie is generated by hashing the source and
-//    destination ports and addresses so that multiple independent HTTP2
-//    streams on the same connection will independently receive the same
-//    cookie, even if they arrive at the Envoy simultaneously.
+//  2. Generated. Envoy generates and sets a cookie with an expiration (TTL)
+//     on the first request from the client in its response to the client,
+//     based on the endpoint the request gets sent to. The client then
+//     presents this on the next and all subsequent requests. The hash of
+//     this is sufficient to ensure these requests get sent to the same
+//     endpoint. The cookie is generated by hashing the source and
+//     destination ports and addresses so that multiple independent HTTP2
+//     streams on the same connection will independently receive the same
+//     cookie, even if they arrive at the Envoy simultaneously.
 #RouteAction_HashPolicy_Cookie: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RouteAction_HashPolicy_Cookie"
 	// The name of the cookie that will be used to obtain the hash key. If the
@@ -1564,6 +1924,8 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// The name of the path for the cookie. If no path is specified here, no path
 	// will be set for the cookie.
 	path?: string
+	// Additional attributes for the cookie. They will be used when generating a new cookie.
+	attributes?: [...#RouteAction_HashPolicy_CookieAttribute]
 }
 
 #RouteAction_HashPolicy_ConnectionProperties: {
@@ -1576,7 +1938,8 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	"@type": "type.googleapis.com/envoy.config.route.v3.RouteAction_HashPolicy_QueryParameter"
 	// The name of the URL query parameter that will be used to obtain the hash
 	// key. If the parameter is not present, no hash will be produced. Query
-	// parameter names are case-sensitive.
+	// parameter names are case-sensitive. If query parameters are repeated, only
+	// the first value will be considered.
 	name?: string
 }
 
@@ -1618,8 +1981,8 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// back-off algorithm.
 	base_interval?: string
 	// Specifies the maximum interval between retries. This parameter is optional, but must be
-	// greater than or equal to the ``base_interval`` if set. The default is 10 times the
-	// ``base_interval``. See :ref:`config_http_filters_router_x-envoy-max-retries` for a discussion
+	// greater than or equal to the “base_interval“ if set. The default is 10 times the
+	// “base_interval“. See :ref:`config_http_filters_router_x-envoy-max-retries` for a discussion
 	// of Envoy's back-off algorithm.
 	max_interval?: string
 }
@@ -1630,7 +1993,7 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	//
 	// .. note::
 	//
-	//   If the header appears multiple times only the first value is used.
+	//	If the header appears multiple times only the first value is used.
 	name?: string
 	// The format of the reset header.
 	format?: #RetryPolicy_ResetHeaderFormat
@@ -1643,21 +2006,21 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 //
 // .. code-block:: yaml
 //
-//   rate_limited_retry_back_off:
-//     reset_headers:
-//     - name: Retry-After
-//       format: SECONDS
-//     - name: X-RateLimit-Reset
-//       format: UNIX_TIMESTAMP
-//     max_interval: "300s"
+//	rate_limited_retry_back_off:
+//	  reset_headers:
+//	  - name: Retry-After
+//	    format: SECONDS
+//	  - name: X-RateLimit-Reset
+//	    format: UNIX_TIMESTAMP
+//	  max_interval: "300s"
 //
 // The following algorithm will apply:
 //
-//  1. If the response contains the header ``Retry-After`` its value must be on
-//     the form ``120`` (an integer that represents the number of seconds to
+//  1. If the response contains the header “Retry-After“ its value must be on
+//     the form “120“ (an integer that represents the number of seconds to
 //     wait before retrying). If so, this value is used as the back-off interval.
-//  2. Otherwise, if the response contains the header ``X-RateLimit-Reset`` its
-//     value must be on the form ``1595320702`` (an integer that represents the
+//  2. Otherwise, if the response contains the header “X-RateLimit-Reset“ its
+//     value must be on the form “1595320702“ (an integer that represents the
 //     point in time at which to retry, as a Unix timestamp in seconds). If so,
 //     the current time is subtracted from this value and the result is used as
 //     the back-off interval.
@@ -1666,33 +2029,35 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 //     strategy.
 //
 // No matter which format is used, if the resulting back-off interval exceeds
-// ``max_interval`` it is discarded and the next header in ``reset_headers``
+// “max_interval“ it is discarded and the next header in “reset_headers“
 // is tried. If a request timeout is configured for the route it will further
 // limit how long the request will be allowed to run.
 //
 // To prevent many clients retrying at the same point in time jitter is added
 // to the back-off interval, so the resulting interval is decided by taking:
-// ``random(interval, interval * 1.5)``.
+// “random(interval, interval * 1.5)“.
 //
 // .. attention::
 //
-//   Configuring ``rate_limited_retry_back_off`` will not by itself cause a request
-//   to be retried. You will still need to configure the right retry policy to match
-//   the responses from the upstream server.
+//	Configuring ``rate_limited_retry_back_off`` will not by itself cause a request
+//	to be retried. You will still need to configure the right retry policy to match
+//	the responses from the upstream server.
 #RetryPolicy_RateLimitedRetryBackOff: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RetryPolicy_RateLimitedRetryBackOff"
-	// Specifies the reset headers (like ``Retry-After`` or ``X-RateLimit-Reset``)
+	// Specifies the reset headers (like “Retry-After“ or “X-RateLimit-Reset“)
 	// to match against the response. Headers are tried in order, and matched case
 	// insensitive. The first header to be parsed successfully is used. If no headers
 	// match the default exponential back-off is used instead.
 	reset_headers?: [...#RetryPolicy_ResetHeader]
 	// Specifies the maximum back off interval that Envoy will allow. If a reset
 	// header contains an interval longer than this then it will be discarded and
-	// the next header will be tried. Defaults to 300 seconds.
+	// the next header will be tried.
+	//
+	// Defaults to 300 seconds.
 	max_interval?: string
 }
 
-// [#next-free-field: 11]
+// [#next-free-field: 14]
 #RateLimit_Action: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action"
 	// Rate limit on source cluster.
@@ -1701,6 +2066,8 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	destination_cluster?: #RateLimit_Action_DestinationCluster
 	// Rate limit on request headers.
 	request_headers?: #RateLimit_Action_RequestHeaders
+	// Rate limit on query parameters.
+	query_parameters?: #RateLimit_Action_QueryParameters
 	// Rate limit on remote address.
 	remote_address?: #RateLimit_Action_RemoteAddress
 	// Rate limit on a generic key.
@@ -1710,9 +2077,10 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// Rate limit on dynamic metadata.
 	//
 	// .. attention::
-	//   This field has been deprecated in favor of the :ref:`metadata <envoy_v3_api_field_config.route.v3.RateLimit.Action.metadata>` field
 	//
-	// Deprecated: Do not use.
+	//	This field has been deprecated in favor of the :ref:`metadata <envoy_v3_api_field_config.route.v3.RateLimit.Action.metadata>` field
+	//
+	// Deprecated: Marked as deprecated in envoy/config/route/v3/route_components.proto.
 	dynamic_metadata?: #RateLimit_Action_DynamicMetaData
 	// Rate limit on metadata.
 	metadata?: #RateLimit_Action_MetaData
@@ -1727,19 +2095,56 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	extension?: v31.#TypedExtensionConfig
 	// Rate limit on masked remote address.
 	masked_remote_address?: #RateLimit_Action_MaskedRemoteAddress
+	// Rate limit on the existence of query parameters.
+	query_parameter_value_match?: #RateLimit_Action_QueryParameterValueMatch
+	// Rate limit on remote address match.
+	remote_address_match?: #RateLimit_Action_RemoteAddressMatch
 }
 
 #RateLimit_Override: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Override"
 	// Limit override from dynamic metadata.
 	dynamic_metadata?: #RateLimit_Override_DynamicMetadata
+	// Static limit override.
+	rate_limit?: #RateLimit_Override_RateLimitOverride
+}
+
+#RateLimit_HitsAddend: {
+	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_HitsAddend"
+	// Fixed number of hits to add to the rate limit descriptor.
+	//
+	// One of the “number“ or “format“ fields should be set but not both.
+	number?: uint64
+	// Substitution format string to extract the number of hits to add to the rate limit descriptor.
+	// The same :ref:`format specifier <config_access_log_format>` as used for
+	// :ref:`HTTP access logging <config_access_log>` applies here.
+	//
+	// .. note::
+	//
+	//	The format string must contains only single valid substitution field. If the format string
+	//	not meets the requirement, the configuration will be rejected.
+	//
+	//	The substitution field should generates a non-negative number or string representation of
+	//	a non-negative number. The value of the non-negative number should be less than or equal
+	//	to 1000000000 like the ``number`` field. If the output of the substitution field not meet
+	//	the requirement, this will be treated as an error and the current descriptor will be ignored.
+	//
+	// For example, the “%BYTES_RECEIVED%“ format string will be replaced with the number of bytes
+	// received in the request.
+	//
+	// One of the “number“ or “format“ fields should be set but not both.
+	format?: string
+	// If true, the hits addend value will be treated as negative, effectively adding to
+	// the rate limit budget instead of consuming from it. This can be used to refill previously consumed
+	// rate limit tokens.
+	is_negative_hits?: bool
 }
 
 // The following descriptor entry is appended to the descriptor:
 //
 // .. code-block:: cpp
 //
-//   ("source_cluster", "<local service cluster>")
+//	("source_cluster", "<local service cluster>")
 //
 // <local service cluster> is derived from the :option:`--service-cluster` option.
 #RateLimit_Action_SourceCluster: {
@@ -1750,28 +2155,28 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 //
 // .. code-block:: cpp
 //
-//   ("destination_cluster", "<routed target cluster>")
+//	("destination_cluster", "<routed target cluster>")
 //
 // Once a request matches against a route table rule, a routed cluster is determined by one of
 // the following :ref:`route table configuration <envoy_v3_api_msg_config.route.v3.RouteConfiguration>`
 // settings:
 //
-// * :ref:`cluster <envoy_v3_api_field_config.route.v3.RouteAction.cluster>` indicates the upstream cluster
-//   to route to.
-// * :ref:`weighted_clusters <envoy_v3_api_field_config.route.v3.RouteAction.weighted_clusters>`
-//   chooses a cluster randomly from a set of clusters with attributed weight.
-// * :ref:`cluster_header <envoy_v3_api_field_config.route.v3.RouteAction.cluster_header>` indicates which
-//   header in the request contains the target cluster.
+//   - :ref:`cluster <envoy_v3_api_field_config.route.v3.RouteAction.cluster>` indicates the upstream cluster
+//     to route to.
+//   - :ref:`weighted_clusters <envoy_v3_api_field_config.route.v3.RouteAction.weighted_clusters>`
+//     chooses a cluster randomly from a set of clusters with attributed weight.
+//   - :ref:`cluster_header <envoy_v3_api_field_config.route.v3.RouteAction.cluster_header>` indicates which
+//     header in the request contains the target cluster.
 #RateLimit_Action_DestinationCluster: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action_DestinationCluster"
 }
 
 // The following descriptor entry is appended when a header contains a key that matches the
-// ``header_name``:
+// “header_name“:
 //
 // .. code-block:: cpp
 //
-//   ("<descriptor_key>", "<header_value_queried_from_header>")
+//	("<descriptor_key>", "<header_value_queried_from_header>")
 #RateLimit_Action_RequestHeaders: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action_RequestHeaders"
 	// The header name to be queried from the request headers. The header’s
@@ -1780,9 +2185,45 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	header_name?: string
 	// The key to use in the descriptor entry.
 	descriptor_key?: string
-	// If set to true, Envoy skips the descriptor while calling rate limiting service
-	// when header is not present in the request. By default it skips calling the
-	// rate limiting service if this header is not present in the request.
+	// Controls the behavior when the specified header is not present in the request.
+	//
+	// If set to “false“ (default):
+	//
+	// * Envoy does **NOT** call the rate limiting service for this descriptor.
+	// * Useful if the header is optional and you prefer to skip rate limiting when it's absent.
+	//
+	// If set to “true“:
+	//
+	// * Envoy calls the rate limiting service but omits this descriptor if the header is missing.
+	// * Useful if you want Envoy to enforce rate limiting even when the header is not present.
+	skip_if_absent?: bool
+}
+
+// The following descriptor entry is appended when a query parameter contains a key that matches the
+// “query_parameter_name“:
+//
+// .. code-block:: cpp
+//
+//	("<descriptor_key>", "<query_parameter_value_queried_from_query_parameter>")
+#RateLimit_Action_QueryParameters: {
+	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action_QueryParameters"
+	// The name of the query parameter to use for rate limiting. Value of this query parameter is used to populate
+	// the value of the descriptor entry for the descriptor_key.
+	query_parameter_name?: string
+	// The key to use when creating the rate limit descriptor entry. This descriptor key will be used to identify the
+	// rate limit rule in the rate limiting service.
+	descriptor_key?: string
+	// Controls the behavior when the specified query parameter is not present in the request.
+	//
+	// If set to “false“ (default):
+	//
+	// * Envoy does **NOT** call the rate limiting service for this descriptor.
+	// * Useful if the query parameter is optional and you prefer to skip rate limiting when it's absent.
+	//
+	// If set to “true“:
+	//
+	// * Envoy calls the rate limiting service but omits this descriptor if the query parameter is missing.
+	// * Useful if you want Envoy to enforce rate limiting even when the query parameter is not present.
 	skip_if_absent?: bool
 }
 
@@ -1791,7 +2232,7 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 //
 // .. code-block:: cpp
 //
-//   ("remote_address", "<trusted address from x-forwarded-for>")
+//	("remote_address", "<trusted address from x-forwarded-for>")
 #RateLimit_Action_RemoteAddress: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action_RemoteAddress"
 }
@@ -1801,18 +2242,22 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 //
 // .. code-block:: cpp
 //
-//   ("masked_remote_address", "<masked address from x-forwarded-for>")
+//	("masked_remote_address", "<masked address from x-forwarded-for>")
 #RateLimit_Action_MaskedRemoteAddress: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action_MaskedRemoteAddress"
 	// Length of prefix mask len for IPv4 (e.g. 0, 32).
+	//
 	// Defaults to 32 when unset.
-	// For example, trusted address from x-forwarded-for is ``192.168.1.1``,
+	//
+	// For example, trusted address from x-forwarded-for is “192.168.1.1“,
 	// the descriptor entry is ("masked_remote_address", "192.168.1.1/32");
 	// if mask len is 24, the descriptor entry is ("masked_remote_address", "192.168.1.0/24").
 	v4_prefix_mask_len?: uint32
 	// Length of prefix mask len for IPv6 (e.g. 0, 128).
+	//
 	// Defaults to 128 when unset.
-	// For example, trusted address from x-forwarded-for is ``2001:abcd:ef01:2345:6789:abcd:ef01:234``,
+	//
+	// For example, trusted address from x-forwarded-for is “2001:abcd:ef01:2345:6789:abcd:ef01:234“,
 	// the descriptor entry is ("masked_remote_address", "2001:abcd:ef01:2345:6789:abcd:ef01:234/128");
 	// if mask len is 64, the descriptor entry is ("masked_remote_address", "2001:abcd:ef01:2345::/64").
 	v6_prefix_mask_len?: uint32
@@ -1822,11 +2267,40 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 //
 // .. code-block:: cpp
 //
-//   ("generic_key", "<descriptor_value>")
+//	("generic_key", "<descriptor_value>")
 #RateLimit_Action_GenericKey: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action_GenericKey"
-	// The value to use in the descriptor entry.
+	// Descriptor value of entry.
+	//
+	// The same :ref:`format specifier <config_access_log_format>` as used for
+	// :ref:`HTTP access logging <config_access_log>` applies here, however
+	// unknown specifier values are replaced with the empty string instead of “-“.
+	//
+	// .. note::
+	//
+	//	Formatter parsing is controlled by the runtime feature flag
+	//	``envoy.reloadable_features.enable_formatter_for_ratelimit_action_descriptor_value``
+	//	(disabled by default).
+	//
+	//	When enabled: The format string can contain multiple valid substitution
+	//	fields. If multiple substitution fields are present, their results will be concatenated
+	//	to form the final descriptor value. If it contains no substitution fields, the value
+	//	will be used as is. If the final concatenated result is empty and ``default_value`` is set,
+	//	the ``default_value`` will be used. If ``default_value`` is not set and the result is
+	//	empty, this descriptor will be skipped and not included in the rate limit call.
+	//
+	//	When disabled (default): The descriptor_value is used as a literal string without any formatter
+	//	parsing or substitution.
+	//
+	// For example, “static_value“ will be used as is since there are no substitution fields.
+	// “%REQ(:method)%“ will be replaced with the HTTP method, and
+	// “%REQ(:method)%%REQ(:path)%“ will be replaced with the concatenation of the HTTP method and path.
+	// “%CEL(request.headers['user-id'])%“ will use CEL to extract the user ID from request headers.
 	descriptor_value?: string
+	// An optional value to use if the final concatenated “descriptor_value“ result is empty.
+	// Only applicable when formatter parsing is enabled by the runtime feature flag
+	// “envoy.reloadable_features.enable_formatter_for_ratelimit_action_descriptor_value“ (disabled by default).
+	default_value?: string
 	// An optional key to use in the descriptor entry. If not set it defaults
 	// to 'generic_key' as the descriptor key.
 	descriptor_key?: string
@@ -1836,20 +2310,54 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 //
 // .. code-block:: cpp
 //
-//   ("header_match", "<descriptor_value>")
+//	("header_match", "<descriptor_value>")
+//
+// [#next-free-field: 6]
 #RateLimit_Action_HeaderValueMatch: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action_HeaderValueMatch"
-	// The key to use in the descriptor entry. Defaults to ``header_match``.
-	descriptor_key?: string
-	// The value to use in the descriptor entry.
+	// Descriptor value of entry.
+	//
+	// The same :ref:`format specifier <config_access_log_format>` as used for
+	// :ref:`HTTP access logging <config_access_log>` applies here, however
+	// unknown specifier values are replaced with the empty string instead of “-“.
+	//
+	// .. note::
+	//
+	//	Formatter parsing is controlled by the runtime feature flag
+	//	``envoy.reloadable_features.enable_formatter_for_ratelimit_action_descriptor_value``
+	//	(disabled by default).
+	//
+	//	When enabled: The format string can contain multiple valid substitution
+	//	fields. If multiple substitution fields are present, their results will be concatenated
+	//	to form the final descriptor value. If it contains no substitution fields, the value
+	//	will be used as is. All substitution fields will be evaluated and their results
+	//	concatenated. If the final concatenated result is empty and ``default_value`` is set,
+	//	the ``default_value`` will be used. If ``default_value`` is not set and the result is
+	//	empty, this descriptor will be skipped and not included in the rate limit call.
+	//
+	//	When disabled (default): The descriptor_value is used as a literal string without any formatter
+	//	parsing or substitution.
+	//
+	// For example, “static_value“ will be used as is since there are no substitution fields.
+	// “%REQ(:method)%“ will be replaced with the HTTP method, and
+	// “%REQ(:method)%%REQ(:path)%“ will be replaced with the concatenation of the HTTP method and path.
+	// “%CEL(request.headers['user-id'])%“ will use CEL to extract the user ID from request headers.
 	descriptor_value?: string
+	// An optional value to use if the final concatenated “descriptor_value“ result is empty.
+	// Only applicable when formatter parsing is enabled by the runtime feature flag
+	// “envoy.reloadable_features.enable_formatter_for_ratelimit_action_descriptor_value“ (disabled by default).
+	default_value?: string
+	// The key to use in the descriptor entry.
+	//
+	// Defaults to “header_match“.
+	descriptor_key?: string
 	// If set to true, the action will append a descriptor entry when the
 	// request matches the headers. If set to false, the action will append a
 	// descriptor entry when the request does not match the headers. The
 	// default value is true.
 	expect_match?: bool
 	// Specifies a set of headers that the rate limit action should match
-	// on. The action will check the request’s headers against all the
+	// on. The action will check the request's headers against all the
 	// specified headers in the config. A match will happen if all the
 	// headers in the config are present in the request with the same values
 	// (or based on presence if the value field is not in the config).
@@ -1861,18 +2369,19 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 //
 // .. code-block:: cpp
 //
-//   ("<descriptor_key>", "<value_queried_from_dynamic_metadata>")
+//	("<descriptor_key>", "<value_queried_from_dynamic_metadata>")
 //
 // .. attention::
-//   This action has been deprecated in favor of the :ref:`metadata <envoy_v3_api_msg_config.route.v3.RateLimit.Action.MetaData>` action
+//
+//	This action has been deprecated in favor of the :ref:`metadata <envoy_v3_api_msg_config.route.v3.RateLimit.Action.MetaData>` action
 #RateLimit_Action_DynamicMetaData: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action_DynamicMetaData"
 	// The key to use in the descriptor entry.
 	descriptor_key?: string
 	// Metadata struct that defines the key and path to retrieve the string value. A match will
 	// only happen if the value in the dynamic metadata is of type string.
-	metadata_key?: v35.#MetadataKey
-	// An optional value to use if ``metadata_key`` is empty. If not set and
+	metadata_key?: v36.#MetadataKey
+	// An optional value to use if “metadata_key“ is empty. If not set and
 	// no value is present under the metadata_key then no descriptor is generated.
 	default_value?: string
 }
@@ -1881,19 +2390,136 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 //
 // .. code-block:: cpp
 //
-//   ("<descriptor_key>", "<value_queried_from_metadata>")
+//	("<descriptor_key>", "<value_queried_from_metadata>")
+//
+// [#next-free-field: 6]
 #RateLimit_Action_MetaData: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action_MetaData"
 	// The key to use in the descriptor entry.
 	descriptor_key?: string
 	// Metadata struct that defines the key and path to retrieve the string value. A match will
 	// only happen if the value in the metadata is of type string.
-	metadata_key?: v35.#MetadataKey
-	// An optional value to use if ``metadata_key`` is empty. If not set and
-	// no value is present under the metadata_key then no descriptor is generated.
+	metadata_key?: v36.#MetadataKey
+	// An optional value to use if “metadata_key“ is empty. If not set and
+	// no value is present under the metadata_key then “skip_if_absent“ is followed to
+	// skip calling the rate limiting service or skip the descriptor.
 	default_value?: string
 	// Source of metadata
 	source?: #RateLimit_Action_MetaData_Source
+	// Controls the behavior when the specified “metadata_key“ is empty and “default_value“ is not set.
+	//
+	// If set to “false“ (default):
+	//
+	// * Envoy does **NOT** call the rate limiting service for this descriptor.
+	// * Useful if the metadata is optional and you prefer to skip rate limiting when it's absent.
+	//
+	// If set to “true“:
+	//
+	//   - Envoy calls the rate limiting service but omits this descriptor if the “metadata_key“ is empty and
+	//     “default_value“ is missing.
+	//   - Useful if you want Envoy to enforce rate limiting even when the metadata is not present.
+	skip_if_absent?: bool
+}
+
+// The following descriptor entry is appended to the descriptor:
+//
+// .. code-block:: cpp
+//
+//	("query_match", "<descriptor_value>")
+//
+// [#next-free-field: 6]
+#RateLimit_Action_QueryParameterValueMatch: {
+	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action_QueryParameterValueMatch"
+	// Descriptor value of entry.
+	//
+	// The same :ref:`format specifier <config_access_log_format>` as used for
+	// :ref:`HTTP access logging <config_access_log>` applies here, however
+	// unknown specifier values are replaced with the empty string instead of “-“.
+	//
+	// .. note::
+	//
+	//	Formatter parsing is controlled by the runtime feature flag
+	//	``envoy.reloadable_features.enable_formatter_for_ratelimit_action_descriptor_value``
+	//	(disabled by default).
+	//
+	//	When enabled: The format string can contain multiple valid substitution
+	//	fields. If multiple substitution fields are present, their results will be concatenated
+	//	to form the final descriptor value. If it contains no substitution fields, the value
+	//	will be used as is. All substitution fields will be evaluated and their results
+	//	concatenated. If the final concatenated result is empty and ``default_value`` is set,
+	//	the ``default_value`` will be used. If ``default_value`` is not set and the result is
+	//	empty, this descriptor will be skipped and not included in the rate limit call.
+	//
+	//	When disabled (default): The descriptor_value is used as a literal string without any formatter
+	//	parsing or substitution.
+	//
+	// For example, “static_value“ will be used as is since there are no substitution fields.
+	// “%REQ(:method)%“ will be replaced with the HTTP method, and
+	// “%REQ(:method)%%REQ(:path)%“ will be replaced with the concatenation of the HTTP method and path.
+	// “%CEL(request.headers['user-id'])%“ will use CEL to extract the user ID from request headers.
+	descriptor_value?: string
+	// An optional value to use if the final concatenated “descriptor_value“ result is empty.
+	// Only applicable when formatter parsing is enabled by the runtime feature flag
+	// “envoy.reloadable_features.enable_formatter_for_ratelimit_action_descriptor_value“ (disabled by default).
+	default_value?: string
+	// The key to use in the descriptor entry.
+	//
+	// Defaults to “query_match“.
+	descriptor_key?: string
+	// If set to true, the action will append a descriptor entry when the
+	// request matches the headers. If set to false, the action will append a
+	// descriptor entry when the request does not match the headers. The
+	// default value is true.
+	expect_match?: bool
+	// Specifies a set of query parameters that the rate limit action should match
+	// on. The action will check the request's query parameters against all the
+	// specified query parameters in the config. A match will happen if all the
+	// query parameters in the config are present in the request with the same values
+	// (or based on presence if the value field is not in the config).
+	query_parameters?: [...#QueryParameterMatcher]
+}
+
+// The following descriptor entry is appended to the descriptor:
+//
+// .. code-block:: cpp
+//
+//	("remote_address_match", "<descriptor_value>")
+#RateLimit_Action_RemoteAddressMatch: {
+	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Action_RemoteAddressMatch"
+	// Descriptor value of entry.
+	//
+	// The same :ref:`format specifier <config_access_log_format>` as used for
+	// :ref:`HTTP access logging <config_access_log>` applies here, however
+	// unknown specifier values are replaced with the empty string instead of “-“.
+	//
+	// .. note::
+	//
+	//	The format string can contain multiple valid substitution fields. If multiple
+	//	substitution fields are present, their results will be concatenated to form the
+	//	final descriptor value. If it contains no substitution fields, the value will be
+	//	used as is. All substitution fields will be evaluated and their results concatenated.
+	//	If the final concatenated result is empty and ``default_value`` is set, the
+	//	``default_value`` will be used. If ``default_value`` is not set and the result is
+	//	empty, this descriptor will be skipped and not included in the rate limit call.
+	//
+	// For example, “static_value“ will be used as is since there are no substitution fields.
+	// “%REQ(:method)%“ will be replaced with the HTTP method, and
+	// “%REQ(:method)%%REQ(:path)%“ will be replaced with the concatenation of the HTTP method and path.
+	// “%CEL(request.headers['user-id'])%“ will use CEL to extract the user ID from request headers.
+	descriptor_value?: string
+	// The key to use in the descriptor entry.
+	//
+	// Defaults to “remote_address_match“.
+	descriptor_key?: string
+	// An optional value to use if the final concatenated “descriptor_value“ result is empty.
+	default_value?: string
+	// Specifies an address matcher that controls whether the rate limit action is applied.
+	// The matcher checks the remote address (trusted address from
+	// :ref:`x-forwarded-for <config_http_conn_man_headers_x-forwarded-for>`)
+	// against the specified CIDR ranges. The rate limit action will be applied if
+	// the remote address matches any of the CIDR ranges (or does not match any if
+	// “invert_match“ is set to true in the address matcher).
+	address_matcher?: v32.#AddressMatcher
 }
 
 // Fetches the override from the dynamic metadata.
@@ -1903,5 +2529,14 @@ RateLimit_Action_MetaData_Source_ROUTE_ENTRY: "ROUTE_ENTRY"
 	// The value must be a struct containing an integer "requests_per_unit" property
 	// and a "unit" property with a value parseable to :ref:`RateLimitUnit
 	// enum <envoy_v3_api_enum_type.v3.RateLimitUnit>`
-	metadata_key?: v35.#MetadataKey
+	metadata_key?: v36.#MetadataKey
+}
+
+// Rate limit to apply to this descriptor.
+#RateLimit_Override_RateLimitOverride: {
+	"@type": "type.googleapis.com/envoy.config.route.v3.RateLimit_Override_RateLimitOverride"
+	// The number of requests per unit of time.
+	requests_per_unit?: uint32
+	// The unit of time.
+	unit?: v33.#RateLimitUnit
 }

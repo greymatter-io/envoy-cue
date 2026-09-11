@@ -1,11 +1,15 @@
 package v3
 
+import (
+	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+)
+
 // Wrapper for tapped body data. This includes HTTP request/response body, transport socket received
 // and transmitted data, etc.
 #Body: {
 	"@type": "type.googleapis.com/envoy.data.tap.v3.Body"
 	// Body data as bytes. By default, tap body data will be present in this field, as the proto
-	// ``bytes`` type can contain any valid byte.
+	// “bytes“ type can contain any valid byte.
 	as_bytes?: bytes
 	// Body data as string. This field is only used when the :ref:`JSON_BODY_AS_STRING
 	// <envoy_v3_api_enum_value_config.tap.v3.OutputSink.Format.JSON_BODY_AS_STRING>` sink
@@ -17,4 +21,13 @@ package v3
 	// :ref:`max_buffered_tx_bytes
 	// <envoy_v3_api_field_config.tap.v3.OutputConfig.max_buffered_tx_bytes>` settings.
 	truncated?: bool
+}
+
+// Connection properties.
+#Connection: {
+	"@type": "type.googleapis.com/envoy.data.tap.v3.Connection"
+	// Local address.
+	local_address?: v3.#Address
+	// Remote address.
+	remote_address?: v3.#Address
 }

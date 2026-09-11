@@ -2,26 +2,30 @@ package v3
 
 import (
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+	v31 "envoyproxy.io/envoy-cue/spec/extensions/common/aws/v3"
+	v32 "envoyproxy.io/envoy-cue/spec/extensions/common/dynamic_forward_proxy/v3"
 )
 
 // ReadPolicy controls how Envoy routes read commands to Redis nodes. This is currently
 // supported for Redis Cluster. All ReadPolicy settings except MASTER may return stale data
 // because replication is asynchronous and requires some delay. You need to ensure that your
 // application can tolerate stale data.
-#RedisProxy_ConnPoolSettings_ReadPolicy: "MASTER" | "PREFER_MASTER" | "REPLICA" | "PREFER_REPLICA" | "ANY"
+#RedisProxy_ConnPoolSettings_ReadPolicy: "MASTER" | "PREFER_MASTER" | "REPLICA" | "PREFER_REPLICA" | "ANY" | "LOCAL_ZONE_AFFINITY" | "LOCAL_ZONE_AFFINITY_REPLICAS_AND_PRIMARY"
 
-RedisProxy_ConnPoolSettings_ReadPolicy_MASTER:         "MASTER"
-RedisProxy_ConnPoolSettings_ReadPolicy_PREFER_MASTER:  "PREFER_MASTER"
-RedisProxy_ConnPoolSettings_ReadPolicy_REPLICA:        "REPLICA"
-RedisProxy_ConnPoolSettings_ReadPolicy_PREFER_REPLICA: "PREFER_REPLICA"
-RedisProxy_ConnPoolSettings_ReadPolicy_ANY:            "ANY"
+RedisProxy_ConnPoolSettings_ReadPolicy_MASTER:                                   "MASTER"
+RedisProxy_ConnPoolSettings_ReadPolicy_PREFER_MASTER:                            "PREFER_MASTER"
+RedisProxy_ConnPoolSettings_ReadPolicy_REPLICA:                                  "REPLICA"
+RedisProxy_ConnPoolSettings_ReadPolicy_PREFER_REPLICA:                           "PREFER_REPLICA"
+RedisProxy_ConnPoolSettings_ReadPolicy_ANY:                                      "ANY"
+RedisProxy_ConnPoolSettings_ReadPolicy_LOCAL_ZONE_AFFINITY:                      "LOCAL_ZONE_AFFINITY"
+RedisProxy_ConnPoolSettings_ReadPolicy_LOCAL_ZONE_AFFINITY_REPLICAS_AND_PRIMARY: "LOCAL_ZONE_AFFINITY_REPLICAS_AND_PRIMARY"
 
 #RedisProxy_RedisFault_RedisFaultType: "DELAY" | "ERROR"
 
 RedisProxy_RedisFault_RedisFaultType_DELAY: "DELAY"
 RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 
-// [#next-free-field: 10]
+// [#next-free-field: 12]
 #RedisProxy: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.redis_proxy.v3.RedisProxy"
 	// The prefix to use when emitting :ref:`statistics <config_network_filters_redis_proxy_stats>`.
@@ -40,20 +44,20 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	//
 	// .. code-block:: yaml
 	//
-	//    prefix_routes:
-	//      routes:
-	//        - prefix: "ab"
-	//          cluster: "cluster_a"
-	//        - prefix: "abc"
-	//          cluster: "cluster_b"
+	//	prefix_routes:
+	//	  routes:
+	//	    - prefix: "ab"
+	//	      cluster: "cluster_a"
+	//	    - prefix: "abc"
+	//	      cluster: "cluster_b"
 	//
 	// When using the above routes, the following prefixes would be sent to:
 	//
-	// * ``get abc:users`` would retrieve the key 'abc:users' from cluster_b.
-	// * ``get ab:users`` would retrieve the key 'ab:users' from cluster_a.
-	// * ``get z:users`` would return a NoUpstreamHost error. A :ref:`catch-all
-	//   route<envoy_v3_api_field_extensions.filters.network.redis_proxy.v3.RedisProxy.PrefixRoutes.catch_all_route>`
-	//   would have retrieved the key from that cluster instead.
+	//   - “get abc:users“ would retrieve the key 'abc:users' from cluster_b.
+	//   - “get ab:users“ would retrieve the key 'ab:users' from cluster_a.
+	//   - “get z:users“ would return a NoUpstreamHost error. A :ref:`catch-all
+	//     route<envoy_v3_api_field_extensions.filters.network.redis_proxy.v3.RedisProxy.PrefixRoutes.catch_all_route>`
+	//     would have retrieved the key from that cluster instead.
 	//
 	// See the :ref:`configuration section
 	// <arch_overview_redis_configuration>` of the architecture overview for recommendations on
@@ -69,10 +73,11 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	// AUTH, but no password is set" error will be returned.
 	//
 	// .. attention::
-	//   This field is deprecated. Use :ref:`downstream_auth_passwords
-	//   <envoy_v3_api_field_extensions.filters.network.redis_proxy.v3.RedisProxy.downstream_auth_passwords>`.
 	//
-	// Deprecated: Do not use.
+	//	This field is deprecated. Use :ref:`downstream_auth_passwords
+	//	<envoy_v3_api_field_extensions.filters.network.redis_proxy.v3.RedisProxy.downstream_auth_passwords>`.
+	//
+	// Deprecated: Marked as deprecated in envoy/extensions/filters/network/redis_proxy/v3/redis_proxy.proto.
 	downstream_auth_password?: v3.#DataSource
 	// Authenticate Redis client connections locally by forcing downstream clients to issue a `Redis
 	// AUTH command <https://redis.io/commands/auth>`_ with one of these passwords before enabling any other
@@ -91,54 +96,118 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	//
 	// .. code-block:: yaml
 	//
-	//    faults:
-	//    - fault_type: ERROR
-	//      fault_enabled:
-	//        default_value:
-	//          numerator: 10
-	//          denominator: HUNDRED
-	//        runtime_key: "bogus_key"
-	//        commands:
-	//        - GET
-	//      - fault_type: DELAY
-	//        fault_enabled:
-	//          default_value:
-	//            numerator: 10
-	//            denominator: HUNDRED
-	//          runtime_key: "bogus_key"
-	//        delay: 2s
+	//	faults:
+	//	- fault_type: ERROR
+	//	  fault_enabled:
+	//	    default_value:
+	//	      numerator: 10
+	//	      denominator: HUNDRED
+	//	    runtime_key: "bogus_key"
+	//	    commands:
+	//	    - GET
+	//	  - fault_type: DELAY
+	//	    fault_enabled:
+	//	      default_value:
+	//	        numerator: 10
+	//	        denominator: HUNDRED
+	//	      runtime_key: "bogus_key"
+	//	    delay: 2s
 	//
 	// See the :ref:`fault injection section
 	// <config_network_filters_redis_proxy_fault_injection>` for more information on how to configure this.
 	faults?: [...#RedisProxy_RedisFault]
 	// If a username is provided an ACL style AUTH command will be required with a username and password.
 	// Authenticate Redis client connections locally by forcing downstream clients to issue a `Redis
-	// AUTH command <https://redis.io/commands/auth>`_ with this username and the ``downstream_auth_password``
+	// AUTH command <https://redis.io/commands/auth>`_ with this username and the “downstream_auth_password“
 	// before enabling any other command. If an AUTH command's username and password matches this username
-	// and the ``downstream_auth_password`` , an "OK" response will be returned to the client. If the AUTH
-	// command username or password does not match this username or the ``downstream_auth_password``, then an
+	// and the “downstream_auth_password“ , an "OK" response will be returned to the client. If the AUTH
+	// command username or password does not match this username or the “downstream_auth_password“, then an
 	// "WRONGPASS invalid username-password pair" error will be returned. If any other command is received before AUTH when this
 	// password is set, then a "NOAUTH Authentication required." error response will be sent to the
 	// client. If an AUTH command is received when the password is not set, then an "ERR Client sent
 	// AUTH, but no ACL is set" error will be returned.
 	downstream_auth_username?: v3.#DataSource
+	// External authentication configuration. If set, instead of validating username and password against “downstream_auth_username“ and “downstream_auth_password“,
+	// the filter will call an external gRPC service to authenticate the client.
+	// A typical usage of this feature is for situations where the password is a one-time token that needs to be validated against a remote service, like a sidecar.
+	// Expiration is also supported, which will disable any further commands from the client after the expiration time, unless a new AUTH command is received and the external auth service returns a new expiration time.
+	// If the external auth service returns an error, authentication is considered failed.
+	// If this setting is set together with “downstream_auth_username“ and “downstream_auth_password“, the external auth service will be source of truth, but those fields will still be used for downstream authentication to the cluster.
+	// The API is defined by :ref:`RedisProxyExternalAuthRequest <envoy_v3_api_msg_service.redis_auth.v3.RedisProxyExternalAuthRequest>`.
+	external_auth_provider?: #RedisExternalAuthProvider
+	// Optional configure redis custom commands for the proxy, eg -> ["my_custom_cmd1", "my_custom_cmd2"]
+	//
+	// .. note::
+	//
+	//	The is to support redis's feature wherein new commands can be added using redis' modules api:
+	//	https://redis.io/docs/latest/develop/reference/modules/
+	custom_commands?: [...string]
 }
 
 // RedisProtocolOptions specifies Redis upstream protocol options. This object is used in
 // :ref:`typed_extension_protocol_options<envoy_v3_api_field_config.cluster.v3.Cluster.typed_extension_protocol_options>`,
-// keyed by the name ``envoy.filters.network.redis_proxy``.
+// keyed by the name “envoy.filters.network.redis_proxy“.
 #RedisProtocolOptions: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.redis_proxy.v3.RedisProtocolOptions"
-	// Upstream server password as defined by the ``requirepass`` directive
+	// Upstream server password as defined by the “requirepass“ directive
 	// `<https://redis.io/topics/config>`_ in the server's configuration file.
+	// If “aws_iam“ is set, this field is ignored.
 	auth_password?: v3.#DataSource
-	// Upstream server username as defined by the ``user`` directive
+	// Upstream server username as defined by the “user“ directive
 	// `<https://redis.io/topics/acl>`_ in the server's configuration file.
+	// If “aws_iam``` is set, this field will be used as the authenticating user for redis IAM authentication.
+	// See “Create a new IAM-enabled user“ under `Setup <https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/auth-iam.html#auth-iam-setup>`_ for more details.
 	auth_username?: v3.#DataSource
+	// The cluster level configuration for AWS IAM authentication
+	aws_iam?: #AwsIam
+	// If specified, these credentials are used when connecting to upstream endpoints. Which
+	// credential is used is determined by matching the resolved “address“ field here with each
+	// endpoint's resolved “address“ field. The first entry for a given “address“ here takes precedence.
+	// If no entry in “credentials“ matches, then the “auth_password“ and “auth_username“ fields
+	// are used as defaults.
+	credentials?: [...#RedisProtocolOptions_Credential]
+}
+
+// [#next-free-field: 6]
+#AwsIam: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.network.redis_proxy.v3.AwsIam"
+	// An AwsCredentialProvider, allowing the use of a specific credential provider chain or specific provider settings
+	credential_provider?: v31.#AwsCredentialProvider
+	// The name of the cache, used when generating the authentication token.
+	cache_name?: string
+	// The optional service name to be used in AWS IAM authentication. If not provided, the service name will be set to “elasticache“. For Amazon MemoryDB
+	// the service name should be set to “memorydb“.
+	service_name?: string
+	// The optional AWS region that your cache is located in. If not provided, the region will be deduced using the region provider chain
+	// as described in :ref:`config_http_filters_aws_request_signing_region`.
+	region?: string
+	// Number of seconds before the IAM authentication token will expire. If not set, defaults to 60s (1 minute). Maximum of 900s (15 minutes)
+	// Expiration of the current authentication token will automatically trigger generation of a new token.
+	// As envoy will automatically continue to generate new tokens as required, there is no substantial benefit to using a long expiration value here.
+	expiration_time?: string
+}
+
+// RedisExternalAuthProvider specifies a gRPC service that can be used to authenticate Redis clients.
+// This service will be called every time an AUTH command is received from a client.
+// If the service returns an error, authentication is considered failed.
+// If the service returns a success, the client is considered authenticated.
+// The service can also return an expiration timestamp, which will be used to disable any further
+// commands from the client after it passes, unless a new AUTH command is received and the
+// external auth service returns a new expiration timestamp.
+#RedisExternalAuthProvider: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.network.redis_proxy.v3.RedisExternalAuthProvider"
+	// External auth gRPC service configuration.
+	// It will be called every time an AUTH command is received from a client.
+	grpc_service?: v3.#GrpcService
+	// If set to true, the filter will expect an expiration timestamp in the response from the external
+	// auth service. This timestamp will be used to disable any further commands from the client after
+	// the expiration time, unless a new AUTH command is received and the external auth service returns
+	// a new expiration timestamp.
+	enable_auth_expiration?: bool
 }
 
 // Redis connection pool settings.
-// [#next-free-field: 9]
+// [#next-free-field: 11]
 #RedisProxy_ConnPoolSettings: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.redis_proxy.v3.RedisProxy_ConnPoolSettings"
 	// Per-operation timeout in milliseconds. The timer starts when the first
@@ -165,6 +234,11 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	// need to be known to the cluster manager. If the command cannot be redirected, then the
 	// original error is passed downstream unchanged. By default, this support is not enabled.
 	enable_redirection?: bool
+	// If “enable_redirection“ is set to true this option configures the DNS cache that the
+	// connection pool will use to resolve hostnames that are returned with MOVED and ASK responses.
+	// If no configuration is provided, DNS lookups will not be performed (and thus the MOVED/ASK errors
+	// will be propagated verbatim to the user).
+	dns_cache_config?: v32.#DnsCacheConfig
 	// Maximum size of encoded request buffer before flush is triggered and encoded requests
 	// are sent upstream. If this is unset, the buffer flushes whenever it receives data
 	// and performs no batching.
@@ -174,18 +248,18 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	// Recommended size (if enabled) is 1024 bytes.
 	max_buffer_size_before_flush?: uint32
 	// The encoded request buffer is flushed N milliseconds after the first request has been
-	// encoded, unless the buffer size has already exceeded ``max_buffer_size_before_flush``.
-	// If ``max_buffer_size_before_flush`` is not set, this flush timer is not used. Otherwise,
+	// encoded, unless the buffer size has already exceeded “max_buffer_size_before_flush“.
+	// If “max_buffer_size_before_flush“ is not set, this flush timer is not used. Otherwise,
 	// the timer should be set according to the number of clients, overall request rate and
 	// desired maximum latency for a single command. For example, if there are many requests
 	// being batched together at a high rate, the buffer will likely be filled before the timer
 	// fires. Alternatively, if the request rate is lower the buffer will not be filled as often
 	// before the timer fires.
-	// If ``max_buffer_size_before_flush`` is set, but ``buffer_flush_timeout`` is not, the latter
+	// If “max_buffer_size_before_flush“ is set, but “buffer_flush_timeout“ is not, the latter
 	// defaults to 3ms.
 	buffer_flush_timeout?: string
-	// ``max_upstream_unknown_connections`` controls how many upstream connections to unknown hosts
-	// can be created at any given time by any given worker thread (see ``enable_redirection`` for
+	// “max_upstream_unknown_connections“ controls how many upstream connections to unknown hosts
+	// can be created at any given time by any given worker thread (see “enable_redirection“ for
 	// more details). If the host is unknown and a connection cannot be created due to enforcing
 	// this limit, then redirection will fail and the original redirection error will be passed
 	// downstream unchanged. This limit defaults to 100.
@@ -195,6 +269,10 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	enable_command_stats?: bool
 	// Read policy. The default is to read from the primary.
 	read_policy?: #RedisProxy_ConnPoolSettings_ReadPolicy
+	// Ops or connection timeout triggers reconnection to redis server which could result in reconnection
+	// storm to busy redis server. This config is a protection to rate limit reconnection rate.
+	// If not set, there will be no rate limiting on the reconnection.
+	connection_rate_limit?: #RedisProxy_ConnectionRateLimit
 }
 
 #RedisProxy_PrefixRoutes: {
@@ -222,6 +300,15 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	commands?: [...string]
 }
 
+// Configuration to limit reconnection rate to redis server to protect redis server
+// from client reconnection storm.
+#RedisProxy_ConnectionRateLimit: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.network.redis_proxy.v3.RedisProxy_ConnectionRateLimit"
+	// Reconnection rate per sec. Rate limiting is implemented with TokenBucket.
+	connection_rate_limit_per_sec?: uint32
+}
+
+// [#next-free-field: 7]
 #RedisProxy_PrefixRoutes_Route: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.redis_proxy.v3.RedisProxy_PrefixRoutes_Route"
 	// String prefix that must match the beginning of the keys. Envoy will always favor the
@@ -233,6 +320,11 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	cluster?: string
 	// Indicates that the route has a request mirroring policy.
 	request_mirror_policy?: [...#RedisProxy_PrefixRoutes_Route_RequestMirrorPolicy]
+	// Indicates how redis key should be formatted. To substitute redis key into the formatting
+	// expression, use %KEY% as a string replacement command.
+	key_formatter?: string
+	// Indicates that the route has a read command policy
+	read_command_policy?: #RedisProxy_PrefixRoutes_Route_ReadCommandPolicy
 }
 
 // The router is capable of shadowing traffic from one cluster to another. The current
@@ -253,4 +345,22 @@ RedisProxy_RedisFault_RedisFaultType_ERROR: "ERROR"
 	// Set this to TRUE to only mirror write commands, this is effectively replicating the
 	// writes in a "fire and forget" manner.
 	exclude_read_commands?: bool
+}
+
+// ReadCommandPolicy specifies that Envoy should route read commands to another cluster.
+#RedisProxy_PrefixRoutes_Route_ReadCommandPolicy: {
+	"@type":  "type.googleapis.com/envoy.extensions.filters.network.redis_proxy.v3.RedisProxy_PrefixRoutes_Route_ReadCommandPolicy"
+	cluster?: string
+}
+
+#RedisProtocolOptions_Credential: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.network.redis_proxy.v3.RedisProtocolOptions_Credential"
+	// The address to which this username and password applies.
+	address?: v3.#Address
+	// Upstream server password as defined by the “requirepass“ directive
+	// `<https://redis.io/topics/config>`_ in the server's configuration file.
+	auth_password?: v3.#DataSource
+	// Upstream server username as defined by the “user“ directive
+	// `<https://redis.io/topics/acl>`_ in the server's configuration file.
+	auth_username?: v3.#DataSource
 }

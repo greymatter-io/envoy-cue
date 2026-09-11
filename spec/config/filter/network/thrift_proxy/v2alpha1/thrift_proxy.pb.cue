@@ -1,7 +1,7 @@
 package v2alpha1
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 // Thrift transport types supported by Envoy.
@@ -51,8 +51,8 @@ ProtocolType_TWITTER:       "TWITTER"
 	// * :ref:`envoy.filters.thrift.router <config_thrift_filters_router>`
 	// * :ref:`envoy.filters.thrift.rate_limit <config_thrift_filters_rate_limit>`
 	name?: string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/config/filter/network/thrift_proxy/v2alpha1/thrift_proxy.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }
 

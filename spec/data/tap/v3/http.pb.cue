@@ -11,6 +11,10 @@ import (
 	request?: #HttpBufferedTrace_Message
 	// Response message.
 	response?: #HttpBufferedTrace_Message
+	// downstream connection
+	downstream_connection?: #Connection
+	// upstream connection
+	upstream_connection?: #Connection
 }
 
 // A streamed HTTP trace segment. Multiple segments make up a full trace.
@@ -43,4 +47,6 @@ import (
 	body?: #Body
 	// Message trailers.
 	trailers?: [...v3.#HeaderValue]
+	// The timestamp after receiving the message headers.
+	headers_received_time?: string
 }

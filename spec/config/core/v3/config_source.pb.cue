@@ -38,8 +38,8 @@ ApiConfigSource_ApiType_AGGREGATED_DELTA_GRPC:                 "AGGREGATED_DELTA
 	//
 	// .. note::
 	//
-	//  The cluster with name ``cluster_name`` must be statically defined and its
-	//  type must not be ``EDS``.
+	//	The cluster with name ``cluster_name`` must be statically defined and its
+	//	type must not be ``EDS``.
 	cluster_names?: [...string]
 	// Multiple gRPC services be provided for GRPC. If > 1 cluster is defined,
 	// services will be cycled through if any kind of failure occurs.
@@ -56,7 +56,7 @@ ApiConfigSource_ApiType_AGGREGATED_DELTA_GRPC:                 "AGGREGATED_DELTA
 	// A list of config validators that will be executed when a new update is
 	// received from the ApiConfigSource. Note that each validator handles a
 	// specific xDS service type, and only the validators corresponding to the
-	// type url (in ``:ref: DiscoveryResponse`` or ``:ref: DeltaDiscoveryResponse``)
+	// type url (in “:ref: DiscoveryResponse“ or “:ref: DeltaDiscoveryResponse“)
 	// will be invoked.
 	// If the validator returns false or throws an exception, the config will be rejected by
 	// the client, and a NACK will be sent.
@@ -89,7 +89,8 @@ ApiConfigSource_ApiType_AGGREGATED_DELTA_GRPC:                 "AGGREGATED_DELTA
 	// default value of 100 will be used.
 	max_tokens?: uint32
 	// Rate at which tokens will be filled per second. If not set, a default fill rate of 10 tokens
-	// per second will be used.
+	// per second will be used. The minimal fill rate is once per year. Lower
+	// fill rates will be set to once per year.
 	fill_rate?: float64
 }
 
@@ -102,27 +103,27 @@ ApiConfigSource_ApiType_AGGREGATED_DELTA_GRPC:                 "AGGREGATED_DELTA
 	//
 	// .. note::
 	//
-	//  The path to the source must exist at config load time.
+	//	The path to the source must exist at config load time.
 	//
 	// .. note::
 	//
-	//   If ``watched_directory`` is *not* configured, Envoy will watch the file path for *moves*.
-	//   This is because in general only moves are atomic. The same method of swapping files as is
-	//   demonstrated in the :ref:`runtime documentation <config_runtime_symbolic_link_swap>` can be
-	//   used here also. If ``watched_directory`` is configured, no watch will be placed directly on
-	//   this path. Instead, the configured ``watched_directory`` will be used to trigger reloads of
-	//   this path. This is required in certain deployment scenarios. See below for more information.
+	//	If ``watched_directory`` is *not* configured, Envoy will watch the file path for *moves*.
+	//	This is because in general only moves are atomic. The same method of swapping files as is
+	//	demonstrated in the :ref:`runtime documentation <config_runtime_symbolic_link_swap>` can be
+	//	used here also. If ``watched_directory`` is configured, no watch will be placed directly on
+	//	this path. Instead, the configured ``watched_directory`` will be used to trigger reloads of
+	//	this path. This is required in certain deployment scenarios. See below for more information.
 	path?: string
 	// If configured, this directory will be watched for *moves*. When an entry in this directory is
-	// moved to, the ``path`` will be reloaded. This is required in certain deployment scenarios.
+	// moved to, the “path“ will be reloaded. This is required in certain deployment scenarios.
 	//
 	// Specifically, if trying to load an xDS resource using a
 	// `Kubernetes ConfigMap <https://kubernetes.io/docs/concepts/configuration/configmap/>`_, the
 	// following configuration might be used:
 	// 1. Store xds.yaml inside a ConfigMap.
-	// 2. Mount the ConfigMap to ``/config_map/xds``
-	// 3. Configure path ``/config_map/xds/xds.yaml``
-	// 4. Configure watched directory ``/config_map/xds``
+	// 2. Mount the ConfigMap to “/config_map/xds“
+	// 3. Configure path “/config_map/xds/xds.yaml“
+	// 4. Configure watched directory “/config_map/xds“
 	//
 	// The above configuration will ensure that Envoy watches the owning directory for moves which is
 	// required due to how Kubernetes manages ConfigMap symbolic links during atomic updates.
@@ -139,13 +140,13 @@ ApiConfigSource_ApiType_AGGREGATED_DELTA_GRPC:                 "AGGREGATED_DELTA
 #ConfigSource: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.ConfigSource"
 	// Authorities that this config source may be used for. An authority specified in a xdstp:// URL
-	// is resolved to a ``ConfigSource`` prior to configuration fetch. This field provides the
+	// is resolved to a “ConfigSource“ prior to configuration fetch. This field provides the
 	// association between authority name and configuration source.
 	// [#not-implemented-hide:]
 	authorities?: [...v3.#Authority]
-	// Deprecated in favor of ``path_config_source``. Use that field instead.
+	// Deprecated in favor of “path_config_source“. Use that field instead.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/core/v3/config_source.proto.
 	path?: string
 	// Local filesystem path configuration source.
 	path_config_source?: #PathConfigSource
@@ -196,13 +197,14 @@ ApiConfigSource_ApiType_AGGREGATED_DELTA_GRPC:                 "AGGREGATED_DELTA
 	config_source?: #ConfigSource
 	// Optional default configuration to use as the initial configuration if
 	// there is a failure to receive the initial extension configuration or if
-	// ``apply_default_config_without_warming`` flag is set.
+	// “apply_default_config_without_warming“ flag is set.
 	default_config?: _
 	// Use the default config as the initial configuration without warming and
 	// waiting for the first discovery response. Requires the default configuration
 	// to be supplied.
 	apply_default_config_without_warming?: bool
-	// A set of permitted extension type URLs. Extension configuration updates are rejected
-	// if they do not match any type URL in the set.
+	// A set of permitted extension type URLs for the type encoded inside of the
+	// :ref:`TypedExtensionConfig <envoy_v3_api_msg_config.core.v3.TypedExtensionConfig>`. Extension
+	// configuration updates are rejected if they do not match any type URL in the set.
 	type_urls?: [...string]
 }

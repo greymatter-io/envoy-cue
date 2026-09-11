@@ -31,7 +31,7 @@ import (
 }
 
 // Load balancing policy settings.
-// [#next-free-field: 6]
+// [#next-free-field: 7]
 #ClusterLoadAssignment_Policy: {
 	"@type": "type.googleapis.com/envoy.config.endpoint.v3.ClusterLoadAssignment_Policy"
 	// Action to trim the overall incoming traffic to protect the upstream
@@ -44,16 +44,25 @@ import (
 	//
 	// .. code-block:: json
 	//
-	//  { "drop_overloads": [
-	//      { "category": "throttle", "drop_percentage": 60 }
-	//      { "category": "lb", "drop_percentage": 50 }
-	//  ]}
+	//	{ "drop_overloads": [
+	//	    { "category": "throttle", "drop_percentage": 60 }
+	//	    { "category": "lb", "drop_percentage": 50 }
+	//	]}
 	//
 	// The actual drop percentages applied to the traffic at the clients will be
-	//    "throttle"_drop = 60%
-	//    "lb"_drop = 20%  // 50% of the remaining 'actual' load, which is 40%.
-	//    actual_outgoing_load = 20% // remaining after applying all categories.
-	// [#not-implemented-hide:]
+	//
+	//	"throttle"_drop = 60%
+	//	"lb"_drop = 20%  // 50% of the remaining 'actual' load, which is 40%.
+	//	actual_outgoing_load = 20% // remaining after applying all categories.
+	//
+	// Envoy supports only one element and will NACK if more than one element is present.
+	// Other xDS-capable data planes will not necessarily have this limitation.
+	//
+	// In Envoy, this “drop_overloads“ config can be overridden by a runtime key
+	// "load_balancing_policy.drop_overload_limit" setting. This runtime key can be set to
+	// any integer number between 0 and 100. 0 means drop 0%. 100 means drop 100%.
+	// When both “drop_overloads“ config and "load_balancing_policy.drop_overload_limit"
+	// setting are in place, the min of these two wins.
 	drop_overloads?: [...#ClusterLoadAssignment_Policy_DropOverload]
 	// Priority levels and localities are considered overprovisioned with this
 	// factor (in percentage). This means that we don't consider a priority
@@ -65,7 +74,7 @@ import (
 	//
 	// .. code-block:: json
 	//
-	//  { "overprovisioning_factor": 100 }
+	//	{ "overprovisioning_factor": 100 }
 	//
 	// Read more at :ref:`priority levels <arch_overview_load_balancing_priority_levels>` and
 	// :ref:`localities <arch_overview_load_balancing_locality_weighted_lb>`.
@@ -75,9 +84,19 @@ import (
 	// are considered stale and should be marked unhealthy.
 	// Defaults to 0 which means endpoints never go stale.
 	endpoint_stale_after?: string
+	// If true, use the :ref:`load balancing weight
+	// <envoy_v3_api_field_config.endpoint.v3.LbEndpoint.load_balancing_weight>` of healthy and unhealthy
+	// hosts to determine the health of the priority level. If false, use the number of healthy and unhealthy hosts
+	// to determine the health of the priority level, or in other words assume each host has a weight of 1 for
+	// this calculation.
+	//
+	// .. note::
+	//
+	//	This is not currently implemented for
+	//	:ref:`locality weighted load balancing <arch_overview_load_balancing_locality_weighted_lb>`.
+	weighted_priority_health?: bool
 }
 
-// [#not-implemented-hide:]
 #ClusterLoadAssignment_Policy_DropOverload: {
 	"@type": "type.googleapis.com/envoy.config.endpoint.v3.ClusterLoadAssignment_Policy_DropOverload"
 	// Identifier for the policy specifying the drop.

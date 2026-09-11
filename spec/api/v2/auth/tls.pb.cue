@@ -6,9 +6,9 @@ package auth
 	//
 	// .. attention::
 	//
-	//   Server certificate verification is not enabled by default. Configure
-	//   :ref:`trusted_ca<envoy_api_field_auth.CertificateValidationContext.trusted_ca>` to enable
-	//   verification.
+	//	Server certificate verification is not enabled by default. Configure
+	//	:ref:`trusted_ca<envoy_api_field_auth.CertificateValidationContext.trusted_ca>` to enable
+	//	verification.
 	common_tls_context?: #CommonTlsContext
 	// SNI string to use when creating TLS backend connections.
 	sni?: string
@@ -16,7 +16,7 @@ package auth
 	//
 	// .. attention::
 	//
-	//   TLS renegotiation is considered insecure and shouldn't be used unless absolutely necessary.
+	//	TLS renegotiation is considered insecure and shouldn't be used unless absolutely necessary.
 	allow_renegotiation?: bool
 	// Maximum number of session keys (Pre-Shared Keys for TLSv1.3+, Session IDs and Session Tickets
 	// for TLSv1.2 and older) to store for the purpose of session resumption.
@@ -49,7 +49,7 @@ package auth
 	// TLS session tickets and encrypt/decrypt them using an internally-generated and managed key, with the
 	// implication that sessions cannot be resumed across hot restarts or on different hosts.
 	disable_stateless_session_resumption?: bool
-	// If specified, ``session_timeout`` will change the maximum lifetime (in seconds) of the TLS session.
+	// If specified, “session_timeout“ will change the maximum lifetime (in seconds) of the TLS session.
 	// Currently this value is used as a hint for the `TLS session ticket lifetime (for TLSv1.2) <https://tools.ietf.org/html/rfc5077#section-5.6>`_.
 	// Only seconds can be specified (fractional seconds are ignored).
 	session_timeout?: string

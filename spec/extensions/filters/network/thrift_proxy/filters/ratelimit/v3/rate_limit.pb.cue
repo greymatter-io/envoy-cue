@@ -17,7 +17,7 @@ import (
 	//
 	// .. note::
 	//
-	//  The filter supports a range of 0 - 10 inclusively for stage numbers.
+	//	The filter supports a range of 0 - 10 inclusively for stage numbers.
 	stage?: uint32
 	// The timeout in milliseconds for the rate limit service RPC. If not
 	// set, this defaults to 20ms.

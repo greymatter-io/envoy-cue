@@ -47,20 +47,3 @@ ConfigStatus_ERROR:    "ERROR"
 	// Client configs for the clients specified in the ClientStatusRequest.
 	config?: [...#ClientConfig]
 }
-
-// ClientStatusDiscoveryServiceClient is the client API for ClientStatusDiscoveryService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-#ClientStatusDiscoveryServiceClient: _
-
-#ClientStatusDiscoveryService_StreamClientStatusClient: _
-
-// ClientStatusDiscoveryServiceServer is the server API for ClientStatusDiscoveryService service.
-#ClientStatusDiscoveryServiceServer: _
-
-// UnimplementedClientStatusDiscoveryServiceServer can be embedded to have forward compatible implementations.
-#UnimplementedClientStatusDiscoveryServiceServer: {
-	"@type": "type.googleapis.com/envoy.service.status.v2.UnimplementedClientStatusDiscoveryServiceServer"
-}
-
-#ClientStatusDiscoveryService_StreamClientStatusServer: _

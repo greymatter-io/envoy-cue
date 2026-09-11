@@ -12,6 +12,6 @@ import (
 	// Retry host predicate metadata match criteria. The hosts in
 	// the upstream cluster with matching metadata will be omitted while
 	// attempting a retry of a failed request. The metadata should be specified
-	// under the ``envoy.lb`` key.
+	// under the “envoy.lb“ key.
 	metadata_match?: v3.#Metadata
 }

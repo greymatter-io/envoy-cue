@@ -1,7 +1,7 @@
 package v2
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 // Custom configuration for an :ref:`AccessLog <envoy_api_msg_config.filter.accesslog.v2.AccessLog>`
@@ -17,10 +17,10 @@ import (
 	format?: string
 	// Access log :ref:`format dictionary<config_access_log_format_dictionaries>`. All values
 	// are rendered as strings.
-	json_format?: _struct.#Struct
+	json_format?: structpb.#Struct
 	// Access log :ref:`format dictionary<config_access_log_format_dictionaries>`. Values are
 	// rendered as strings, numbers, or boolean values as appropriate. Nested JSON objects may
 	// be produced by some command operators (e.g.FILTER_STATE or DYNAMIC_METADATA). See the
 	// documentation for a specific command operator for details.
-	typed_json_format?: _struct.#Struct
+	typed_json_format?: structpb.#Struct
 }

@@ -1,11 +1,13 @@
 package v3
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 	v3 "envoyproxy.io/envoy-cue/spec/deps/cncf/xds/go/xds/core/v3"
-	v31 "envoyproxy.io/envoy-cue/spec/config/endpoint/v3"
-	v32 "envoyproxy.io/envoy-cue/spec/config/core/v3"
-	v33 "envoyproxy.io/envoy-cue/spec/type/v3"
+	v31 "envoyproxy.io/envoy-cue/spec/deps/cncf/xds/go/xds/type/matcher/v3"
+	v32 "envoyproxy.io/envoy-cue/spec/config/endpoint/v3"
+	v33 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+	v34 "envoyproxy.io/envoy-cue/spec/type/v3"
+	v35 "envoyproxy.io/envoy-cue/spec/type/metadata/v3"
 )
 
 // Refer to :ref:`service discovery type <arch_overview_service_discovery_types>`
@@ -95,7 +97,16 @@ Cluster_LbSubsetConfig_LbSubsetSelector_LbSubsetSelectorFallbackPolicy_KEYS_SUBS
 Cluster_RingHashLbConfig_HashFunction_XX_HASH:       "XX_HASH"
 Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 
-// Cluster list collections. Entries are ``Cluster`` resources or references.
+// [#comment: Keep this list of address types in sync with api/config/core/v3/address.proto.]
+#UpstreamConnectionOptions_FirstAddressFamilyVersion: "DEFAULT" | "V4" | "V6" | "PIPE" | "INTERNAL"
+
+UpstreamConnectionOptions_FirstAddressFamilyVersion_DEFAULT:  "DEFAULT"
+UpstreamConnectionOptions_FirstAddressFamilyVersion_V4:       "V4"
+UpstreamConnectionOptions_FirstAddressFamilyVersion_V6:       "V6"
+UpstreamConnectionOptions_FirstAddressFamilyVersion_PIPE:     "PIPE"
+UpstreamConnectionOptions_FirstAddressFamilyVersion_INTERNAL: "INTERNAL"
+
+// Cluster list collections. Entries are “Cluster“ resources or references.
 // [#not-implemented-hide:]
 #ClusterCollection: {
 	"@type":  "type.googleapis.com/envoy.config.cluster.v3.ClusterCollection"
@@ -103,40 +114,43 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 }
 
 // Configuration for a single upstream cluster.
-// [#next-free-field: 57]
+// [#next-free-field: 61]
 #Cluster: {
 	"@type": "type.googleapis.com/envoy.config.cluster.v3.Cluster"
-	// Configuration to use different transport sockets for different endpoints.
-	// The entry of ``envoy.transport_socket_match`` in the
-	// :ref:`LbEndpoint.Metadata <envoy_v3_api_field_config.endpoint.v3.LbEndpoint.metadata>`
-	// is used to match against the transport sockets as they appear in the list. The first
-	// :ref:`match <envoy_v3_api_msg_config.cluster.v3.Cluster.TransportSocketMatch>` is used.
-	// For example, with the following match
+	// Configuration to use different transport sockets for different endpoints. The entry of
+	// “envoy.transport_socket_match“ in the :ref:`LbEndpoint.Metadata
+	// <envoy_v3_api_field_config.endpoint.v3.LbEndpoint.metadata>` is used to match against the
+	// transport sockets as they appear in the list. If a match is not found, the search continues in
+	// :ref:`LocalityLbEndpoints.Metadata
+	// <envoy_v3_api_field_config.endpoint.v3.LocalityLbEndpoints.metadata>`. The first :ref:`match
+	// <envoy_v3_api_msg_config.cluster.v3.Cluster.TransportSocketMatch>` is used. For example, with
+	// the following match
 	//
 	// .. code-block:: yaml
 	//
-	//  transport_socket_matches:
-	//  - name: "enableMTLS"
-	//    match:
-	//      acceptMTLS: true
-	//    transport_socket:
-	//      name: envoy.transport_sockets.tls
-	//      config: { ... } # tls socket configuration
-	//  - name: "defaultToPlaintext"
-	//    match: {}
-	//    transport_socket:
-	//      name: envoy.transport_sockets.raw_buffer
+	//	transport_socket_matches:
+	//	- name: "enableMTLS"
+	//	  match:
+	//	    acceptMTLS: true
+	//	  transport_socket:
+	//	    name: envoy.transport_sockets.tls
+	//	    config: { ... } # tls socket configuration
+	//	- name: "defaultToPlaintext"
+	//	  match: {}
+	//	  transport_socket:
+	//	    name: envoy.transport_sockets.raw_buffer
 	//
-	// Connections to the endpoints whose metadata value under ``envoy.transport_socket_match``
+	// Connections to the endpoints whose metadata value under “envoy.transport_socket_match“
 	// having "acceptMTLS"/"true" key/value pair use the "enableMTLS" socket configuration.
 	//
 	// If a :ref:`socket match <envoy_v3_api_msg_config.cluster.v3.Cluster.TransportSocketMatch>` with empty match
 	// criteria is provided, that always match any endpoint. For example, the "defaultToPlaintext"
 	// socket match in case above.
 	//
-	// If an endpoint metadata's value under ``envoy.transport_socket_match`` does not match any
-	// ``TransportSocketMatch``, socket configuration fallbacks to use the ``tls_context`` or
-	// ``transport_socket`` specified in this cluster.
+	// If an endpoint metadata's value under “envoy.transport_socket_match“ does not match any
+	// “TransportSocketMatch“, the locality metadata is then checked for a match. Barring any
+	// matches in the endpoint or locality metadata, the socket configuration fallbacks to use the
+	// “tls_context“ or “transport_socket“ specified in this cluster.
 	//
 	// This field allows gradual and flexible transport socket configuration changes.
 	//
@@ -147,8 +161,8 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// Then the xDS server can configure the CDS to a client, Envoy A, to send mutual TLS
 	// traffic for endpoints with "acceptMTLS": "true", by adding a corresponding
-	// ``TransportSocketMatch`` in this field. Other client Envoys receive CDS without
-	// ``transport_socket_match`` set, and still send plain text traffic to the same cluster.
+	// “TransportSocketMatch“ in this field. Other client Envoys receive CDS without
+	// “transport_socket_match“ set, and still send plain text traffic to the same cluster.
 	//
 	// This field can be used to specify custom transport socket configurations for health
 	// checks by adding matching key/value pairs in a health check's
@@ -156,19 +170,61 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// [#comment:TODO(incfly): add a detailed architecture doc on intended usage.]
 	transport_socket_matches?: [...#Cluster_TransportSocketMatch]
+	// Optional matcher that selects a transport socket from
+	// :ref:`transport_socket_matches <envoy_v3_api_field_config.cluster.v3.Cluster.transport_socket_matches>`.
+	//
+	// This matcher uses the generic xDS matcher framework to select a named transport socket
+	// based on various inputs available at transport socket selection time.
+	//
+	// Supported matching inputs:
+	//
+	//   - “endpoint_metadata“: Extract values from the selected endpoint's metadata.
+	//
+	//   - “locality_metadata“: Extract values from the endpoint's locality metadata.
+	//
+	//   - “transport_socket_filter_state“: Extract values from filter state that was explicitly shared from
+	//     downstream to upstream via “TransportSocketOptions“. This enables flexible
+	//     downstream-connection-based matching, such as:
+	//
+	//   - Network namespace matching.
+	//
+	//   - Custom connection attributes.
+	//
+	//   - Any data explicitly passed via filter state.
+	//
+	// .. note::
+	//
+	//	Filter state sharing follows the same pattern as tunneling in Envoy. Filters must explicitly
+	//	share data by setting filter state with the appropriate sharing mode. The filter state is
+	//	then accessible via the ``transport_socket_filter_state`` input during transport socket selection.
+	//
+	// If this field is set, it takes precedence over legacy metadata-based selection
+	// performed by :ref:`transport_socket_matches
+	// <envoy_v3_api_field_config.cluster.v3.Cluster.transport_socket_matches>` alone.
+	// If the matcher does not yield a match, Envoy uses the default transport socket
+	// configured for the cluster.
+	//
+	// When using this field, each entry in
+	// :ref:`transport_socket_matches <envoy_v3_api_field_config.cluster.v3.Cluster.transport_socket_matches>`
+	// must have a unique “name“. The matcher outcome is expected to reference one of
+	// these names.
+	transport_socket_matcher?: v31.#Matcher
 	// Supplies the name of the cluster which must be unique across all clusters.
 	// The cluster name is used when emitting
 	// :ref:`statistics <config_cluster_manager_cluster_stats>` if :ref:`alt_stat_name
 	// <envoy_v3_api_field_config.cluster.v3.Cluster.alt_stat_name>` is not provided.
-	// Any ``:`` in the cluster name will be converted to ``_`` when emitting statistics.
+	// Any “:“ in the cluster name will be converted to “_“ when emitting statistics.
 	name?: string
 	// An optional alternative to the cluster name to be used for observability. This name is used
-	// emitting stats for the cluster and access logging the cluster name. This will appear as
+	// for emitting stats for the cluster and access logging the cluster name. This will appear as
 	// additional information in configuration dumps of a cluster's current status as
 	// :ref:`observability_name <envoy_v3_api_field_admin.v3.ClusterStatus.observability_name>`
-	// and as an additional tag "upstream_cluster.name" while tracing. Note: Any ``:`` in the name
-	// will be converted to ``_`` when emitting statistics. This should not be confused with
-	// :ref:`Router Filter Header <config_http_filters_router_x-envoy-upstream-alt-stat-name>`.
+	// and as an additional tag "upstream_cluster.name" while tracing.
+	//
+	// .. note::
+	//
+	//	Any ``:`` in the name will be converted to ``_`` when emitting statistics. This should not be confused with
+	//	:ref:`Router Filter Header <config_http_filters_router_x-envoy-upstream-alt-stat-name>`.
 	alt_stat_name?: string
 	// The :ref:`service discovery type <arch_overview_service_discovery_types>`
 	// to use for resolving the cluster.
@@ -183,6 +239,10 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// Soft limit on size of the cluster’s connections read and write buffers. If
 	// unspecified, an implementation defined default is applied (1MiB).
 	per_connection_buffer_limit_bytes?: uint32
+	// Optional timeout that controls how long an upstream connection is allowed to stay above the
+	// configured buffer high watermark before it is closed. If this timeout is not specified, or
+	// explicitly set to 0, connections will not be closed due to buffer high watermark usage.
+	per_connection_buffer_high_watermark_timeout?: string
 	// The :ref:`load balancer type <arch_overview_load_balancing_types>` to use
 	// when picking a host in the cluster.
 	lb_policy?: #Cluster_LbPolicy
@@ -190,28 +250,28 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// :ref:`STATIC<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.STATIC>`,
 	// :ref:`STRICT_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.STRICT_DNS>`
 	// or :ref:`LOGICAL_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.LOGICAL_DNS>` clusters.
-	// This field supersedes the ``hosts`` field in the v2 API.
+	// This field supersedes the “hosts“ field in the v2 API.
 	//
 	// .. attention::
 	//
-	//   Setting this allows non-EDS cluster types to contain embedded EDS equivalent
-	//   :ref:`endpoint assignments<envoy_v3_api_msg_config.endpoint.v3.ClusterLoadAssignment>`.
-	//
-	load_assignment?: v31.#ClusterLoadAssignment
+	//	Setting this allows non-EDS cluster types to contain embedded EDS equivalent
+	//	:ref:`endpoint assignments<envoy_v3_api_msg_config.endpoint.v3.ClusterLoadAssignment>`.
+	load_assignment?: v32.#ClusterLoadAssignment
 	// Optional :ref:`active health checking <arch_overview_health_checking>`
 	// configuration for the cluster. If no
 	// configuration is specified no health checking will be done and all cluster
 	// members will be considered healthy at all times.
-	health_checks?: [...v32.#HealthCheck]
+	health_checks?: [...v33.#HealthCheck]
 	// Optional maximum requests for a single upstream connection. This parameter
 	// is respected by both the HTTP/1.1 and HTTP/2 connection pool
 	// implementations. If not specified, there is no limit. Setting this
 	// parameter to 1 will effectively disable keep alive.
 	//
 	// .. attention::
-	//   This field has been deprecated in favor of the :ref:`max_requests_per_connection <envoy_v3_api_field_config.core.v3.HttpProtocolOptions.max_requests_per_connection>` field.
 	//
-	// Deprecated: Do not use.
+	//	This field has been deprecated in favor of the :ref:`max_requests_per_connection <envoy_v3_api_field_config.core.v3.HttpProtocolOptions.max_requests_per_connection>` field.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
 	max_requests_per_connection?: uint32
 	// Optional :ref:`circuit breaking <arch_overview_circuit_break>` for the cluster.
 	circuit_breakers?: #CircuitBreakers
@@ -226,8 +286,8 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// <envoy_v3_api_field_extensions.upstreams.http.v3.HttpProtocolOptions.upstream_http_protocol_options>`
 	// for example usage.
 	//
-	// Deprecated: Do not use.
-	upstream_http_protocol_options?: v32.#UpstreamHttpProtocolOptions
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
+	upstream_http_protocol_options?: v33.#UpstreamHttpProtocolOptions
 	// Additional options when handling HTTP requests upstream. These options will be applicable to
 	// both HTTP1 and HTTP2 requests.
 	// This has been deprecated in favor of
@@ -239,8 +299,8 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// <envoy_v3_api_field_extensions.upstreams.http.v3.HttpProtocolOptions.upstream_http_protocol_options>`
 	// for example usage.
 	//
-	// Deprecated: Do not use.
-	common_http_protocol_options?: v32.#HttpProtocolOptions
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
+	common_http_protocol_options?: v33.#HttpProtocolOptions
 	// Additional options when handling HTTP1 requests.
 	// This has been deprecated in favor of http_protocol_options fields in the
 	// :ref:`http_protocol_options <envoy_v3_api_msg_extensions.upstreams.http.v3.HttpProtocolOptions>` message.
@@ -250,13 +310,13 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// <envoy_v3_api_field_extensions.upstreams.http.v3.HttpProtocolOptions.upstream_http_protocol_options>`
 	// for example usage.
 	//
-	// Deprecated: Do not use.
-	http_protocol_options?: v32.#Http1ProtocolOptions
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
+	http_protocol_options?: v33.#Http1ProtocolOptions
 	// Even if default HTTP2 protocol options are desired, this field must be
 	// set so that Envoy will assume that the upstream supports HTTP/2 when
 	// making new HTTP connection pool connections. Currently, Envoy only
 	// supports prior knowledge for upstream connections. Even if TLS is used
-	// with ALPN, ``http2_protocol_options`` must be specified. As an aside this allows HTTP/2
+	// with ALPN, “http2_protocol_options“ must be specified. As an aside this allows HTTP/2
 	// connections to happen over plain text.
 	// This has been deprecated in favor of http2_protocol_options fields in the
 	// :ref:`http_protocol_options <envoy_v3_api_msg_extensions.upstreams.http.v3.HttpProtocolOptions>`
@@ -266,13 +326,14 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// <envoy_v3_api_field_extensions.upstreams.http.v3.HttpProtocolOptions.upstream_http_protocol_options>`
 	// for example usage.
 	//
-	// Deprecated: Do not use.
-	http2_protocol_options?: v32.#Http2ProtocolOptions
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
+	http2_protocol_options?: v33.#Http2ProtocolOptions
 	// The extension_protocol_options field is used to provide extension-specific protocol options
 	// for upstream connections. The key should match the extension filter name, such as
 	// "envoy.filters.network.thrift_proxy". See the extension's documentation for details on
 	// specific options.
 	// [#next-major-version: make this a list of typed extensions.]
+	// [#extension-category: envoy.upstream_options]
 	typed_extension_protocol_options?: [string]: _
 	// If the DNS refresh rate is specified and the cluster type is either
 	// :ref:`STRICT_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.STRICT_DNS>`,
@@ -283,7 +344,29 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// :ref:`STRICT_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.STRICT_DNS>`
 	// and :ref:`LOGICAL_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.LOGICAL_DNS>`
 	// this setting is ignored.
+	// This field is deprecated in favor of using the :ref:`cluster_type<envoy_v3_api_field_config.cluster.v3.Cluster.cluster_type>`
+	// extension point and configuring it with :ref:`DnsCluster<envoy_v3_api_msg_extensions.clusters.dns.v3.DnsCluster>`.
+	// If :ref:`cluster_type<envoy_v3_api_field_config.cluster.v3.Cluster.cluster_type>` is configured with
+	// :ref:`DnsCluster<envoy_v3_api_msg_extensions.clusters.dns.v3.DnsCluster>`, this field will be ignored.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
 	dns_refresh_rate?: string
+	// DNS jitter can be optionally specified if the cluster type is either
+	// :ref:`STRICT_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.STRICT_DNS>`,
+	// or :ref:`LOGICAL_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.LOGICAL_DNS>`.
+	// DNS jitter causes the cluster to refresh DNS entries later by a random amount of time to avoid a
+	// stampede of DNS requests. This value sets the upper bound (exclusive) for the random amount.
+	// There will be no jitter if this value is omitted. For cluster types other than
+	// :ref:`STRICT_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.STRICT_DNS>`
+	// and :ref:`LOGICAL_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.LOGICAL_DNS>`
+	// this setting is ignored.
+	// This field is deprecated in favor of using the :ref:`cluster_type<envoy_v3_api_field_config.cluster.v3.Cluster.cluster_type>`
+	// extension point and configuring it with :ref:`DnsCluster<envoy_v3_api_msg_extensions.clusters.dns.v3.DnsCluster>`.
+	// If :ref:`cluster_type<envoy_v3_api_field_config.cluster.v3.Cluster.cluster_type>` is configured with
+	// :ref:`DnsCluster<envoy_v3_api_msg_extensions.clusters.dns.v3.DnsCluster>`, this field will be ignored.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
+	dns_jitter?: string
 	// If the DNS failure refresh rate is specified and the cluster type is either
 	// :ref:`STRICT_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.STRICT_DNS>`,
 	// or :ref:`LOGICAL_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.LOGICAL_DNS>`,
@@ -292,14 +375,31 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// other than :ref:`STRICT_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.STRICT_DNS>` and
 	// :ref:`LOGICAL_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.LOGICAL_DNS>` this setting is
 	// ignored.
+	// This field is deprecated in favor of using the :ref:`cluster_type<envoy_v3_api_field_config.cluster.v3.Cluster.cluster_type>`
+	// extension point and configuring it with :ref:`DnsCluster<envoy_v3_api_msg_extensions.clusters.dns.v3.DnsCluster>`.
+	// If :ref:`cluster_type<envoy_v3_api_field_config.cluster.v3.Cluster.cluster_type>` is configured with
+	// :ref:`DnsCluster<envoy_v3_api_msg_extensions.clusters.dns.v3.DnsCluster>`, this field will be ignored.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
 	dns_failure_refresh_rate?: #Cluster_RefreshRate
 	// Optional configuration for setting cluster's DNS refresh rate. If the value is set to true,
 	// cluster's DNS refresh rate will be set to resource record's TTL which comes from DNS
 	// resolution.
+	// This field is deprecated in favor of using the :ref:`cluster_type<envoy_v3_api_field_config.cluster.v3.Cluster.cluster_type>`
+	// extension point and configuring it with :ref:`DnsCluster<envoy_v3_api_msg_extensions.clusters.dns.v3.DnsCluster>`.
+	// If :ref:`cluster_type<envoy_v3_api_field_config.cluster.v3.Cluster.cluster_type>` is configured with
+	// :ref:`DnsCluster<envoy_v3_api_msg_extensions.clusters.dns.v3.DnsCluster>`, this field will be ignored.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
 	respect_dns_ttl?: bool
 	// The DNS IP address resolution policy. If this setting is not specified, the
 	// value defaults to
 	// :ref:`AUTO<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DnsLookupFamily.AUTO>`.
+	// For logical and strict dns cluster, this field is deprecated in favor of using the
+	// :ref:`cluster_type<envoy_v3_api_field_config.cluster.v3.Cluster.cluster_type>`
+	// extension point and configuring it with :ref:`DnsCluster<envoy_v3_api_msg_extensions.clusters.dns.v3.DnsCluster>`.
+	// If :ref:`cluster_type<envoy_v3_api_field_config.cluster.v3.Cluster.cluster_type>` is configured with
+	// :ref:`DnsCluster<envoy_v3_api_msg_extensions.clusters.dns.v3.DnsCluster>`, this field will be ignored.
 	dns_lookup_family?: #Cluster_DnsLookupFamily
 	// If DNS resolvers are specified and the cluster type is either
 	// :ref:`STRICT_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.STRICT_DNS>`,
@@ -311,38 +411,42 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// :ref:`STRICT_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.STRICT_DNS>`
 	// and :ref:`LOGICAL_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.LOGICAL_DNS>`
 	// this setting is ignored.
-	// This field is deprecated in favor of ``dns_resolution_config``
+	// This field is deprecated in favor of “dns_resolution_config“
 	// which aggregates all of the DNS resolver configuration in a single message.
 	//
-	// Deprecated: Do not use.
-	dns_resolvers?: [...v32.#Address]
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
+	dns_resolvers?: [...v33.#Address]
 	// Always use TCP queries instead of UDP queries for DNS lookups.
-	// This field is deprecated in favor of ``dns_resolution_config``
+	// This field is deprecated in favor of “dns_resolution_config“
 	// which aggregates all of the DNS resolver configuration in a single message.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
 	use_tcp_for_dns_lookups?: bool
 	// DNS resolution configuration which includes the underlying dns resolver addresses and options.
 	// This field is deprecated in favor of
 	// :ref:`typed_dns_resolver_config <envoy_v3_api_field_config.cluster.v3.Cluster.typed_dns_resolver_config>`.
 	//
-	// Deprecated: Do not use.
-	dns_resolution_config?: v32.#DnsResolutionConfig
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
+	dns_resolution_config?: v33.#DnsResolutionConfig
 	// DNS resolver type configuration extension. This extension can be used to configure c-ares, apple,
 	// or any other DNS resolver types and the related parameters.
 	// For example, an object of
 	// :ref:`CaresDnsResolverConfig <envoy_v3_api_msg_extensions.network.dns_resolver.cares.v3.CaresDnsResolverConfig>`
-	// can be packed into this ``typed_dns_resolver_config``. This configuration replaces the
+	// can be packed into this “typed_dns_resolver_config“. This configuration replaces the
 	// :ref:`dns_resolution_config <envoy_v3_api_field_config.cluster.v3.Cluster.dns_resolution_config>`
 	// configuration.
-	// During the transition period when both ``dns_resolution_config`` and ``typed_dns_resolver_config`` exists,
-	// when ``typed_dns_resolver_config`` is in place, Envoy will use it and ignore ``dns_resolution_config``.
-	// When ``typed_dns_resolver_config`` is missing, the default behavior is in place.
+	// During the transition period when both “dns_resolution_config“ and “typed_dns_resolver_config“ exists,
+	// when “typed_dns_resolver_config“ is in place, Envoy will use it and ignore “dns_resolution_config“.
+	// When “typed_dns_resolver_config“ is missing, the default behavior is in place.
+	// Also note that this field is deprecated for logical dns and strict dns clusters and will be ignored when
+	// :ref:`cluster_type<envoy_v3_api_field_config.cluster.v3.Cluster.cluster_type>` is configured with
+	// :ref:`DnsCluster<envoy_v3_api_msg_extensions.clusters.dns.v3.DnsCluster>`.
 	// [#extension-category: envoy.network.dns_resolver]
-	typed_dns_resolver_config?: v32.#TypedExtensionConfig
+	typed_dns_resolver_config?: v33.#TypedExtensionConfig
 	// Optional configuration for having cluster readiness block on warm-up. Currently, only applicable for
 	// :ref:`STRICT_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.STRICT_DNS>`,
-	// or :ref:`LOGICAL_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.LOGICAL_DNS>`.
+	// or :ref:`LOGICAL_DNS<envoy_v3_api_enum_value_config.cluster.v3.Cluster.DiscoveryType.LOGICAL_DNS>`,
+	// or :ref:`Redis Cluster<arch_overview_redis>`.
 	// If true, cluster readiness blocks on warm-up. If false, the cluster will complete
 	// initialization whether or not warm-up has completed. Defaults to true.
 	wait_for_warm_on_init?: bool
@@ -367,7 +471,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// Optional configuration used to bind newly established upstream connections.
 	// This overrides any bind_config specified in the bootstrap proto.
 	// If the address and port are empty, no bind will be performed.
-	upstream_bind_config?: v32.#BindConfig
+	upstream_bind_config?: v33.#BindConfig
 	// Configuration for load balancing subsetting.
 	lb_subset_config?: #Cluster_LbSubsetConfig
 	// Optional configuration for the Ring Hash load balancing policy.
@@ -383,17 +487,17 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// Common configuration for all load balancer implementations.
 	common_lb_config?: #Cluster_CommonLbConfig
 	// Optional custom transport socket implementation to use for upstream connections.
-	// To setup TLS, set a transport socket with name ``envoy.transport_sockets.tls`` and
-	// :ref:`UpstreamTlsContexts <envoy_v3_api_msg_extensions.transport_sockets.tls.v3.UpstreamTlsContext>` in the ``typed_config``.
+	// To setup TLS, set a transport socket with name “envoy.transport_sockets.tls“ and
+	// :ref:`UpstreamTlsContexts <envoy_v3_api_msg_extensions.transport_sockets.tls.v3.UpstreamTlsContext>` in the “typed_config“.
 	// If no transport socket configuration is specified, new connections
 	// will be set up with plaintext.
-	transport_socket?: v32.#TransportSocket
+	transport_socket?: v33.#TransportSocket
 	// The Metadata field can be used to provide additional information about the
 	// cluster. It can be used for stats, logging, and varying filter behavior.
 	// Fields should use reverse DNS notation to denote which entity within Envoy
 	// will need the information. For instance, if the metadata is intended for
-	// the Router filter, the filter name should be specified as ``envoy.filters.http.router``.
-	metadata?: v32.#Metadata
+	// the Router filter, the filter name should be specified as “envoy.filters.http.router“.
+	metadata?: v33.#Metadata
 	// Determines how Envoy selects the protocol used to speak to upstream hosts.
 	// This has been deprecated in favor of setting explicit protocol selection
 	// in the :ref:`http_protocol_options
@@ -401,7 +505,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// http_protocol_options can be set via the cluster's
 	// :ref:`extension_protocol_options<envoy_v3_api_field_config.cluster.v3.Cluster.typed_extension_protocol_options>`.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
 	protocol_selection?: #Cluster_ClusterProtocolSelection
 	// Optional options for upstream connections.
 	upstream_connection_options?: #UpstreamConnectionOptions
@@ -410,14 +514,14 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. note::
 	//
-	//   This is currently only supported for connections created by tcp_proxy.
+	//	This is currently only supported for connections created by tcp_proxy.
 	//
 	// .. note::
 	//
-	//   The current implementation of this feature closes all connections immediately when
-	//   the unhealthy status is detected. If there are a large number of connections open
-	//   to an upstream host that becomes unhealthy, Envoy may spend a substantial amount of
-	//   time exclusively closing these connections, and not processing any other traffic.
+	//	The current implementation of this feature closes all connections immediately when
+	//	the unhealthy status is detected. If there are a large number of connections open
+	//	to an upstream host that becomes unhealthy, Envoy may spend a substantial amount of
+	//	time exclusively closing these connections, and not processing any other traffic.
 	close_connections_on_host_health_failure?: bool
 	// If set to true, Envoy will ignore the health value of a host when processing its removal
 	// from service discovery. This means that if active health checking is used, Envoy will *not*
@@ -444,7 +548,23 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// [#next-major-version: In the v3 API, we should consider restructuring this somehow,
 	// maybe by allowing LRS to go on the ADS stream, or maybe by moving some of the negotiation
 	// from the LRS stream here.]
-	lrs_server?: v32.#ConfigSource
+	lrs_server?: v33.#ConfigSource
+	// A list of metric names from :ref:`ORCA load reports <envoy_v3_api_msg_.xds.data.orca.v3.OrcaLoadReport>` to propagate to LRS.
+	//
+	// If not specified, then ORCA load reports will not be propagated to LRS.
+	//
+	// For map fields in the ORCA proto, the string will be of the form “<map_field_name>.<map_key>“.
+	// For example, the string “named_metrics.foo“ will mean to look for the key “foo“ in the ORCA
+	// :ref:`named_metrics <envoy_v3_api_field_.xds.data.orca.v3.OrcaLoadReport.named_metrics>` field.
+	//
+	// The special map key “*“ means to report all entries in the map (e.g., “named_metrics.*“ means to
+	// report all entries in the ORCA named_metrics field). Note that this should be used only with trusted
+	// backends.
+	//
+	// The metric names in LRS will follow the same semantics as this field. In other words, if this field
+	// contains “named_metrics.foo“, then the LRS load report will include the data with that same string
+	// as the key.
+	lrs_report_endpoint_metrics?: [...string]
 	// If track_timeout_budgets is true, the :ref:`timeout budget histograms
 	// <config_cluster_manager_cluster_stats_timeout_budgets>` will be published for each
 	// request. These show what percentage of a request's per try and global timeout was used. A value
@@ -453,10 +573,10 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. attention::
 	//
-	//   This field has been deprecated in favor of ``timeout_budgets``, part of
-	//   :ref:`track_cluster_stats <envoy_v3_api_field_config.cluster.v3.Cluster.track_cluster_stats>`.
+	//	This field has been deprecated in favor of ``timeout_budgets``, part of
+	//	:ref:`track_cluster_stats <envoy_v3_api_field_config.cluster.v3.Cluster.track_cluster_stats>`.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/config/cluster/v3/cluster.proto.
 	track_timeout_budgets?: bool
 	// Optional customization and configuration of upstream connection pool, and upstream type.
 	//
@@ -464,7 +584,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// TCP upstreams.
 	//
 	// For HTTP traffic, Envoy will generally take downstream HTTP and send it upstream as upstream
-	// HTTP, using the http connection pool and the codec from ``http2_protocol_options``
+	// HTTP, using the http connection pool and the codec from “http2_protocol_options“
 	//
 	// For routes where CONNECT termination is configured, Envoy will take downstream CONNECT
 	// requests and forward the CONNECT payload upstream over raw TCP using the tcp connection pool.
@@ -476,12 +596,12 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// CONNECT only if a custom filter indicates it is appropriate, the custom factories
 	// can be registered and configured here.
 	// [#extension-category: envoy.upstreams]
-	upstream_config?: v32.#TypedExtensionConfig
+	upstream_config?: v33.#TypedExtensionConfig
 	// Configuration to track optional cluster stats.
 	track_cluster_stats?: #TrackClusterStats
 	// Preconnect configuration for this cluster.
 	preconnect_policy?: #Cluster_PreconnectPolicy
-	// If ``connection_pool_per_downstream_connection`` is true, the cluster will use a separate
+	// If “connection_pool_per_downstream_connection“ is true, the cluster will use a separate
 	// connection pool for every downstream connection
 	connection_pool_per_downstream_connection?: bool
 }
@@ -516,11 +636,15 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 #UpstreamConnectionOptions: {
 	"@type": "type.googleapis.com/envoy.config.cluster.v3.UpstreamConnectionOptions"
 	// If set then set SO_KEEPALIVE on the socket to enable TCP Keepalives.
-	tcp_keepalive?: v32.#TcpKeepalive
+	tcp_keepalive?: v33.#TcpKeepalive
 	// If enabled, associates the interface name of the local address with the upstream connection.
 	// This can be used by extensions during processing of requests. The association mechanism is
 	// implementation specific. Defaults to false due to performance concerns.
 	set_local_interface_name_on_upstream_connections?: bool
+	// Configurations for happy eyeballs algorithm.
+	// Add configs for first_address_family_version and first_address_family_count
+	// when sorting destination ip addresses.
+	happy_eyeballs_config?: #UpstreamConnectionOptions_HappyEyeballsConfig
 }
 
 #TrackClusterStats: {
@@ -533,8 +657,22 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	timeout_budgets?: bool
 	// If request_response_sizes is true, then the :ref:`histograms
 	// <config_cluster_manager_cluster_stats_request_response_sizes>`  tracking header and body sizes
-	// of requests and responses will be published.
+	// of requests and responses will be published. Additionally, number of headers in the requests and responses will be tracked.
 	request_response_sizes?: bool
+	// If true, some stats will be emitted per-endpoint, similar to the stats in admin “/clusters“
+	// output.
+	//
+	// This does not currently output correct stats during a hot-restart.
+	//
+	// This is not currently implemented by all stat sinks.
+	//
+	// These stats do not honor filtering or tag extraction rules in :ref:`StatsConfig
+	// <envoy_v3_api_msg_config.metrics.v3.StatsConfig>` (but fixed-value tags are supported). Admin
+	// endpoint filtering is supported.
+	//
+	// This may not be used at the same time as
+	// :ref:`load_stats_config <envoy_v3_api_field_config.bootstrap.v3.ClusterManager.load_stats_config>`.
+	per_endpoint_stats?: bool
 }
 
 // TransportSocketMatch specifies what transport socket config will be used
@@ -543,15 +681,15 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	"@type": "type.googleapis.com/envoy.config.cluster.v3.Cluster_TransportSocketMatch"
 	// The name of the match, used in stats generation.
 	name?: string
-	// Optional endpoint metadata match criteria.
+	// Optional metadata match criteria.
 	// The connection to the endpoint with metadata matching what is set in this field
 	// will use the transport socket configuration specified here.
-	// The endpoint's metadata entry in ``envoy.transport_socket_match`` is used to match
+	// The endpoint's metadata entry in “envoy.transport_socket_match“ is used to match
 	// against the values specified in this field.
-	match?: _struct.#Struct
+	match?: structpb.#Struct
 	// The configuration of the transport socket.
 	// [#extension-category: envoy.transport_sockets.upstream]
-	transport_socket?: v32.#TransportSocket
+	transport_socket?: v33.#TransportSocket
 }
 
 // Extended cluster type.
@@ -569,7 +707,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 #Cluster_EdsClusterConfig: {
 	"@type": "type.googleapis.com/envoy.config.cluster.v3.Cluster_EdsClusterConfig"
 	// Configuration for the source of EDS updates for this Cluster.
-	eds_config?: v32.#ConfigSource
+	eds_config?: v33.#ConfigSource
 	// Optional alternative to cluster name to present to EDS. This does not
 	// have the same restrictions as cluster name, i.e. it may be arbitrary
 	// length. This may be a xdstp:// URL.
@@ -589,21 +727,21 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// fallback_policy is
 	// :ref:`DEFAULT_SUBSET<envoy_v3_api_enum_value_config.cluster.v3.Cluster.LbSubsetConfig.LbSubsetFallbackPolicy.DEFAULT_SUBSET>`.
 	// Each field in default_subset is
-	// compared to the matching LbEndpoint.Metadata under the ``envoy.lb``
+	// compared to the matching LbEndpoint.Metadata under the “envoy.lb“
 	// namespace. It is valid for no hosts to match, in which case the behavior
 	// is the same as a fallback_policy of
 	// :ref:`NO_FALLBACK<envoy_v3_api_enum_value_config.cluster.v3.Cluster.LbSubsetConfig.LbSubsetFallbackPolicy.NO_FALLBACK>`.
-	default_subset?: _struct.#Struct
+	default_subset?: structpb.#Struct
 	// For each entry, LbEndpoint.Metadata's
-	// ``envoy.lb`` namespace is traversed and a subset is created for each unique
+	// “envoy.lb“ namespace is traversed and a subset is created for each unique
 	// combination of key and value. For example:
 	//
 	// .. code-block:: json
 	//
-	//   { "subset_selectors": [
-	//       { "keys": [ "version" ] },
-	//       { "keys": [ "stage", "hardware_type" ] }
-	//   ]}
+	//	{ "subset_selectors": [
+	//	    { "keys": [ "version" ] },
+	//	    { "keys": [ "stage", "hardware_type" ] }
+	//	]}
 	//
 	// A subset is matched when the metadata from the selected route and
 	// weighted cluster contains the same keys and values as the subset's
@@ -660,16 +798,16 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// By tuning the parameter, is possible to achieve polynomial or exponential shape of ramp-up curve.
 	//
 	// During slow start window, effective weight of an endpoint would be scaled with time factor and aggression:
-	// ``new_weight = weight * max(min_weight_percent, time_factor ^ (1 / aggression))``,
-	// where ``time_factor=(time_since_start_seconds / slow_start_time_seconds)``.
+	// “new_weight = weight * max(min_weight_percent, time_factor ^ (1 / aggression))“,
+	// where “time_factor=(time_since_start_seconds / slow_start_time_seconds)“.
 	//
 	// As time progresses, more and more traffic would be sent to endpoint, which is in slow start window.
 	// Once host exits slow start, time_factor and aggression no longer affect its weight.
-	aggression?: v32.#RuntimeDouble
+	aggression?: v33.#RuntimeDouble
 	// Configures the minimum percentage of origin weight that avoids too small new weight,
 	// which may cause endpoints in slow start mode receive no traffic in slow start window.
 	// If not specified, the default is 10%.
-	min_weight_percent?: v33.#Percent
+	min_weight_percent?: v34.#Percent
 }
 
 // Specific configuration for the RoundRobin load balancing policy.
@@ -689,18 +827,18 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// The following formula is used to calculate the dynamic weights when hosts have different load
 	// balancing weights:
 	//
-	// ``weight = load_balancing_weight / (active_requests + 1)^active_request_bias``
+	// “weight = load_balancing_weight / (active_requests + 1)^active_request_bias“
 	//
 	// The larger the active request bias is, the more aggressively active requests will lower the
 	// effective weight when all host weights are not equal.
 	//
-	// ``active_request_bias`` must be greater than or equal to 0.0.
+	// “active_request_bias“ must be greater than or equal to 0.0.
 	//
-	// When ``active_request_bias == 0.0`` the Least Request Load Balancer doesn't consider the number
+	// When “active_request_bias == 0.0“ the Least Request Load Balancer doesn't consider the number
 	// of active requests at the time it picks a host and behaves like the Round Robin Load
 	// Balancer.
 	//
-	// When ``active_request_bias > 0.0`` the Least Request Load Balancer scales the load balancing
+	// When “active_request_bias > 0.0“ the Least Request Load Balancer scales the load balancing
 	// weight by the number of active requests at the time it does a pick.
 	//
 	// The value is cached for performance reasons and refreshed whenever one of the Load Balancer's
@@ -708,8 +846,9 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// weight change.
 	//
 	// .. note::
-	//   This setting only takes effect if all host weights are not equal.
-	active_request_bias?: v32.#RuntimeDouble
+	//
+	//	This setting only takes effect if all host weights are not equal.
+	active_request_bias?: v33.#RuntimeDouble
 	// Configuration for slow start mode.
 	// If this configuration is not set, slow start will not be not enabled.
 	slow_start_config?: #Cluster_SlowStartConfig
@@ -747,6 +886,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 // Specific configuration for the
 // :ref:`Original Destination <arch_overview_load_balancing_types_original_destination>`
 // load balancing policy.
+// [#extension: envoy.clusters.original_dst]
 #Cluster_OriginalDstLbConfig: {
 	"@type": "type.googleapis.com/envoy.config.cluster.v3.Cluster_OriginalDstLbConfig"
 	// When true, a HTTP header can be used to override the original dst address. The default header is
@@ -754,13 +894,13 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. attention::
 	//
-	//   This header isn't sanitized by default, so enabling this feature allows HTTP clients to
-	//   route traffic to arbitrary hosts and/or ports, which may have serious security
-	//   consequences.
+	//	This header isn't sanitized by default, so enabling this feature allows HTTP clients to
+	//	route traffic to arbitrary hosts and/or ports, which may have serious security
+	//	consequences.
 	//
 	// .. note::
 	//
-	//   If the header appears multiple times only the first value is used.
+	//	If the header appears multiple times only the first value is used.
 	use_http_header?: bool
 	// The http header to override destination address if :ref:`use_http_header <envoy_v3_api_field_config.cluster.v3.Cluster.OriginalDstLbConfig.use_http_header>`.
 	// is set to true. If the value is empty, :ref:`x-envoy-original-dst-host <config_http_conn_man_headers_x-envoy-original-dst-host>` will be used.
@@ -768,6 +908,9 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// The port to override for the original dst address. This port
 	// will take precedence over filter state and header override ports
 	upstream_port_override?: uint32
+	// The dynamic metadata key to override destination address.
+	// First the request metadata is considered, then the connection one.
+	metadata_key?: v35.#MetadataKey
 }
 
 // Common configuration for all load balancer implementations.
@@ -779,8 +922,9 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// To disable panic mode, set to 0%.
 	//
 	// .. note::
-	//   The specified percent will be truncated to the nearest 1%.
-	healthy_panic_threshold?:     v33.#Percent
+	//
+	//	The specified percent will be truncated to the nearest 1%.
+	healthy_panic_threshold?:     v34.#Percent
 	zone_aware_lb_config?:        #Cluster_CommonLbConfig_ZoneAwareLbConfig
 	locality_weighted_lb_config?: #Cluster_CommonLbConfig_LocalityWeightedLbConfig
 	// If set, all health check/weight/metadata updates that happen within this duration will be
@@ -794,15 +938,17 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// If this is not set, we default to a merge window of 1000ms. To disable it, set the merge
 	// window to 0.
 	//
-	// Note: merging does not apply to cluster membership changes (e.g.: adds/removes); this is
-	// because merging those updates isn't currently safe. See
-	// https://github.com/envoyproxy/envoy/pull/3941.
+	// .. note::
+	//
+	//	Merging does not apply to cluster membership changes (e.g.: adds/removes); this is
+	//	because merging those updates isn't currently safe. See
+	//	https://github.com/envoyproxy/envoy/pull/3941.
 	update_merge_window?: string
 	// If set to true, Envoy will :ref:`exclude <arch_overview_load_balancing_excluded>` new hosts
 	// when computing load balancing weights until they have been health checked for the first time.
 	// This will have no effect unless active health checking is also configured.
 	ignore_new_hosts_until_first_hc?: bool
-	// If set to ``true``, the cluster manager will drain all existing
+	// If set to “true“, the cluster manager will drain all existing
 	// connections to upstream hosts whenever hosts are added or removed from the cluster.
 	close_connections_on_host_set_change?: bool
 	// Common Configuration for all consistent hashing load balancers (MaglevLb, RingHashLb, etc.)
@@ -813,7 +959,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// If this is unset then [UNKNOWN, HEALTHY, DEGRADED] will be applied by default. If this is
 	// set with an empty set of statuses then host overrides will be ignored by the load balancing.
-	override_host_status?: v32.#HealthStatusSet
+	override_host_status?: v33.#HealthStatusSet
 }
 
 #Cluster_RefreshRate: {
@@ -856,10 +1002,10 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// This is limited somewhat arbitrarily to 3 because preconnecting too aggressively can
 	// harm latency more than the preconnecting helps.
 	per_upstream_preconnect_ratio?: float64
-	// Indicates how many many streams (rounded up) can be anticipated across a cluster for each
+	// Indicates how many streams (rounded up) can be anticipated across a cluster for each
 	// stream, useful for low QPS services. This is currently supported for a subset of
 	// deterministic non-hash-based load-balancing algorithms (weighted round robin, random).
-	// Unlike ``per_upstream_preconnect_ratio`` this preconnects across the upstream instances in a
+	// Unlike “per_upstream_preconnect_ratio“ this preconnects across the upstream instances in a
 	// cluster, doing best effort predictions of what upstream would be picked next and
 	// pre-establishing a connection.
 	//
@@ -878,6 +1024,9 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// If both this and preconnect_ratio are set, Envoy will make sure both predicted needs are met,
 	// basically preconnecting max(predictive-preconnect, per-upstream-preconnect), for each
 	// upstream.
+	//
+	// This is limited somewhat arbitrarily to 3 because preconnecting too aggressively can
+	// harm latency more than the preconnecting helps.
 	predictive_preconnect_ratio?: float64
 }
 
@@ -891,7 +1040,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// If a match is found to a host, that host will be used regardless of priority levels.
 	//
-	// When this mode is enabled, configurations that contain more than one host with the same metadata value for the single key in ``keys``
+	// When this mode is enabled, configurations that contain more than one host with the same metadata value for the single key in “keys“
 	// will use only one of the hosts with the given key; no requests will be routed to the others. The cluster gauge
 	// :ref:`lb_subsets_single_host_per_subset_duplicate<config_cluster_manager_cluster_stats_subset_lb>` indicates how many duplicates are
 	// present in the current configuration.
@@ -907,7 +1056,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// For any other fallback policy the parameter is not used and should not be set.
 	// Only values also present in
 	// :ref:`keys<envoy_v3_api_field_config.cluster.v3.Cluster.LbSubsetConfig.LbSubsetSelector.keys>` are allowed, but
-	// ``fallback_keys_subset`` cannot be equal to ``keys``.
+	// “fallback_keys_subset“ cannot be equal to “keys“.
 	fallback_keys_subset?: [...string]
 }
 
@@ -919,7 +1068,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// if zone aware routing is configured. If not specified, the default is 100%.
 	// * :ref:`runtime values <config_cluster_manager_cluster_runtime_zone_routing>`.
 	// * :ref:`Zone aware routing support <arch_overview_load_balancing_zone_aware_routing>`.
-	routing_enabled?: v33.#Percent
+	routing_enabled?: v34.#Percent
 	// Configures minimum upstream cluster size required for zone aware routing
 	// If upstream cluster size is less than specified, zone aware routing is not performed
 	// even if zone aware routing is configured. If not specified, the default is 6.
@@ -942,7 +1091,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 // Common Configuration for all consistent hashing load balancers (MaglevLb, RingHashLb, etc.)
 #Cluster_CommonLbConfig_ConsistentHashingLbConfig: {
 	"@type": "type.googleapis.com/envoy.config.cluster.v3.Cluster_CommonLbConfig_ConsistentHashingLbConfig"
-	// If set to ``true``, the cluster will use hostname instead of the resolved
+	// If set to “true“, the cluster will use hostname instead of the resolved
 	// address as the key to consistently hash to an upstream host. Only valid for StrictDNS clusters with hostnames which resolve to a single IP address.
 	use_hostname_for_hashing?: bool
 	// Configures percentage of average cluster load to bound per upstream host. For example, with a value of 150
@@ -953,7 +1102,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// Applies to both Ring Hash and Maglev load balancers.
 	//
 	// This is implemented based on the method described in the paper https://arxiv.org/abs/1608.01350. For the specified
-	// ``hash_balance_factor``, requests to any upstream host are capped at ``hash_balance_factor/100`` times the average number of requests
+	// “hash_balance_factor“, requests to any upstream host are capped at “hash_balance_factor/100“ times the average number of requests
 	// across the cluster. When a request arrives for an upstream host that is currently serving at its max capacity, linear probing
 	// is used to identify an eligible host. Further, the linear probe is implemented using a random jump in hosts ring/table to identify
 	// the eligible host (this technique is as described in the paper https://arxiv.org/abs/1908.08762 - the random jump avoids the
@@ -961,12 +1110,23 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// If weights are specified on the hosts, they are respected.
 	//
-	// This is an O(N) algorithm, unlike other load balancers. Using a lower ``hash_balance_factor`` results in more hosts
+	// This is an O(N) algorithm, unlike other load balancers. Using a lower “hash_balance_factor“ results in more hosts
 	// being probed, so use a higher value if you require better performance.
 	hash_balance_factor?: uint32
 }
 
 #LoadBalancingPolicy_Policy: {
-	"@type":                 "type.googleapis.com/envoy.config.cluster.v3.LoadBalancingPolicy_Policy"
-	typed_extension_config?: v32.#TypedExtensionConfig
+	"@type": "type.googleapis.com/envoy.config.cluster.v3.LoadBalancingPolicy_Policy"
+	// [#extension-category: envoy.load_balancing_policies]
+	typed_extension_config?: v33.#TypedExtensionConfig
+}
+
+#UpstreamConnectionOptions_HappyEyeballsConfig: {
+	"@type": "type.googleapis.com/envoy.config.cluster.v3.UpstreamConnectionOptions_HappyEyeballsConfig"
+	// Specify the IP address family to attempt connection first in happy
+	// eyeballs algorithm according to RFC8305#section-4.
+	first_address_family_version?: #UpstreamConnectionOptions_FirstAddressFamilyVersion
+	// Specify the number of addresses of the first_address_family_version being
+	// attempted for connection before the other address family.
+	first_address_family_count?: uint32
 }

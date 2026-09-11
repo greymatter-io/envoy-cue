@@ -1,7 +1,7 @@
 package listener
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 #UdpListenerConfig: {
@@ -10,8 +10,8 @@ import (
 	// "quic_listener" to create a specific udp listener.
 	// If not specified, treat as "raw_udp_listener".
 	udp_listener_name?: string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/listener/udp_listener_config.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }
 

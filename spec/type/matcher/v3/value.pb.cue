@@ -1,8 +1,8 @@
 package v3
 
-// Specifies the way to match a ProtobufWkt::Value. Primitive values and ListValue are supported.
+// Specifies the way to match a Protobuf::Value. Primitive values and ListValue are supported.
 // StructValue is not supported and is always not matched.
-// [#next-free-field: 7]
+// [#next-free-field: 8]
 #ValueMatcher: {
 	"@type": "type.googleapis.com/envoy.type.matcher.v3.ValueMatcher"
 	// If specified, a match occurs if and only if the target value is a NullValue.
@@ -23,6 +23,8 @@ package v3
 	// If specified, a match occurs if and only if the target value is a list value and
 	// is matched to this field.
 	list_match?: #ListMatcher
+	// If specified, a match occurs if and only if any of the alternatives in the match accept the value.
+	or_match?: #OrMatcher
 }
 
 // Specifies the way to match a list value.
@@ -30,6 +32,12 @@ package v3
 	"@type": "type.googleapis.com/envoy.type.matcher.v3.ListMatcher"
 	// If specified, at least one of the values in the list must match the value specified.
 	one_of?: #ValueMatcher
+}
+
+// Specifies a list of alternatives for the match.
+#OrMatcher: {
+	"@type": "type.googleapis.com/envoy.type.matcher.v3.OrMatcher"
+	value_matchers?: [...#ValueMatcher]
 }
 
 // NullMatch is an empty message to specify a null value.

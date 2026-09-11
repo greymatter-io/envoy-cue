@@ -1,0 +1,50 @@
+package v3
+
+// CEL expression evaluation configuration.
+// These options control the behavior of the Common Expression Language runtime for
+// individual CEL expressions.
+#CelExpressionConfig: {
+	"@type": "type.googleapis.com/envoy.config.core.v3.CelExpressionConfig"
+	// Enable string conversion functions for CEL expressions. When enabled, CEL expressions
+	// can convert values to strings using the “string()“ function.
+	//
+	// .. attention::
+	//
+	//	This option is disabled by default to avoid unbounded memory allocation.
+	//	CEL evaluation cost is typically bounded by the expression size, but converting
+	//	arbitrary values (e.g., large messages, lists, or maps) to strings may allocate
+	//	memory proportional to input data size, which can be unbounded and lead to
+	//	memory exhaustion.
+	enable_string_conversion?: bool
+	// Enable string concatenation for CEL expressions. When enabled, CEL expressions
+	// can concatenate strings using the “+“ operator.
+	//
+	// .. attention::
+	//
+	//	This option is disabled by default to avoid unbounded memory allocation.
+	//	While CEL normally bounds evaluation by expression size, enabling string
+	//	concatenation allows building outputs whose size depends on input data,
+	//	potentially causing large intermediate allocations and memory exhaustion.
+	enable_string_concat?: bool
+	// Enable string manipulation functions for CEL expressions. When enabled, CEL
+	// expressions can use additional string functions:
+	//
+	// * “replace(old, new)“ - Replaces all occurrences of “old“ with “new“.
+	// * “split(separator)“ - Splits a string into a list of substrings.
+	// * “lowerAscii()“ - Converts ASCII characters to lowercase.
+	// * “upperAscii()“ - Converts ASCII characters to uppercase.
+	//
+	// .. note::
+	//
+	//	Standard CEL string functions like ``contains()``, ``startsWith()``, and
+	//	``endsWith()`` are always available regardless of this setting.
+	//
+	// .. attention::
+	//
+	//	This option is disabled by default to avoid unbounded memory allocation.
+	//	Although CEL generally bounds evaluation by expression size, functions such as
+	//	``replace``, ``split``, ``lowerAscii()``, and ``upperAscii()`` can allocate memory
+	//	proportional to input data size. Under adversarial inputs this can lead to
+	//	unbounded allocations and memory exhaustion.
+	enable_string_functions?: bool
+}

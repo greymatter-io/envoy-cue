@@ -13,14 +13,14 @@ import (
 	// The name of the route configuration. Reserved for future use in asynchronous route discovery.
 	name?: string
 	// The interface name of the service. Wildcard interface are supported in the suffix or prefix form.
-	// e.g. ``*.methods.add`` will match ``com.dev.methods.add``, ``com.prod.methods.add``, etc.
-	// ``com.dev.methods.*`` will match ``com.dev.methods.add``, ``com.dev.methods.update``, etc.
-	// Special wildcard ``*`` matching any interface.
+	// e.g. “*.methods.add“ will match “com.dev.methods.add“, “com.prod.methods.add“, etc.
+	// “com.dev.methods.*“ will match “com.dev.methods.add“, “com.dev.methods.update“, etc.
+	// Special wildcard “*“ matching any interface.
 	//
 	// .. note::
 	//
-	//  The wildcard will not match the empty string.
-	//  e.g. ``*.methods.add`` will match ``com.dev.methods.add`` but not ``.methods.add``.
+	//	The wildcard will not match the empty string.
+	//	e.g. ``*.methods.add`` will match ``com.dev.methods.add`` but not ``.methods.add``.
 	interface?: string
 	// Which group does the interface belong to.
 	group?: string
@@ -61,7 +61,7 @@ import (
 	weighted_clusters?: v3.#WeightedCluster
 	// Optional endpoint metadata match criteria used by the subset load balancer. Only endpoints in
 	// the upstream cluster with metadata matching what is set in this field will be considered for
-	// load balancing. The filter name should be specified as ``envoy.lb``.
+	// load balancing. The filter name should be specified as “envoy.lb“.
 	metadata_match?: v31.#Metadata
 }
 
@@ -97,7 +97,7 @@ import (
 	//
 	// Examples:
 	//
-	// * For range [-10,0), route will match for header value -1, but not for 0,
-	//   "somestring", 10.9, "-1somestring"
+	//   - For range [-10,0), route will match for header value -1, but not for 0,
+	//     "somestring", 10.9, "-1somestring"
 	range_match?: v33.#Int64Range
 }

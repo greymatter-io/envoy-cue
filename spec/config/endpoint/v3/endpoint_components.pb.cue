@@ -2,34 +2,55 @@ package v3
 
 import (
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+	v31 "envoyproxy.io/envoy-cue/spec/deps/cncf/xds/go/xds/core/v3"
 )
 
 // Upstream host identifier.
+// [#next-free-field: 6]
 #Endpoint: {
 	"@type": "type.googleapis.com/envoy.config.endpoint.v3.Endpoint"
 	// The upstream host address.
 	//
 	// .. attention::
 	//
-	//   The form of host address depends on the given cluster type. For STATIC or EDS,
-	//   it is expected to be a direct IP address (or something resolvable by the
-	//   specified :ref:`resolver <envoy_v3_api_field_config.core.v3.SocketAddress.resolver_name>`
-	//   in the Address). For LOGICAL or STRICT DNS, it is expected to be hostname,
-	//   and will be resolved via DNS.
+	//	The form of host address depends on the given cluster type. For STATIC or EDS,
+	//	it is expected to be a direct IP address (or something resolvable by the
+	//	specified :ref:`resolver <envoy_v3_api_field_config.core.v3.SocketAddress.resolver_name>`
+	//	in the Address). For LOGICAL or STRICT DNS, it is expected to be hostname,
+	//	and will be resolved via DNS.
 	address?: v3.#Address
 	// The optional health check configuration is used as configuration for the
 	// health checker to contact the health checked host.
 	//
 	// .. attention::
 	//
-	//   This takes into effect only for upstream clusters with
-	//   :ref:`active health checking <arch_overview_health_checking>` enabled.
+	//	This takes into effect only for upstream clusters with
+	//	:ref:`active health checking <arch_overview_health_checking>` enabled.
 	health_check_config?: #Endpoint_HealthCheckConfig
 	// The hostname associated with this endpoint. This hostname is not used for routing or address
 	// resolution. If provided, it will be associated with the endpoint, and can be used for features
 	// that require a hostname, like
 	// :ref:`auto_host_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.auto_host_rewrite>`.
 	hostname?: string
+	// An ordered list of addresses that together with “address“ comprise the
+	// list of addresses for an endpoint. The address given in the “address“ is
+	// prepended to this list. It is assumed that the list must already be
+	// sorted by preference order of the addresses. This will only be supported
+	// for STATIC and EDS clusters.
+	additional_addresses?: [...#Endpoint_AdditionalAddress]
+	// Optional alternative stat name for this endpoint. If not specified, the main address will be used
+	// as the stat name and be extracted as “envoy.endpoint_address“ tag value in generated stats.
+	// If specified, the “observability_name“ here will be used to replace the main address.
+	//
+	// .. note::
+	//
+	//	This field is ignored for logical DNS host implementation..
+	//
+	// This is useful when there are duplicate addresses in the cluster, for example when multiple
+	// endpoints share the same address but have different hostnames or metadata.
+	// In this case, the observability name can be used to differentiate between these endpoints in
+	// stats and logs.
+	observability_name?: string
 }
 
 // An Endpoint that Envoy can route traffic to.
@@ -43,8 +64,8 @@ import (
 	health_status?: v3.#HealthStatus
 	// The endpoint metadata specifies values that may be used by the load
 	// balancer to select endpoints in a cluster for a given request. The filter
-	// name should be specified as ``envoy.lb``. An example boolean key-value pair
-	// is ``canary``, providing the optional canary status of the upstream host.
+	// name should be specified as “envoy.lb“. An example boolean key-value pair
+	// is “canary“, providing the optional canary status of the upstream host.
 	// This may be matched against in a route's
 	// :ref:`RouteAction <envoy_v3_api_msg_config.route.v3.RouteAction>` metadata_match field
 	// to subset the endpoints considered in cluster load balancing.
@@ -61,34 +82,51 @@ import (
 	load_balancing_weight?: uint32
 }
 
+// LbEndpoint list collection. Entries are `LbEndpoint` resources or references.
 // [#not-implemented-hide:]
-// A configuration for a LEDS collection.
+#LbEndpointCollection: {
+	"@type": "type.googleapis.com/envoy.config.endpoint.v3.LbEndpointCollection"
+	entries?: [...v31.#CollectionEntry]
+}
+
+// A configuration for an LEDS collection.
 #LedsClusterLocalityConfig: {
 	"@type": "type.googleapis.com/envoy.config.endpoint.v3.LedsClusterLocalityConfig"
 	// Configuration for the source of LEDS updates for a Locality.
 	leds_config?: v3.#ConfigSource
-	// The xDS transport protocol glob collection resource name.
-	// The service is only supported in delta xDS (incremental) mode.
+	// The name of the LbEndpoint collection resource.
+	//
+	// If the name ends in “/*“, it indicates an LbEndpoint glob collection,
+	// which is supported only in the xDS incremental protocol variants.
+	// Otherwise, it indicates an LbEndpointCollection list collection.
+	//
+	// Envoy currently supports only glob collections.
 	leds_collection_name?: string
 }
 
 // A group of endpoints belonging to a Locality.
 // One can have multiple LocalityLbEndpoints for a locality, but only if
 // they have different priorities.
-// [#next-free-field: 9]
+// [#next-free-field: 10]
 #LocalityLbEndpoints: {
 	"@type": "type.googleapis.com/envoy.config.endpoint.v3.LocalityLbEndpoints"
 	// Identifies location of where the upstream hosts run.
 	locality?: v3.#Locality
+	// Metadata to provide additional information about the locality endpoints in aggregate.
+	metadata?: v3.#Metadata
 	// The group of endpoints belonging to the locality specified.
-	// [#comment:TODO(adisuissa): Once LEDS is implemented this field needs to be
-	// deprecated and replaced by ``load_balancer_endpoints``.]
+	// This is ignored if :ref:`leds_cluster_locality_config
+	// <envoy_v3_api_field_config.endpoint.v3.LocalityLbEndpoints.leds_cluster_locality_config>` is set.
 	lb_endpoints?: [...#LbEndpoint]
-	// The group of endpoints belonging to the locality.
-	// [#comment:TODO(adisuissa): Once LEDS is implemented the ``lb_endpoints`` field
-	// needs to be deprecated.]
+	// [#not-implemented-hide:]
+	// Not implemented and deprecated.
+	//
+	// Deprecated: Marked as deprecated in envoy/config/endpoint/v3/endpoint_components.proto.
 	load_balancer_endpoints?: #LocalityLbEndpoints_LbEndpointList
 	// LEDS Configuration for the current locality.
+	// If this is set, the :ref:`lb_endpoints
+	// <envoy_v3_api_field_config.endpoint.v3.LocalityLbEndpoints.lb_endpoints>`
+	// field is ignored.
 	leds_cluster_locality_config?: #LedsClusterLocalityConfig
 	// Optional: Per priority/region/zone/sub_zone weight; at least 1. The load
 	// balancing weight for a locality is divided by the sum of the weights of all
@@ -106,9 +144,9 @@ import (
 	// default to the highest priority (0).
 	//
 	// Under usual circumstances, Envoy will only select endpoints for the highest
-	// priority (0). In the event all endpoints for a particular priority are
+	// priority (0). In the event that enough endpoints for a particular priority are
 	// unavailable/unhealthy, Envoy will fail over to selecting endpoints for the
-	// next highest priority group.
+	// next highest priority group. Read more at :ref:`priority levels <arch_overview_load_balancing_priority_levels>`.
 	//
 	// Priorities should range from 0 (highest) to N (lowest) without skipping.
 	priority?: uint32
@@ -141,7 +179,16 @@ import (
 	//
 	// .. attention::
 	//
-	//   The form of the health check host address is expected to be a direct IP address.
+	//	The form of the health check host address is expected to be a direct IP address.
+	address?: v3.#Address
+	// Optional flag to control if perform active health check for this endpoint.
+	// Active health check is enabled by default if there is a health checker.
+	disable_active_health_check?: bool
+}
+
+#Endpoint_AdditionalAddress: {
+	"@type": "type.googleapis.com/envoy.config.endpoint.v3.Endpoint_AdditionalAddress"
+	// Additional address that is associated with the endpoint.
 	address?: v3.#Address
 }
 

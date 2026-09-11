@@ -42,8 +42,8 @@ import (
 	//
 	// .. note::
 	//
-	//    If this field is set, the retry budget will override any configured retry circuit
-	//    breaker.
+	//	If this field is set, the retry budget will override any configured retry circuit
+	//	breaker.
 	retry_budget?: #CircuitBreakers_Thresholds_RetryBudget
 	// If track_remaining is true, then stats will be published that expose
 	// the number of resources remaining until the circuit breakers open. If
@@ -51,8 +51,8 @@ import (
 	//
 	// .. note::
 	//
-	//    If a retry budget is used in lieu of the max_retries circuit breaker,
-	//    the remaining retry resources remaining will not be tracked.
+	//	If a retry budget is used in lieu of the max_retries circuit breaker,
+	//	the remaining retry resources remaining will not be tracked.
 	track_remaining?: bool
 	// The maximum number of connection pools per cluster that Envoy will concurrently support at
 	// once. If not specified, the default is unlimited. Set this for clusters which create a

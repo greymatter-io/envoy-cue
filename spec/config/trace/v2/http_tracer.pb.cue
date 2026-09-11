@@ -1,7 +1,7 @@
 package v2
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 // The tracing configuration specifies settings for an HTTP tracer provider used by Envoy.
@@ -11,8 +11,8 @@ import (
 //
 // .. attention::
 //
-//   Use of this message type has been deprecated in favor of direct use of
-//   :ref:`Tracing.Http <envoy_api_msg_config.trace.v2.Tracing.Http>`.
+//	Use of this message type has been deprecated in favor of direct use of
+//	:ref:`Tracing.Http <envoy_api_msg_config.trace.v2.Tracing.Http>`.
 #Tracing: {
 	"@type": "type.googleapis.com/envoy.config.trace.v2.Tracing"
 	// Provides configuration for the HTTP tracer.
@@ -34,10 +34,9 @@ import (
 	// - *envoy.tracers.zipkin*
 	// - *envoy.tracers.dynamic_ot*
 	// - *envoy.tracers.datadog*
-	// - *envoy.tracers.opencensus*
 	// - *envoy.tracers.xray*
 	name?: string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/config/trace/v2/http_tracer.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }

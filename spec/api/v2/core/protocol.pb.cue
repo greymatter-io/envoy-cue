@@ -42,8 +42,9 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// If not specified, this defaults to 1 hour. To disable idle timeouts explicitly set this to 0.
 	//
 	// .. warning::
-	//   Disabling this timeout has a highly likelihood of yielding connection leaks due to lost TCP
-	//   FIN packets, etc.
+	//
+	//	Disabling this timeout has a highly likelihood of yielding connection leaks due to lost TCP
+	//	FIN packets, etc.
 	idle_timeout?: string
 	// The maximum duration of a connection. The duration is defined as a period since a connection
 	// was established. If not set, there is no max duration. When max_connection_duration is reached
@@ -89,11 +90,11 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	//
 	// .. attention::
 	//
-	//   Note that this only happens when Envoy is chunk encoding which occurs when:
-	//   - The request is HTTP/1.1.
-	//   - Is neither a HEAD only request nor a HTTP Upgrade.
-	//   - Not a response to a HEAD request.
-	//   - The content length header is not present.
+	//	Note that this only happens when Envoy is chunk encoding which occurs when:
+	//	- The request is HTTP/1.1.
+	//	- Is neither a HEAD only request nor a HTTP Upgrade.
+	//	- Not a response to a HEAD request.
+	//	- The content length header is not present.
 	enable_trailers?: bool
 }
 
@@ -139,20 +140,20 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	allow_metadata?: bool
 	// Limit the number of pending outbound downstream frames of all types (frames that are waiting to
 	// be written into the socket). Exceeding this limit triggers flood mitigation and connection is
-	// terminated. The ``http2.outbound_flood`` stat tracks the number of terminated connections due
+	// terminated. The “http2.outbound_flood“ stat tracks the number of terminated connections due
 	// to flood mitigation. The default limit is 10000.
 	// [#comment:TODO: implement same limits for upstream outbound frames as well.]
 	max_outbound_frames?: uint32
 	// Limit the number of pending outbound downstream frames of types PING, SETTINGS and RST_STREAM,
 	// preventing high memory utilization when receiving continuous stream of these frames. Exceeding
 	// this limit triggers flood mitigation and connection is terminated. The
-	// ``http2.outbound_control_flood`` stat tracks the number of terminated connections due to flood
+	// “http2.outbound_control_flood“ stat tracks the number of terminated connections due to flood
 	// mitigation. The default limit is 1000.
 	// [#comment:TODO: implement same limits for upstream outbound frames as well.]
 	max_outbound_control_frames?: uint32
 	// Limit the number of consecutive inbound frames of types HEADERS, CONTINUATION and DATA with an
 	// empty payload and no end stream flag. Those frames have no legitimate use and are abusive, but
-	// might be a result of a broken HTTP/2 implementation. The `http2.inbound_empty_frames_flood``
+	// might be a result of a broken HTTP/2 implementation. The `http2.inbound_empty_frames_flood“
 	// stat tracks the number of connections terminated due to flood mitigation.
 	// Setting this to 0 will terminate connection upon receiving first frame with an empty payload
 	// and no end stream flag. The default limit is 1.
@@ -162,9 +163,9 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// of PRIORITY frames received over the lifetime of connection exceeds the value calculated
 	// using this formula::
 	//
-	//     max_inbound_priority_frames_per_stream * (1 + inbound_streams)
+	//	max_inbound_priority_frames_per_stream * (1 + inbound_streams)
 	//
-	// the connection is terminated. The ``http2.inbound_priority_frames_flood`` stat tracks
+	// the connection is terminated. The “http2.inbound_priority_frames_flood“ stat tracks
 	// the number of connections terminated due to flood mitigation. The default limit is 100.
 	// [#comment:TODO: implement same limits for upstream inbound frames as well.]
 	max_inbound_priority_frames_per_stream?: uint32
@@ -172,10 +173,10 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	// of WINDOW_UPDATE frames received over the lifetime of connection exceeds the value calculated
 	// using this formula::
 	//
-	//     1 + 2 * (inbound_streams +
-	//              max_inbound_window_update_frames_per_data_frame_sent * outbound_data_frames)
+	//	1 + 2 * (inbound_streams +
+	//	         max_inbound_window_update_frames_per_data_frame_sent * outbound_data_frames)
 	//
-	// the connection is terminated. The ``http2.inbound_priority_frames_flood`` stat tracks
+	// the connection is terminated. The “http2.inbound_priority_frames_flood“ stat tracks
 	// the number of connections terminated due to flood mitigation. The default limit is 10.
 	// Setting this to 1 should be enough to support HTTP/2 implementations with basic flow control,
 	// but more complex implementations that try to estimate available bandwidth require at least 2.
@@ -201,11 +202,11 @@ HttpProtocolOptions_HeadersWithUnderscoresAction_DROP_HEADER:    "DROP_HEADER"
 	//
 	// .. code-block:: text
 	//
-	//   ID    Field Name
-	//   ----------------
-	//   0x1   hpack_table_size
-	//   0x3   max_concurrent_streams
-	//   0x4   initial_stream_window_size
+	//	ID    Field Name
+	//	----------------
+	//	0x1   hpack_table_size
+	//	0x3   max_concurrent_streams
+	//	0x4   initial_stream_window_size
 	//
 	// Collisions will trigger config validation failure on load/update. Likewise, inconsistencies
 	// between custom parameters with the same identifier will trigger a failure.

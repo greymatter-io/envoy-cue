@@ -17,7 +17,7 @@ SerializationType_Hessian2: "Hessian2"
 #Drds: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.dubbo_proxy.v3.Drds"
 	// Configuration source specifier.
-	// In case of ``api_config_source`` only aggregated ``api_type`` is supported.
+	// In case of “api_config_source“ only aggregated “api_type“ is supported.
 	config_source?: v3.#ConfigSource
 	// The name of the multiple route configuration. This allows to use different multiple route
 	// configurations. Tells which multiple route configuration should be fetched from the configuration
@@ -38,17 +38,17 @@ SerializationType_Hessian2: "Hessian2"
 	//
 	// .. note::
 	//
-	//   This field is deprecated. Please use ``drds`` or ``multiple_route_config`` first.
+	//	This field is deprecated. Please use ``drds`` or ``multiple_route_config`` first.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/extensions/filters/network/dubbo_proxy/v3/dubbo_proxy.proto.
 	route_config?: [...#RouteConfiguration]
-	// Use xDS to fetch the route configuration. It is invalid to define both ``route_config`` and ``drds``.
+	// Use xDS to fetch the route configuration. It is invalid to define both “route_config“ and “drds“.
 	drds?:                  #Drds
 	multiple_route_config?: #MultipleRouteConfiguration
 	// A list of individual Dubbo filters that make up the filter chain for requests made to the
 	// Dubbo proxy. Order matters as the filters are processed sequentially. For backwards
 	// compatibility, if no dubbo_filters are specified, a default Dubbo router filter
-	// (``envoy.filters.dubbo.router``) is used.
+	// (“envoy.filters.dubbo.router“) is used.
 	dubbo_filters?: [...#DubboFilter]
 }
 

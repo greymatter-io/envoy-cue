@@ -1,8 +1,8 @@
 package core
 
 import (
-	_struct "envoyproxy.io/envoy-cue/spec/deps/golang/protobuf/ptypes/struct"
 	_type "envoyproxy.io/envoy-cue/spec/type"
+	structpb "envoyproxy.io/envoy-cue/spec/deps/protobuf/types/known/structpb"
 )
 
 // Envoy supports :ref:`upstream priority routing
@@ -66,7 +66,7 @@ TrafficDirection_OUTBOUND:    "OUTBOUND"
 	version?: _type.#SemanticVersion
 	// Free-form build information.
 	// Envoy defines several well known keys in the source/common/version/version.h file
-	metadata?: _struct.#Struct
+	metadata?: structpb.#Struct
 }
 
 // Version and identification for an Envoy extension.
@@ -122,7 +122,7 @@ TrafficDirection_OUTBOUND:    "OUTBOUND"
 	cluster?: string
 	// Opaque metadata extending the node identifier. Envoy will pass this
 	// directly to the management server.
-	metadata?: _struct.#Struct
+	metadata?: structpb.#Struct
 	// Locality specifying where the Envoy instance is running.
 	locality?: #Locality
 	// This is motivated by informing a management server during canary which
@@ -130,7 +130,7 @@ TrafficDirection_OUTBOUND:    "OUTBOUND"
 	// by Envoy in management server RPCs.
 	// This field is deprecated in favor of the user_agent_name and user_agent_version values.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in envoy/api/v2/core/base.proto.
 	build_version?: string
 	// Free-form string that identifies the entity requesting config.
 	// E.g. "envoy" or "grpc"
@@ -173,15 +173,16 @@ TrafficDirection_OUTBOUND:    "OUTBOUND"
 // object to match against. There are some well defined metadata used today for
 // this purpose:
 //
-// * ``{"envoy.lb": {"canary": <bool> }}`` This indicates the canary status of an
-//   endpoint and is also used during header processing
-//   (x-envoy-upstream-canary) and for stats purposes.
+//   - “{"envoy.lb": {"canary": <bool> }}“ This indicates the canary status of an
+//     endpoint and is also used during header processing
+//     (x-envoy-upstream-canary) and for stats purposes.
+//
 // [#next-major-version: move to type/metadata/v2]
 #Metadata: {
 	"@type": "type.googleapis.com/envoy.api.v2.core.Metadata"
 	// Key is the reverse DNS filter name, e.g. com.acme.widget. The envoy.*
 	// namespace is reserved for Envoy's built-in filters.
-	filter_metadata?: [string]: _struct.#Struct
+	filter_metadata?: [string]: structpb.#Struct
 }
 
 // Runtime derived uint32 with a default when not specified.
@@ -294,8 +295,8 @@ TrafficDirection_OUTBOUND:    "OUTBOUND"
 	// The name of the transport socket to instantiate. The name must match a supported transport
 	// socket implementation.
 	name?: string
-	// Deprecated: Do not use.
-	config?:       _struct.#Struct
+	// Deprecated: Marked as deprecated in envoy/api/v2/core/base.proto.
+	config?:       structpb.#Struct
 	typed_config?: _
 }
 
@@ -304,11 +305,11 @@ TrafficDirection_OUTBOUND:    "OUTBOUND"
 //
 // .. note::
 //
-//   Parsing of the runtime key's data is implemented such that it may be represented as a
-//   :ref:`FractionalPercent <envoy_api_msg_type.FractionalPercent>` proto represented as JSON/YAML
-//   and may also be represented as an integer with the assumption that the value is an integral
-//   percentage out of 100. For instance, a runtime key lookup returning the value "42" would parse
-//   as a `FractionalPercent` whose numerator is 42 and denominator is HUNDRED.
+//	Parsing of the runtime key's data is implemented such that it may be represented as a
+//	:ref:`FractionalPercent <envoy_api_msg_type.FractionalPercent>` proto represented as JSON/YAML
+//	and may also be represented as an integer with the assumption that the value is an integral
+//	percentage out of 100. For instance, a runtime key lookup returning the value "42" would parse
+//	as a `FractionalPercent` whose numerator is 42 and denominator is HUNDRED.
 #RuntimeFractionalPercent: {
 	"@type": "type.googleapis.com/envoy.api.v2.core.RuntimeFractionalPercent"
 	// Default value if the runtime value's for the numerator/denominator keys are not available.

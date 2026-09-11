@@ -15,12 +15,12 @@ import (
 	//
 	// .. note::
 	//
-	//   This field defaults to 100/:ref:`HUNDRED
-	//   <envoy_api_enum_type.FractionalPercent.DenominatorType>`.
+	//	This field defaults to 100/:ref:`HUNDRED
+	//	<envoy_api_enum_type.FractionalPercent.DenominatorType>`.
 	filter_enabled?: core.#RuntimeFractionalPercent
 	// Specifies that CSRF policies will be evaluated and tracked, but not enforced.
 	//
-	// This is intended to be used when ``filter_enabled`` is off and will be ignored otherwise.
+	// This is intended to be used when “filter_enabled“ is off and will be ignored otherwise.
 	//
 	// If :ref:`runtime_key <envoy_api_field_core.RuntimeFractionalPercent.runtime_key>` is specified,
 	// Envoy will lookup the runtime key to get the percentage of requests for which it will evaluate

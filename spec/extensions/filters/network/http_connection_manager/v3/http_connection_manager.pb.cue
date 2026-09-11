@@ -2,12 +2,13 @@ package v3
 
 import (
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
-	v31 "envoyproxy.io/envoy-cue/spec/config/accesslog/v3"
-	v32 "envoyproxy.io/envoy-cue/spec/config/route/v3"
-	v33 "envoyproxy.io/envoy-cue/spec/type/v3"
-	v34 "envoyproxy.io/envoy-cue/spec/type/tracing/v3"
-	v35 "envoyproxy.io/envoy-cue/spec/config/trace/v3"
-	v36 "envoyproxy.io/envoy-cue/spec/type/http/v3"
+	v31 "envoyproxy.io/envoy-cue/spec/type/v3"
+	v32 "envoyproxy.io/envoy-cue/spec/config/accesslog/v3"
+	v33 "envoyproxy.io/envoy-cue/spec/deps/cncf/xds/go/xds/type/matcher/v3"
+	v34 "envoyproxy.io/envoy-cue/spec/config/route/v3"
+	v35 "envoyproxy.io/envoy-cue/spec/type/tracing/v3"
+	v36 "envoyproxy.io/envoy-cue/spec/config/trace/v3"
+	v37 "envoyproxy.io/envoy-cue/spec/type/http/v3"
 )
 
 #HttpConnectionManager_CodecType: "AUTO" | "HTTP1" | "HTTP2" | "HTTP3"
@@ -33,7 +34,7 @@ HttpConnectionManager_ForwardClientCertDetails_APPEND_FORWARD:      "APPEND_FORW
 HttpConnectionManager_ForwardClientCertDetails_SANITIZE_SET:        "SANITIZE_SET"
 HttpConnectionManager_ForwardClientCertDetails_ALWAYS_FORWARD_ONLY: "ALWAYS_FORWARD_ONLY"
 
-// Determines the action for request that contain %2F, %2f, %5C or %5c sequences in the URI path.
+// Determines the action for request that contain “%2F“, “%2f“, “%5C“ or “%5c“ sequences in the URI path.
 // This operation occurs before URL normalization and the merge slashes transformations if they were enabled.
 #HttpConnectionManager_PathWithEscapedSlashesAction: "IMPLEMENTATION_SPECIFIC_DEFAULT" | "KEEP_UNCHANGED" | "REJECT_REQUEST" | "UNESCAPE_AND_REDIRECT" | "UNESCAPE_AND_FORWARD"
 
@@ -43,12 +44,21 @@ HttpConnectionManager_PathWithEscapedSlashesAction_REJECT_REQUEST:              
 HttpConnectionManager_PathWithEscapedSlashesAction_UNESCAPE_AND_REDIRECT:           "UNESCAPE_AND_REDIRECT"
 HttpConnectionManager_PathWithEscapedSlashesAction_UNESCAPE_AND_FORWARD:            "UNESCAPE_AND_FORWARD"
 
+// The format to use when writing the
+// :ref:`config_http_conn_man_headers_x-forwarded-client-cert` (XFCC) header value.
+#HttpConnectionManager_ForwardClientCertFormat: "TEXT" | "JSON"
+
+HttpConnectionManager_ForwardClientCertFormat_TEXT: "TEXT"
+HttpConnectionManager_ForwardClientCertFormat_JSON: "JSON"
+
+// This OperationName makes no sense and is unnecessary in the current tracing API.
+// [#not-implemented-hide:]
 #HttpConnectionManager_Tracing_OperationName: "INGRESS" | "EGRESS"
 
 HttpConnectionManager_Tracing_OperationName_INGRESS: "INGRESS"
 HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 
-// [#next-free-field: 51]
+// [#next-free-field: 63]
 #HttpConnectionManager: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
 	// Supplies the type of codec that the connection manager should use.
@@ -60,7 +70,7 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// The connection manager’s route table will be dynamically loaded via the RDS API.
 	rds?: #Rds
 	// The route table for the connection manager is static and is specified in this property.
-	route_config?: v32.#RouteConfiguration
+	route_config?: v34.#RouteConfiguration
 	// A route table will be dynamically assigned to each request based on request attributes
 	// (e.g., the value of a header). The "routing scopes" (i.e., route tables) and "scope keys" are
 	// specified in this message.
@@ -78,8 +88,22 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// <envoy_v3_api_msg_config.trace.v3.Tracing>`.
 	tracing?: #HttpConnectionManager_Tracing
 	// Additional settings for HTTP requests handled by the connection manager. These will be
-	// applicable to both HTTP1 and HTTP2 requests.
+	// applicable to both HTTP/1.1 and HTTP/2 requests.
 	common_http_protocol_options?: v3.#HttpProtocolOptions
+	// If set to “true“, Envoy will not initiate an immediate drain timer for downstream HTTP/1 connections
+	// once :ref:`common_http_protocol_options.max_connection_duration
+	// <envoy_v3_api_field_config.core.v3.HttpProtocolOptions.max_connection_duration>` is exceeded.
+	// Instead, Envoy will wait until the next downstream request arrives, add a “connection: close“ header
+	// to the response, and then gracefully close the connection once the stream has completed.
+	//
+	// This behavior adheres to `RFC 9112, Section 9.6 <https://www.rfc-editor.org/rfc/rfc9112#name-tear-down>`_.
+	//
+	// If set to “false“, exceeding “max_connection_duration“ triggers Envoy's default drain behavior for HTTP/1,
+	// where the connection is eventually closed after all active streams finish.
+	//
+	// This option has no effect if “max_connection_duration“ is not configured.
+	// Defaults to “false“.
+	http1_safe_max_connection_duration?: bool
 	// Additional HTTP/1 settings that are passed to the HTTP/1 codec.
 	// [#comment:TODO: The following fields are ignored when the
 	// :ref:`header validation configuration <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.typed_header_validation_config>`
@@ -89,10 +113,9 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// Additional HTTP/2 settings that are passed directly to the HTTP/2 codec.
 	http2_protocol_options?: v3.#Http2ProtocolOptions
 	// Additional HTTP/3 settings that are passed directly to the HTTP/3 codec.
-	// [#not-implemented-hide:]
 	http3_protocol_options?: v3.#Http3ProtocolOptions
 	// An optional override that the connection manager will write to the server
-	// header in responses. If not set, the default is ``envoy``.
+	// header in responses. If not set, the default is “envoy“.
 	server_name?: string
 	// Defines the action to be applied to the Server header on the response path.
 	// By default, Envoy will overwrite the header with the value specified in
@@ -104,10 +127,20 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	scheme_header_transformation?: v3.#SchemeHeaderTransformation
 	// The maximum request headers size for incoming connections.
 	// If unconfigured, the default max request headers allowed is 60 KiB.
+	// The default value can be overridden by setting runtime key “envoy.reloadable_features.max_request_headers_size_kb“.
 	// Requests that exceed this limit will receive a 431 response.
+	//
+	// .. note::
+	//
+	//	Currently some protocol codecs impose limits on the maximum size of a single header.
+	//
+	//	* HTTP/2 (when using nghttp2) limits a single header to around 100 KB by default. This can be
+	//	  adjusted via :ref:`max_header_field_size_kb
+	//	  <envoy_v3_api_field_config.core.v3.Http2ProtocolOptions.max_header_field_size_kb>`.
+	//	* HTTP/3 limits a single header to around 1024 KB.
 	max_request_headers_kb?: uint32
 	// The stream idle timeout for connections managed by the connection manager.
-	// If not specified, this defaults to 5 minutes. The default value was selected
+	// If not specified, this defaults to “5 minutes“. The default value was selected
 	// so as not to interfere with any smaller configured timeouts that may have
 	// existed in configurations prior to the introduction of this feature, while
 	// introducing robustness to TCP connections that terminate without a FIN.
@@ -116,14 +149,37 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// :ref:`route-level idle_timeout
 	// <envoy_v3_api_field_config.route.v3.RouteAction.idle_timeout>`. Even on a stream in
 	// which the override applies, prior to receipt of the initial request
-	// headers, the :ref:`stream_idle_timeout
-	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.stream_idle_timeout>`
-	// applies. Each time an encode/decode event for headers or data is processed
-	// for the stream, the timer will be reset. If the timeout fires, the stream
-	// is terminated with a 408 Request Timeout error code if no upstream response
-	// header has been received, otherwise a stream reset occurs.
+	// headers, the “stream_idle_timeout“ applies. Each time an encode/decode event
+	// for headers or data is processed for the stream, the timer will be reset. If the
+	// timeout fires, the stream is terminated with a “408 Request Timeout“ error code
+	// if no upstream response header has been received, otherwise a stream reset occurs.
 	//
-	// This timeout also specifies the amount of time that Envoy will wait for the peer to open enough
+	// If the :ref:`overload action <config_overload_manager_overload_actions>`
+	// “envoy.overload_actions.reduce_timeouts“ is configured, this timeout is scaled
+	// according to the value for
+	// :ref:`HTTP_DOWNSTREAM_STREAM_IDLE <envoy_v3_api_enum_value_config.overload.v3.ScaleTimersOverloadActionConfig.TimerType.HTTP_DOWNSTREAM_STREAM_IDLE>`.
+	//
+	// .. note::
+	//
+	//	It is possible to idle timeout even if the wire traffic for a stream is non-idle, due
+	//	to the granularity of events presented to the connection manager. For example, while receiving
+	//	very large request headers, it may be the case that there is traffic regularly arriving on the
+	//	wire while the connection manager is only able to observe the end-of-headers event, hence the
+	//	stream may still idle timeout.
+	//
+	// A value of “0“ will completely disable the connection manager stream idle
+	// timeout, although per-route idle timeout overrides will continue to apply.
+	//
+	// This timeout is also used as the default value for
+	// :ref:`stream_flush_timeout <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.stream_flush_timeout>`.
+	stream_idle_timeout?: string
+	// The stream flush timeout for connections managed by the connection manager.
+	//
+	// If not specified, the value of stream_idle_timeout is used. This is for backwards compatibility
+	// since this was the original behavior. In essence this timeout is an override for the
+	// stream_idle_timeout that applies specifically to the end of stream flush case.
+	//
+	// This timeout specifies the amount of time that Envoy will wait for the peer to open enough
 	// window to write any remaining stream data once the entirety of stream data (local end stream is
 	// true) has been buffered pending available window. In other words, this timeout defends against
 	// a peer that does not release enough window to completely write the stream, even though all
@@ -132,20 +188,7 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// incremented. Note that :ref:`max_stream_duration
 	// <envoy_v3_api_field_config.core.v3.HttpProtocolOptions.max_stream_duration>` does not apply to
 	// this corner case.
-	//
-	// If the :ref:`overload action <config_overload_manager_overload_actions>` "envoy.overload_actions.reduce_timeouts"
-	// is configured, this timeout is scaled according to the value for
-	// :ref:`HTTP_DOWNSTREAM_STREAM_IDLE <envoy_v3_api_enum_value_config.overload.v3.ScaleTimersOverloadActionConfig.TimerType.HTTP_DOWNSTREAM_STREAM_IDLE>`.
-	//
-	// Note that it is possible to idle timeout even if the wire traffic for a stream is non-idle, due
-	// to the granularity of events presented to the connection manager. For example, while receiving
-	// very large request headers, it may be the case that there is traffic regularly arriving on the
-	// wire while the connection manage is only able to observe the end-of-headers event, hence the
-	// stream may still idle timeout.
-	//
-	// A value of 0 will completely disable the connection manager stream idle
-	// timeout, although per-route idle timeout overrides will continue to apply.
-	stream_idle_timeout?: string
+	stream_flush_timeout?: string
 	// The amount of time that Envoy will wait for the entire request to be received.
 	// The timer is activated when the request is initiated, and is disarmed when the last byte of the
 	// request is sent upstream (i.e. all decoding filters have processed the request), OR when the
@@ -161,44 +204,89 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// race with the final GOAWAY frame. During this grace period, Envoy will
 	// continue to accept new streams. After the grace period, a final GOAWAY
 	// frame is sent and Envoy will start refusing new streams. Draining occurs
-	// both when a connection hits the idle timeout or during general server
-	// draining. The default grace period is 5000 milliseconds (5 seconds) if this
-	// option is not specified.
+	// either when a connection hits the idle timeout, when :ref:`max_connection_duration
+	// <envoy_v3_api_field_config.core.v3.HttpProtocolOptions.max_connection_duration>`
+	// is reached, or during general server draining. The default grace period is
+	// 5000 milliseconds (5 seconds) if this option is not specified.
 	drain_timeout?: string
+	// Percentage-based jitter for “drain_timeout“. If set, the actual drain grace period
+	// is extended by a random duration up to “drain_timeout * jitter / 100“ per connection.
+	// This staggers the final GOAWAY (and connection close) across time so that connections
+	// entering the drain state simultaneously do not all complete draining at the same instant,
+	// mitigating thundering-herd reconnects. If not set, no jitter is added.
+	//
+	// This is analogous to
+	// :ref:`max_connection_duration_jitter
+	// <envoy_v3_api_field_config.core.v3.HttpProtocolOptions.max_connection_duration_jitter>`,
+	// but applied to the drain grace timer rather than the connection duration timer.
+	drain_timeout_jitter?: v31.#Percent
 	// The delayed close timeout is for downstream connections managed by the HTTP connection manager.
 	// It is defined as a grace period after connection close processing has been locally initiated
 	// during which Envoy will wait for the peer to close (i.e., a TCP FIN/RST is received by Envoy
 	// from the downstream connection) prior to Envoy closing the socket associated with that
 	// connection.
-	// NOTE: This timeout is enforced even when the socket associated with the downstream connection
-	// is pending a flush of the write buffer. However, any progress made writing data to the socket
-	// will restart the timer associated with this timeout. This means that the total grace period for
-	// a socket in this state will be
-	// <total_time_waiting_for_write_buffer_flushes>+<delayed_close_timeout>.
+	//
+	// .. note::
+	//
+	//	This timeout is enforced even when the socket associated with the downstream connection is pending a flush of
+	//	the write buffer. However, any progress made writing data to the socket will restart the timer associated with
+	//	this timeout. This means that the total grace period for a socket in this state will be
+	//	<total_time_waiting_for_write_buffer_flushes>+<delayed_close_timeout>.
 	//
 	// Delaying Envoy's connection close and giving the peer the opportunity to initiate the close
 	// sequence mitigates a race condition that exists when downstream clients do not drain/process
 	// data in a connection's receive buffer after a remote close has been detected via a socket
-	// write(). This race leads to such clients failing to process the response code sent by Envoy,
+	// “write()“. This race leads to such clients failing to process the response code sent by Envoy,
 	// which could result in erroneous downstream processing.
 	//
 	// If the timeout triggers, Envoy will close the connection's socket.
 	//
 	// The default timeout is 1000 ms if this option is not specified.
 	//
-	// .. NOTE::
-	//    To be useful in avoiding the race condition described above, this timeout must be set
-	//    to *at least* <max round trip time expected between clients and Envoy>+<100ms to account for
-	//    a reasonable "worst" case processing time for a full iteration of Envoy's event loop>.
+	// .. note::
 	//
-	// .. WARNING::
-	//    A value of 0 will completely disable delayed close processing. When disabled, the downstream
-	//    connection's socket will be closed immediately after the write flush is completed or will
-	//    never close if the write flush does not complete.
+	//	To be useful in avoiding the race condition described above, this timeout must be set
+	//	to *at least* <max round trip time expected between clients and Envoy>+<100ms to account for
+	//	a reasonable "worst" case processing time for a full iteration of Envoy's event loop>.
+	//
+	// .. warning::
+	//
+	//	A value of ``0`` will completely disable delayed close processing. When disabled, the downstream
+	//	connection's socket will be closed immediately after the write flush is completed or will
+	//	never close if the write flush does not complete.
 	delayed_close_timeout?: string
 	// Configuration for :ref:`HTTP access logs <arch_overview_access_logs>`
 	// emitted by the connection manager.
-	access_log?: [...v31.#AccessLog]
+	access_log?: [...v32.#AccessLog]
+	// The interval to flush the above access logs.
+	//
+	// .. attention::
+	//
+	//	This field is deprecated in favor of
+	//	:ref:`access_log_flush_interval
+	//	<envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.HcmAccessLogOptions.access_log_flush_interval>`.
+	//	Note that if both this field and :ref:`access_log_flush_interval
+	//	<envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.HcmAccessLogOptions.access_log_flush_interval>`
+	//	are specified, the former (deprecated field) is ignored.
+	//
+	// Deprecated: Marked as deprecated in envoy/extensions/filters/network/http_connection_manager/v3/http_connection_manager.proto.
+	access_log_flush_interval?: string
+	// If set to true, HCM will flush an access log once when a new HTTP request is received, after the request
+	// headers have been evaluated, and before iterating through the HTTP filter chain.
+	//
+	// .. attention::
+	//
+	//	This field is deprecated in favor of
+	//	:ref:`flush_access_log_on_new_request
+	//	<envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.HcmAccessLogOptions.flush_access_log_on_new_request>`.
+	//	Note that if both this field and :ref:`flush_access_log_on_new_request
+	//	<envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.HcmAccessLogOptions.flush_access_log_on_new_request>`
+	//	are specified, the former (deprecated field) is ignored.
+	//
+	// Deprecated: Marked as deprecated in envoy/extensions/filters/network/http_connection_manager/v3/http_connection_manager.proto.
+	flush_access_log_on_new_request?: bool
+	// Additional access log options for HTTP connection manager.
+	access_log_options?: #HttpConnectionManager_HcmAccessLogOptions
 	// If set to true, the connection manager will use the real remote address
 	// of the client connection when determining internal versus external origin and manipulating
 	// various headers. If set to false or absent, the connection manager will use the
@@ -213,28 +301,65 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// is not specified. See the documentation for
 	// :ref:`config_http_conn_man_headers_x-forwarded-for` for more information.
 	xff_num_trusted_hops?: uint32
-	// The configuration for the original IP detection extensions.
+	// Configuration for original IP detection extensions.
 	//
-	// When configured the extensions will be called along with the request headers
-	// and information about the downstream connection, such as the directly connected address.
-	// Each extension will then use these parameters to decide the request's effective remote address.
-	// If an extension fails to detect the original IP address and isn't configured to reject
-	// the request, the HCM will try the remaining extensions until one succeeds or rejects
-	// the request. If the request isn't rejected nor any extension succeeds, the HCM will
-	// fallback to using the remote address.
+	// When these extensions are configured, Envoy will invoke them with the incoming request headers and
+	// details about the downstream connection, including the directly connected address. Each extension uses
+	// this information to determine the effective remote IP address for the request. If an extension cannot
+	// identify the original IP address and isn't set to reject the request, Envoy will sequentially attempt
+	// the remaining extensions until one successfully determines the IP or explicitly rejects the request.
+	// If all extensions fail without rejection, Envoy defaults to using the directly connected remote address.
 	//
-	// .. WARNING::
-	//    Extensions cannot be used in conjunction with :ref:`use_remote_address
-	//    <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.use_remote_address>`
-	//    nor :ref:`xff_num_trusted_hops
-	//    <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.xff_num_trusted_hops>`.
+	// .. warning::
+	//
+	//	These extensions cannot be configured simultaneously with :ref:`use_remote_address
+	//	<envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.use_remote_address>`
+	//	or :ref:`xff_num_trusted_hops
+	//	<envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.xff_num_trusted_hops>`.
 	//
 	// [#extension-category: envoy.http.original_ip_detection]
 	original_ip_detection_extensions?: [...v3.#TypedExtensionConfig]
+	// The configuration for the early header mutation extensions.
+	//
+	// When configured the extensions will be called before any routing, tracing, or any filter processing.
+	// Each extension will be applied in the order they are configured.
+	// If the same header is mutated by multiple extensions, then the last extension will win.
+	//
+	// [#extension-category: envoy.http.early_header_mutation]
+	early_header_mutation_extensions?: [...v3.#TypedExtensionConfig]
 	// Configures what network addresses are considered internal for stats and header sanitation
 	// purposes. If unspecified, only RFC1918 IP addresses will be considered internal.
 	// See the documentation for :ref:`config_http_conn_man_headers_x-envoy-internal` for more
 	// information about internal/external addresses.
+	//
+	// .. warning::
+	//
+	//	As of Envoy 1.33.0 no IP addresses will be considered trusted. If you have tooling such as probes
+	//	on your private network which need to be treated as trusted (e.g. changing arbitrary x-envoy headers)
+	//	you will have to manually include those addresses or CIDR ranges like:
+	//
+	// .. validated-code-block:: yaml
+	//
+	//	:type-name: envoy.extensions.filters.network.http_connection_manager.v3.InternalAddressConfig
+	//
+	//	cidr_ranges:
+	//	    address_prefix: 10.0.0.0
+	//	    prefix_len: 8
+	//	cidr_ranges:
+	//	    address_prefix: 192.168.0.0
+	//	    prefix_len: 16
+	//	cidr_ranges:
+	//	    address_prefix: 172.16.0.0
+	//	    prefix_len: 12
+	//	cidr_ranges:
+	//	    address_prefix: 127.0.0.1
+	//	    prefix_len: 32
+	//	cidr_ranges:
+	//	    address_prefix: fd00::
+	//	    prefix_len: 8
+	//	cidr_ranges:
+	//	    address_prefix: ::1
+	//	    prefix_len: 128
 	internal_address_config?: #HttpConnectionManager_InternalAddressConfig
 	// If set, Envoy will not append the remote address to the
 	// :ref:`config_http_conn_man_headers_x-forwarded-for` HTTP header. This may be used in
@@ -242,7 +367,7 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// has mutated the request headers. While :ref:`use_remote_address
 	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.use_remote_address>`
 	// will also suppress XFF addition, it has consequences for logging and other
-	// Envoy uses of the remote address, so ``skip_xff_append`` should be used
+	// Envoy uses of the remote address, so “skip_xff_append“ should be used
 	// when only an elision of XFF addition is intended.
 	skip_xff_append?: bool
 	// Via header value to append to request and response headers. If this is
@@ -269,10 +394,56 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.forward_client_cert_details>`
 	// is APPEND_FORWARD or SANITIZE_SET and the client connection is mTLS. It specifies the fields in
 	// the client certificate to be forwarded. Note that in the
-	// :ref:`config_http_conn_man_headers_x-forwarded-client-cert` header, ``Hash`` is always set, and
-	// ``By`` is always set when the client certificate presents the URI type Subject Alternative Name
+	// :ref:`config_http_conn_man_headers_x-forwarded-client-cert` header, “Hash“ is always set, and
+	// “By“ is always set when the client certificate presents the URI type Subject Alternative Name
 	// value.
 	set_current_client_cert_details?: #HttpConnectionManager_SetCurrentClientCertDetails
+	// The matcher for forwarding client cert details. This allows per-request configuration
+	// of forward client cert behavior based on request properties. If a matcher is configured
+	// and matches a request, the matched action's forward client cert config will be used.
+	// If the matcher is not configured or doesn't match, the static
+	// :ref:`forward_client_cert_details
+	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.forward_client_cert_details>`
+	// and
+	// :ref:`set_current_client_cert_details
+	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.set_current_client_cert_details>`
+	// config will be used as fallback.
+	//
+	// Example: If the x-forwarded-client-cert header contains "trusted-client", use APPEND_FORWARD,
+	// otherwise use SANITIZE_SET:
+	//
+	// .. code-block:: yaml
+	//
+	//	forward_client_cert_matcher:
+	//	  matcher_list:
+	//	    matchers:
+	//	    - predicate:
+	//	        single_predicate:
+	//	          input:
+	//	            name: envoy.matching.inputs.request_headers
+	//	            typed_config:
+	//	              "@type": type.googleapis.com/envoy.type.matcher.v3.HttpRequestHeaderMatchInput
+	//	              header_name: "x-forwarded-client-cert"
+	//	          value_match:
+	//	            string_match:
+	//	              contains: "trusted-client"
+	//	      on_match:
+	//	        action:
+	//	          name: forward_client_cert
+	//	          typed_config:
+	//	            "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.ForwardClientCertConfig
+	//	            forward_client_cert_details: APPEND_FORWARD
+	//	            set_current_client_cert_details:
+	//	              uri: true
+	//	  on_no_match:
+	//	    action:
+	//	      name: forward_client_cert
+	//	      typed_config:
+	//	        "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.ForwardClientCertConfig
+	//	        forward_client_cert_details: SANITIZE_SET
+	//	        set_current_client_cert_details:
+	//	          uri: true
+	forward_client_cert_matcher?: v33.#Matcher
 	// If proxy_100_continue is true, Envoy will proxy incoming "Expect:
 	// 100-continue" headers upstream, and forward "100 Continue" responses
 	// downstream. If this is false or not set, Envoy will instead strip the
@@ -282,7 +453,7 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// :ref:`use_remote_address
 	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.use_remote_address>`
 	// is true and represent_ipv4_remote_address_as_ipv4_mapped_ipv6 is true and the remote address is
-	// an IPv4 address, the address will be mapped to IPv6 before it is appended to ``x-forwarded-for``.
+	// an IPv4 address, the address will be mapped to IPv6 before it is appended to “x-forwarded-for“.
 	// This is useful for testing compatibility of upstream services that parse the header value. For
 	// example, 50.0.0.1 is represented as ::FFFF:50.0.0.1. See `IPv4-Mapped IPv6 Addresses
 	// <https://tools.ietf.org/html/rfc4291#section-2.5.5.2>`_ for details. This will also affect the
@@ -294,7 +465,7 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	represent_ipv4_remote_address_as_ipv4_mapped_ipv6?: bool
 	upgrade_configs?: [...#HttpConnectionManager_UpgradeConfig]
 	// Should paths be normalized according to RFC 3986 before any processing of
-	// requests by HTTP filters or routing? This affects the upstream ``:path`` header
+	// requests by HTTP filters or routing? This affects the upstream “:path“ header
 	// as well. For paths that fail this check, Envoy will respond with 400 to
 	// paths that are malformed. This defaults to false currently but will default
 	// true in the future. When not specified, this value may be overridden by the
@@ -309,9 +480,9 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// is present.]
 	normalize_path?: bool
 	// Determines if adjacent slashes in the path are merged into one before any processing of
-	// requests by HTTP filters or routing. This affects the upstream ``:path`` header as well. Without
-	// setting this option, incoming requests with path ``//dir///file`` will not match against route
-	// with ``prefix`` match set to ``/dir``. Defaults to ``false``. Note that slash merging is not part of
+	// requests by HTTP filters or routing. This affects the upstream “:path“ header as well. Without
+	// setting this option, incoming requests with path “//dir///file“ will not match against route
+	// with “prefix“ match set to “/dir“. Defaults to “false“. Note that slash merging is not part of
 	// `HTTP spec <https://tools.ietf.org/html/rfc3986>`_ and is provided for convenience.
 	// [#comment:TODO: This field is ignored when the
 	// :ref:`header validation configuration <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.typed_header_validation_config>`
@@ -335,11 +506,12 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// the following configuration can be used:
 	//
 	// .. validated-code-block:: yaml
-	//   :type-name: envoy.extensions.filters.network.http_connection_manager.v3.RequestIDExtension
 	//
-	//   typed_config:
-	//     "@type": type.googleapis.com/envoy.extensions.request_id.uuid.v3.UuidRequestIdConfig
-	//     pack_trace_reason: false
+	//	:type-name: envoy.extensions.filters.network.http_connection_manager.v3.RequestIDExtension
+	//
+	//	typed_config:
+	//	  "@type": type.googleapis.com/envoy.extensions.request_id.uuid.v3.UuidRequestIdConfig
+	//	  pack_trace_reason: false
 	//
 	// [#extension-category: envoy.request_id]
 	request_id_extension?: #RequestIDExtension
@@ -352,19 +524,19 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// local port. This affects the upstream host header unless the method is
 	// CONNECT in which case if no filter adds a port the original port will be restored before headers are
 	// sent upstream.
-	// Without setting this option, incoming requests with host ``example:443`` will not match against
-	// route with :ref:`domains<envoy_v3_api_field_config.route.v3.VirtualHost.domains>` match set to ``example``. Defaults to ``false``. Note that port removal is not part
+	// Without setting this option, incoming requests with host “example:443“ will not match against
+	// route with :ref:`domains<envoy_v3_api_field_config.route.v3.VirtualHost.domains>` match set to “example“. Defaults to “false“. Note that port removal is not part
 	// of `HTTP spec <https://tools.ietf.org/html/rfc3986>`_ and is provided for convenience.
-	// Only one of ``strip_matching_host_port`` or ``strip_any_host_port`` can be set.
+	// Only one of “strip_matching_host_port“ or “strip_any_host_port“ can be set.
 	strip_matching_host_port?: bool
 	// Determines if the port part should be removed from host/authority header before any processing
 	// of request by HTTP filters or routing.
 	// This affects the upstream host header unless the method is CONNECT in
 	// which case if no filter adds a port the original port will be restored before headers are sent upstream.
-	// Without setting this option, incoming requests with host ``example:443`` will not match against
-	// route with :ref:`domains<envoy_v3_api_field_config.route.v3.VirtualHost.domains>` match set to ``example``. Defaults to ``false``. Note that port removal is not part
+	// Without setting this option, incoming requests with host “example:443“ will not match against
+	// route with :ref:`domains<envoy_v3_api_field_config.route.v3.VirtualHost.domains>` match set to “example“. Defaults to “false“. Note that port removal is not part
 	// of `HTTP spec <https://tools.ietf.org/html/rfc3986>`_ and is provided for convenience.
-	// Only one of ``strip_matching_host_port`` or ``strip_any_host_port`` can be set.
+	// Only one of “strip_matching_host_port“ or “strip_any_host_port“ can be set.
 	strip_any_host_port?: bool
 	// Governs Envoy's behavior when receiving invalid HTTP from downstream.
 	// If this option is false (default), Envoy will err on the conservative side handling HTTP
@@ -380,13 +552,13 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// <envoy_v3_api_field_config.core.v3.Http1ProtocolOptions.override_stream_error_on_invalid_http_message>` or the new HTTP/2 option
 	// :ref:`override_stream_error_on_invalid_http_message
 	// <envoy_v3_api_field_config.core.v3.Http2ProtocolOptions.override_stream_error_on_invalid_http_message>`
-	// ``not`` the deprecated but similarly named :ref:`stream_error_on_invalid_http_messaging
+	// “not“ the deprecated but similarly named :ref:`stream_error_on_invalid_http_messaging
 	// <envoy_v3_api_field_config.core.v3.Http2ProtocolOptions.stream_error_on_invalid_http_messaging>`
 	stream_error_on_invalid_http_message?: bool
 	// [#not-implemented-hide:] Path normalization configuration. This includes
 	// configurations for transformations (e.g. RFC 3986 normalization or merge
 	// adjacent slashes) and the policy to apply them. The policy determines
-	// whether transformations affect the forwarded ``:path`` header. RFC 3986 path
+	// whether transformations affect the forwarded “:path“ header. RFC 3986 path
 	// normalization is enabled by default and the default policy is that the
 	// normalized header will be forwarded. See :ref:`PathNormalizationOptions
 	// <envoy_v3_api_msg_extensions.filters.network.http_connection_manager.v3.PathNormalizationOptions>`
@@ -395,11 +567,11 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// Determines if trailing dot of the host should be removed from host/authority header before any
 	// processing of request by HTTP filters or routing.
 	// This affects the upstream host header.
-	// Without setting this option, incoming requests with host ``example.com.`` will not match against
-	// route with :ref:`domains<envoy_v3_api_field_config.route.v3.VirtualHost.domains>` match set to ``example.com``. Defaults to ``false``.
+	// Without setting this option, incoming requests with host “example.com.“ will not match against
+	// route with :ref:`domains<envoy_v3_api_field_config.route.v3.VirtualHost.domains>` match set to “example.com“. Defaults to “false“.
 	// When the incoming request contains a host/authority header that includes a port number,
 	// setting this option will strip a trailing dot, if present, from the host section,
-	// leaving the port as is (e.g. host value ``example.com.:443`` will be updated to ``example.com:443``).
+	// leaving the port as is (e.g. host value “example.com.:443“ will be updated to “example.com:443“).
 	strip_trailing_host_dot?: bool
 	// Proxy-Status HTTP response header configuration.
 	// If this config is set, the Proxy-Status HTTP response header field is
@@ -409,8 +581,8 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// UHV is an extensible mechanism for checking validity of HTTP requests as well as providing
 	// normalization for request attributes, such as URI path.
 	// If the typed_header_validation_config is present it overrides the following options:
-	// ``normalize_path``, ``merge_slashes``, ``path_with_escaped_slashes_action``
-	// ``http_protocol_options.allow_chunked_length``.
+	// “normalize_path“, “merge_slashes“, “path_with_escaped_slashes_action“
+	// “http_protocol_options.allow_chunked_length“, “common_http_protocol_options.headers_with_underscores_action“.
 	//
 	// The default UHV checks the following:
 	//
@@ -420,14 +592,67 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// #. Syntax of HTTP/2 pseudo headers
 	// #. HTTP/3 header map validity according to `RFC 9114 section 4.3 <https://www.rfc-editor.org/rfc/rfc9114.html>`_
 	// #. Syntax of HTTP/3 pseudo headers
-	// #. Syntax of ``Content-Length`` and ``Transfer-Encoding``
-	// #. Validation of HTTP/1 requests with both ``Content-Length`` and ``Transfer-Encoding`` headers
+	// #. Syntax of “Content-Length“ and “Transfer-Encoding“
+	// #. Validation of HTTP/1 requests with both “Content-Length“ and “Transfer-Encoding“ headers
 	// #. Normalization of the URI path according to `Normalization and Comparison <https://datatracker.ietf.org/doc/html/rfc3986#section-6>`_
-	//    without `case normalization <https://datatracker.ietf.org/doc/html/rfc3986#section-6.2.2.1>`_
+	//
+	//	without `case normalization <https://datatracker.ietf.org/doc/html/rfc3986#section-6.2.2.1>`_
 	//
 	// [#not-implemented-hide:]
 	// [#extension-category: envoy.http.header_validators]
 	typed_header_validation_config?: v3.#TypedExtensionConfig
+	// Append the “x-forwarded-port“ header with the port value client used to connect to Envoy. It
+	// will be ignored if the “x-forwarded-port“ header has been set by any trusted proxy in front of Envoy.
+	append_x_forwarded_port?: bool
+	// Append the :ref:`config_http_conn_man_headers_x-envoy-local-overloaded` HTTP header in the scenario where
+	// the Overload Manager has been triggered.
+	append_local_overload?: bool
+	// Whether the HCM will add ProxyProtocolFilterState to the Connection lifetime filter state. Defaults to “true“.
+	// This should be set to “false“ in cases where Envoy's view of the downstream address may not correspond to the
+	// actual client address, for example, if there's another proxy in front of the Envoy.
+	add_proxy_protocol_connection_state?: bool
+	// Configuration for controlling how the “x-forwarded-proto“ header is set.
+	// This allows customization of protocol inference, including support for inferring the original
+	// protocol (HTTP or HTTPS) from the PROXY protocol destination port.
+	//
+	// This is useful when a Layer 4 load balancer (such as AWS NLB) terminates TLS and uses
+	// PROXY protocol to communicate with Envoy.
+	//
+	// When configured and the local address was restored from PROXY protocol (indicating the
+	// original destination address is available), the “x-forwarded-proto“ header will be set
+	// based on whether the destination port is in “https_destination_ports“ or
+	// “http_destination_ports“.
+	//
+	// Example configuration:
+	//
+	// .. code-block:: yaml
+	//
+	//	http_connection_manager:
+	//	  forward_proto_config:
+	//	    https_destination_ports: [443, 8443]
+	//	    http_destination_ports: [80, 8080]
+	//
+	// If not configured, defaults to disabled and the standard behavior applies (using connection
+	// TLS status or trusted downstream headers).
+	forward_proto_config?: #ForwardProtoConfig
+}
+
+// Configuration options for setting the “x-forwarded-proto“ header.
+// This message provides flexibility for future enhancements to protocol inference.
+#ForwardProtoConfig: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.ForwardProtoConfig"
+	// List of destination ports that should be treated as HTTPS.
+	// When the PROXY protocol destination port matches one of these ports,
+	// “x-forwarded-proto“ will be set to “https“.
+	//
+	// Common values: 443, 8443
+	https_destination_ports?: [...uint32]
+	// List of destination ports that should be treated as HTTP.
+	// When the PROXY protocol destination port matches one of these ports,
+	// “x-forwarded-proto“ will be set to “http“.
+	//
+	// Common values: 80, 8080
+	http_destination_ports?: [...uint32]
 }
 
 // The configuration to customize local reply returned by Envoy.
@@ -439,41 +664,42 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// The configuration to form response body from the :ref:`command operators <config_access_log_command_operators>`
 	// and to specify response content type as one of: plain/text or application/json.
 	//
-	// Example one: "plain/text" ``body_format``.
+	// Example one: "plain/text" “body_format“.
 	//
 	// .. validated-code-block:: yaml
-	//   :type-name: envoy.config.core.v3.SubstitutionFormatString
 	//
-	//   text_format: "%LOCAL_REPLY_BODY%:%RESPONSE_CODE%:path=%REQ(:path)%\n"
+	//	:type-name: envoy.config.core.v3.SubstitutionFormatString
+	//
+	//	text_format: "%LOCAL_REPLY_BODY%:%RESPONSE_CODE%:path=%REQ(:path)%\n"
 	//
 	// The following response body in "plain/text" format will be generated for a request with
 	// local reply body of "upstream connection error", response_code=503 and path=/foo.
 	//
 	// .. code-block:: text
 	//
-	//   upstream connect error:503:path=/foo
+	//	upstream connect error:503:path=/foo
 	//
-	// Example two: "application/json" ``body_format``.
+	// Example two: "application/json" “body_format“.
 	//
 	// .. validated-code-block:: yaml
-	//   :type-name: envoy.config.core.v3.SubstitutionFormatString
 	//
-	//   json_format:
-	//     status: "%RESPONSE_CODE%"
-	//     message: "%LOCAL_REPLY_BODY%"
-	//     path: "%REQ(:path)%"
+	//	:type-name: envoy.config.core.v3.SubstitutionFormatString
+	//
+	//	json_format:
+	//	  status: "%RESPONSE_CODE%"
+	//	  message: "%LOCAL_REPLY_BODY%"
+	//	  path: "%REQ(:path)%"
 	//
 	// The following response body in "application/json" format would be generated for a request with
 	// local reply body of "upstream connection error", response_code=503 and path=/foo.
 	//
 	// .. code-block:: json
 	//
-	//  {
-	//    "status": 503,
-	//    "message": "upstream connection error",
-	//    "path": "/foo"
-	//  }
-	//
+	//	{
+	//	  "status": 503,
+	//	  "message": "upstream connection error",
+	//	  "path": "/foo"
+	//	}
 	body_format?: v3.#SubstitutionFormatString
 }
 
@@ -482,13 +708,13 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 #ResponseMapper: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.ResponseMapper"
 	// Filter to determine if this mapper should apply.
-	filter?: v31.#AccessLogFilter
+	filter?: v32.#AccessLogFilter
 	// The new response status code if specified.
 	status_code?: uint32
-	// The new local reply body text if specified. It will be used in the ``%LOCAL_REPLY_BODY%``
-	// command operator in the ``body_format``.
+	// The new local reply body text if specified. It will be used in the “%LOCAL_REPLY_BODY%“
+	// command operator in the “body_format“.
 	body?: v3.#DataSource
-	// A per mapper ``body_format`` to override the :ref:`body_format <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.LocalReplyConfig.body_format>`.
+	// A per mapper “body_format“ to override the :ref:`body_format <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.LocalReplyConfig.body_format>`.
 	// It will be used when this mapper is matched.
 	body_format_override?: v3.#SubstitutionFormatString
 	// HTTP headers to add to a local reply. This allows the response mapper to append, to add
@@ -510,7 +736,7 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 // This message is used to work around the limitations with 'oneof' and repeated fields.
 #ScopedRouteConfigurationsList: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.ScopedRouteConfigurationsList"
-	scoped_route_configurations?: [...v32.#ScopedRouteConfiguration]
+	scoped_route_configurations?: [...v34.#ScopedRouteConfiguration]
 }
 
 // [#next-free-field: 6]
@@ -547,7 +773,7 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	srds_resources_locator?: string
 }
 
-// [#next-free-field: 7]
+// [#next-free-field: 8]
 #HttpFilter: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpFilter"
 	// The name of the filter configuration. It also serves as a resource name in ExtensionConfigDS.
@@ -572,8 +798,14 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// If true, clients that do not support this filter may ignore the
 	// filter but otherwise accept the config.
 	// Otherwise, clients that do not support this filter must reject the config.
-	// This is also same with typed per filter config.
 	is_optional?: bool
+	// If true, the filter is disabled by default and must be explicitly enabled by setting
+	// per filter configuration in the route configuration.
+	// See :ref:`route based filter chain <arch_overview_http_filters_route_based_filter_chain>`
+	// for more details.
+	//
+	// Terminal filters (e.g. “envoy.filters.http.router“) cannot be marked as disabled.
+	disabled?: bool
 }
 
 #RequestIDExtension: {
@@ -592,22 +824,22 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	config?: #HttpConnectionManager
 }
 
-// [#next-free-field: 10]
+// [#next-free-field: 14]
 #HttpConnectionManager_Tracing: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager_Tracing"
 	// Target percentage of requests managed by this HTTP connection manager that will be force
 	// traced if the :ref:`x-client-trace-id <config_http_conn_man_headers_x-client-trace-id>`
 	// header is set. This field is a direct analog for the runtime variable
-	// 'tracing.client_sampling' in the :ref:`HTTP Connection Manager
+	// 'tracing.client_enabled' in the :ref:`HTTP Connection Manager
 	// <config_http_conn_man_runtime>`.
 	// Default: 100%
-	client_sampling?: v33.#Percent
+	client_sampling?: v31.#Percent
 	// Target percentage of requests managed by this HTTP connection manager that will be randomly
 	// selected for trace generation, if not requested by the client or not forced. This field is
 	// a direct analog for the runtime variable 'tracing.random_sampling' in the
 	// :ref:`HTTP Connection Manager <config_http_conn_man_runtime>`.
 	// Default: 100%
-	random_sampling?: v33.#Percent
+	random_sampling?: v31.#Percent
 	// Target percentage of requests managed by this HTTP connection manager that will be traced
 	// after all other sampling checks have been applied (client-directed, force tracing, random
 	// sampling). This field functions as an upper limit on the total configured sampling rate. For
@@ -616,7 +848,7 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// analog for the runtime variable 'tracing.global_enabled' in the
 	// :ref:`HTTP Connection Manager <config_http_conn_man_runtime>`.
 	// Default: 100%
-	overall_sampling?: v33.#Percent
+	overall_sampling?: v31.#Percent
 	// Whether to annotate spans with additional data. If true, spans will include logs for stream
 	// events.
 	verbose?: bool
@@ -625,18 +857,63 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// Default: 256
 	max_path_tag_length?: uint32
 	// A list of custom tags with unique tag name to create tags for the active span.
-	custom_tags?: [...v34.#CustomTag]
+	custom_tags?: [...v35.#CustomTag]
 	// Configuration for an external tracing provider.
 	// If not specified, no tracing will be performed.
+	provider?: v36.#Tracing_Http
+	// Create separate tracing span for each upstream request if true. And if this flag is set to true,
+	// the tracing provider will assume that Envoy will be independent hop in the trace chain and may
+	// set span type to client or server based on this flag.
+	// This will deprecate the
+	// :ref:`start_child_span <envoy_v3_api_field_extensions.filters.http.router.v3.Router.start_child_span>`
+	// in the router.
 	//
-	// .. attention::
-	//   Please be aware that ``envoy.tracers.opencensus`` provider can only be configured once
-	//   in Envoy lifetime.
-	//   Any attempts to reconfigure it or to use different configurations for different HCM filters
-	//   will be rejected.
-	//   Such a constraint is inherent to OpenCensus itself. It cannot be overcome without changes
-	//   on OpenCensus side.
-	provider?: v35.#Tracing_Http
+	// Users should set appropriate value based on their tracing provider and actual scenario:
+	//
+	//   - If Envoy is used as sidecar and users want to make the sidecar and its application as only one
+	//     hop in the trace chain, this flag should be set to false. And please also make sure the
+	//     :ref:`start_child_span <envoy_v3_api_field_extensions.filters.http.router.v3.Router.start_child_span>`
+	//     in the router is not set to true.
+	//   - If Envoy is used as gateway or independent proxy, or users want to make the sidecar and its
+	//     application as different hops in the trace chain, this flag should be set to true.
+	//   - If tracing provider that has explicit requirements on span creation (like SkyWalking),
+	//     this flag should be set to true.
+	//
+	// The default value is false for now for backward compatibility.
+	spawn_upstream_span?: bool
+	// The operation name of the span which will be used for tracing.
+	//
+	// The same :ref:`format specifier <config_access_log_format>` as used for
+	// :ref:`HTTP access logging <config_access_log>` applies here, however
+	// unknown specifier values are replaced with the empty string instead of “-“.
+	//
+	// This field will take precedence over and make following settings ineffective:
+	//
+	//   - :ref:`route decorator <envoy_v3_api_field_config.route.v3.Route.decorator>` and
+	//   - :ref:`x-envoy-decorator-operation <config_http_filters_router_x-envoy-decorator-operation>`
+	//     header will be ignored.
+	operation?: string
+	// The operation name of the upstream span which will be used for tracing.
+	// This only takes effect when “spawn_upstream_span“ is set to true and the upstream
+	// span is created.
+	//
+	// The same :ref:`format specifier <config_access_log_format>` as used for
+	// :ref:`HTTP access logging <config_access_log>` applies here, however
+	// unknown specifier values are replaced with the empty string instead of “-“.
+	upstream_operation?: string
+	// If set to true, trace context propagation is disabled, meaning that trace context headers
+	// (e.g. “traceparent“, “tracestate“ for OpenTelemetry/W3C, or “X-B3-*“ headers for Zipkin)
+	// will not be injected when proxying requests to upstreams.
+	//
+	// This is useful for scenarios where you want to report spans from a proxy (e.g., an egress
+	// gateway) while preventing trace context from being propagated to external services,
+	// effectively stopping the trace at the mesh boundary.
+	//
+	// Note that span reporting is still performed when this is set to true - only context
+	// propagation is disabled.
+	//
+	// Default: false (context propagation is enabled)
+	no_context_propagation?: bool
 }
 
 #HttpConnectionManager_InternalAddressConfig: {
@@ -648,7 +925,7 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	cidr_ranges?: [...v3.#CidrRange]
 }
 
-// [#next-free-field: 7]
+// [#next-free-field: 8]
 #HttpConnectionManager_SetCurrentClientCertDetails: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager_SetCurrentClientCertDetails"
 	// Whether to forward the subject of the client cert. Defaults to false.
@@ -668,6 +945,26 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// Whether to forward the URI type Subject Alternative Name of the client cert. Defaults to
 	// false.
 	uri?: bool
+	// The format for the header. When the :ref:`forward_client_cert_details
+	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.forward_client_cert_details>`
+	// is APPEND_FORWARD and an existing XFCC header is present, the format of the existing header
+	// is used. The configured format is used when there is no existing header value
+	// (APPEND_FORWARD with no prior XFCC header, or SANITIZE_SET which always replaces the value).
+	format?: #HttpConnectionManager_ForwardClientCertFormat
+}
+
+// The configuration for forwarding client cert details, used as the action config in a
+// :ref:`forward_client_cert_matcher
+// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.forward_client_cert_matcher>`.
+#HttpConnectionManager_ForwardClientCertConfig: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager_ForwardClientCertConfig"
+	// How to handle the XFCC header.
+	forward_client_cert_details?: #HttpConnectionManager_ForwardClientCertDetails
+	// The fields in the client certificate to forward. See
+	// :ref:`set_current_client_cert_details
+	// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.set_current_client_cert_details>`
+	// for details.
+	set_current_client_cert_details?: #HttpConnectionManager_SetCurrentClientCertDetails
 }
 
 // The configuration for HTTP upgrades.
@@ -675,13 +972,12 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 //
 // .. warning::
 //
-//    The current implementation of upgrade headers does not handle
-//    multi-valued upgrade headers. Support for multi-valued headers may be
-//    added in the future if needed.
+//	The current implementation of upgrade headers does not handle multi-valued upgrade headers. Support for
+//	multi-valued headers may be added in the future if needed.
 //
 // .. warning::
-//    The current implementation of upgrade headers does not work with HTTP/2
-//    upstreams.
+//
+//	The current implementation of upgrade headers does not work with HTTP/2 upstreams.
 #HttpConnectionManager_UpgradeConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager_UpgradeConfig"
 	// The case-insensitive name of this upgrade, e.g. "websocket".
@@ -705,31 +1001,33 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 // path will be visible internally if a transformation is enabled. Any path rewrites that the
 // router performs (e.g. :ref:`regex_rewrite
 // <envoy_v3_api_field_config.route.v3.RouteAction.regex_rewrite>` or :ref:`prefix_rewrite
-// <envoy_v3_api_field_config.route.v3.RouteAction.prefix_rewrite>`) will apply to the ``:path`` header
+// <envoy_v3_api_field_config.route.v3.RouteAction.prefix_rewrite>`) will apply to the “:path“ header
 // destined for the upstream.
 //
-// Note: access logging and tracing will show the original ``:path`` header.
+// .. note::
+//
+//	Access logging and tracing will show the original ``:path`` header.
 #HttpConnectionManager_PathNormalizationOptions: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager_PathNormalizationOptions"
 	// [#not-implemented-hide:] Normalization applies internally before any processing of requests by
-	// HTTP filters, routing, and matching *and* will affect the forwarded ``:path`` header. Defaults
+	// HTTP filters, routing, and matching *and* will affect the forwarded “:path“ header. Defaults
 	// to :ref:`NormalizePathRFC3986
 	// <envoy_v3_api_msg_type.http.v3.PathTransformation.Operation.NormalizePathRFC3986>`. When not
 	// specified, this value may be overridden by the runtime variable
 	// :ref:`http_connection_manager.normalize_path<config_http_conn_man_runtime_normalize_path>`.
 	// Envoy will respond with 400 to paths that are malformed (e.g. for paths that fail RFC 3986
 	// normalization due to disallowed characters.)
-	forwarding_transformation?: v36.#PathTransformation
+	forwarding_transformation?: v37.#PathTransformation
 	// [#not-implemented-hide:] Normalization only applies internally before any processing of
 	// requests by HTTP filters, routing, and matching. These will be applied after full
-	// transformation is applied. The ``:path`` header before this transformation will be restored in
+	// transformation is applied. The “:path“ header before this transformation will be restored in
 	// the router filter and sent upstream unless it was mutated by a filter. Defaults to no
 	// transformations.
 	// Multiple actions can be applied in the same Transformation, forming a sequential
 	// pipeline. The transformations will be performed in the order that they appear. Envoy will
 	// respond with 400 to paths that are malformed (e.g. for paths that fail RFC 3986
 	// normalization due to disallowed characters.)
-	http_filter_transformation?: v36.#PathTransformation
+	http_filter_transformation?: v37.#PathTransformation
 }
 
 // Configures the manner in which the Proxy-Status HTTP response header is
@@ -741,32 +1039,54 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 //
 // The Proxy-Status header is a string of the form:
 //
-//   "<server_name>; error=<error_type>; details=<details>"
+//	"<server_name>; error=<error_type>; details=<details>"
+//
 // [#next-free-field: 7]
 #HttpConnectionManager_ProxyStatusConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager_ProxyStatusConfig"
 	// If true, the details field of the Proxy-Status header is not populated with stream_info.response_code_details.
-	// This value defaults to ``false``, i.e. the ``details`` field is populated by default.
+	// This value defaults to “false“, i.e. the “details“ field is populated by default.
 	remove_details?: bool
 	// If true, the details field of the Proxy-Status header will not contain
-	// connection termination details. This value defaults to ``false``, i.e. the
-	// ``details`` field will contain connection termination details by default.
+	// connection termination details. This value defaults to “false“, i.e. the
+	// “details“ field will contain connection termination details by default.
 	remove_connection_termination_details?: bool
 	// If true, the details field of the Proxy-Status header will not contain an
-	// enumeration of the Envoy ResponseFlags. This value defaults to ``false``,
-	// i.e. the ``details`` field will contain a list of ResponseFlags by default.
+	// enumeration of the Envoy ResponseFlags. This value defaults to “false“,
+	// i.e. the “details“ field will contain a list of ResponseFlags by default.
 	remove_response_flags?: bool
 	// If true, overwrites the existing Status header with the response code
 	// recommended by the Proxy-Status spec.
-	// This value defaults to ``false``, i.e. the HTTP response code is not
+	// This value defaults to “false“, i.e. the HTTP response code is not
 	// overwritten.
 	set_recommended_response_code?: bool
-	// If ``use_node_id`` is set, Proxy-Status headers will use the Envoy's node
+	// If “use_node_id“ is set, Proxy-Status headers will use the Envoy's node
 	// ID as the name of the proxy.
 	use_node_id?: bool
-	// If ``literal_proxy_name`` is set, Proxy-Status headers will use this
+	// If “literal_proxy_name“ is set, Proxy-Status headers will use this
 	// value as the name of the proxy.
 	literal_proxy_name?: string
+}
+
+#HttpConnectionManager_HcmAccessLogOptions: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager_HcmAccessLogOptions"
+	// The interval to flush the above access logs. By default, the HCM will flush exactly one access log
+	// on stream close, when the HTTP request is complete. If this field is set, the HCM will flush access
+	// logs periodically at the specified interval. This is especially useful in the case of long-lived
+	// requests, such as CONNECT and Websockets. Final access logs can be detected via the
+	// “requestComplete()“ method of “StreamInfo“ in access log filters, or through the “%DURATION%“ substitution
+	// string.
+	// The interval must be at least 1 millisecond.
+	access_log_flush_interval?: string
+	// If set to true, HCM will flush an access log when a new HTTP request is received, after request
+	// headers have been evaluated, before iterating through the HTTP filter chain.
+	// This log record, if enabled, does not depend on periodic log records or request completion log.
+	// Details related to upstream cluster, such as upstream host, will not be available for this log.
+	flush_access_log_on_new_request?: bool
+	// If true, the HCM will flush an access log when a tunnel is successfully established. For example,
+	// this could be when an upstream has successfully returned 101 Switching Protocols, or when the proxy
+	// has returned 200 to a CONNECT request.
+	flush_log_on_tunnel_successfully_established?: bool
 }
 
 // Specifies the mechanism for constructing "scope keys" based on HTTP request attributes. These
@@ -798,25 +1118,25 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 //
 // .. code::
 //
-//              <0> <1>   <-- index
-//    X-Header: a=b;c=d
-//    |         || |
-//    |         || \----> <element_separator>
-//    |         ||
-//    |         |\----> <element.separator>
-//    |         |
-//    |         \----> <element.key>
-//    |
-//    \----> <name>
+//	          <0> <1>   <-- index
+//	X-Header: a=b;c=d
+//	|         || |
+//	|         || \----> <element_separator>
+//	|         ||
+//	|         |\----> <element.separator>
+//	|         |
+//	|         \----> <element.key>
+//	|
+//	\----> <name>
 //
-//    Each 'a=b' key-value pair constitutes an 'element' of the header field.
+//	Each 'a=b' key-value pair constitutes an 'element' of the header field.
 #ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.ScopedRoutes_ScopeKeyBuilder_FragmentBuilder_HeaderValueExtractor"
 	// The name of the header field to extract the value from.
 	//
 	// .. note::
 	//
-	//   If the header appears multiple times only the first value is used.
+	//	If the header appears multiple times only the first value is used.
 	name?: string
 	// The element separator (e.g., ';' separates 'a;b;c;d').
 	// Default: empty string. This causes the entirety of the header field to be extracted.

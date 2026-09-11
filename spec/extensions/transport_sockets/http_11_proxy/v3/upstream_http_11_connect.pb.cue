@@ -4,22 +4,30 @@ import (
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
-// Configuration for HTTP/1.1 proxy transport sockets.
-// This is intended for use in Envoy Mobile, though may eventually be extended
-// for upstream Envoy use.
-// If this transport socket is configured, and an intermediate filter adds the
-// stream info necessary for proxying to the stream info (as the test filter
-// does :repo:`here <test/integration/filters/header_to_proxy_filter.cc>`) then
+// HTTP/1.1 proxy transport socket establishes an upstream connection to a proxy address
+// instead of the target host's address. This behavior is triggered when the transport
+// socket is configured and proxy information is provided.
 //
-// * Upstream connections will be directed to the specified proxy address rather
-//   than the host's address
-// * Upstream TLS connections will have a raw HTTP/1.1 CONNECT header prefaced
-//   to the payload, and 200 response stripped (if less than 200 bytes)
-// * Plaintext HTTP/1.1 connections will be sent with a fully qualified URL.
+// Behavior when proxying:
+// =======================
+// When an upstream connection is established, instead of connecting directly to the endpoint
+// address, the client will connect to the specified proxy address, send an HTTP/1.1 “CONNECT“ request
+// indicating the endpoint address, and process the response. If the response has HTTP status 200,
+// the connection will be passed down to the underlying transport socket.
 //
-// This transport socket is not compatible with HTTP/3, plaintext HTTP/2, or raw TCP.
+// Configuring proxy information:
+// ==============================
+// Set “typed_filter_metadata“ in :ref:`LbEndpoint.Metadata <envoy_v3_api_field_config.endpoint.v3.lbendpoint.metadata>` or :ref:`LocalityLbEndpoints.Metadata <envoy_v3_api_field_config.endpoint.v3.LocalityLbEndpoints.metadata>`.
+// using the key “envoy.http11_proxy_transport_socket.proxy_address“ and the
+// proxy address in “config::core::v3::Address“ format.
+//
+// If the “default_proxy_address“ is set and proxy address is not found in
+// “typed_filter_metadata“, the default proxy address is used.
 #Http11ProxyUpstreamTransport: {
 	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.http_11_proxy.v3.Http11ProxyUpstreamTransport"
-	// The underlying transport socket being wrapped.
+	// The underlying transport socket being wrapped. Defaults to plaintext (raw_buffer) if unset.
 	transport_socket?: v3.#TransportSocket
+	// Specifies the default proxy address to use if the proxy address is not present in the
+	// “typed_filter_metadata“ of the endpoint.
+	default_proxy_address?: v3.#Address
 }
