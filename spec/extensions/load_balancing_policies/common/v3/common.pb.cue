@@ -35,8 +35,8 @@ LocalityLbConfig_ZoneAwareLbConfig_LocalityBasis_HEALTHY_HOSTS_WEIGHT: "HEALTHY_
 	// By tuning the parameter, is possible to achieve polynomial or exponential shape of ramp-up curve.
 	//
 	// During slow start window, effective weight of an endpoint would be scaled with time factor and aggression:
-	// “new_weight = weight * max(min_weight_percent, time_factor ^ (1 / aggression))“,
-	// where “time_factor=(time_since_start_seconds / slow_start_time_seconds)“.
+	// ``new_weight = weight * max(min_weight_percent, time_factor ^ (1 / aggression))``,
+	// where ``time_factor=(time_since_start_seconds / slow_start_time_seconds)``.
 	//
 	// As time progresses, more and more traffic would be sent to endpoint, which is in slow start window.
 	// Once host exits slow start, time_factor and aggression no longer affect its weight.
@@ -50,7 +50,7 @@ LocalityLbConfig_ZoneAwareLbConfig_LocalityBasis_HEALTHY_HOSTS_WEIGHT: "HEALTHY_
 // Common Configuration for all consistent hashing load balancers (MaglevLb, RingHashLb, etc.)
 #ConsistentHashingLbConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.load_balancing_policies.common.v3.ConsistentHashingLbConfig"
-	// If set to “true“, the cluster will use hostname instead of the resolved
+	// If set to ``true``, the cluster will use hostname instead of the resolved
 	// address as the key to consistently hash to an upstream host. Only valid for StrictDNS clusters with hostnames which resolve to a single IP address.
 	use_hostname_for_hashing?: bool
 	// Configures percentage of average cluster load to bound per upstream host. For example, with a value of 150
@@ -61,7 +61,7 @@ LocalityLbConfig_ZoneAwareLbConfig_LocalityBasis_HEALTHY_HOSTS_WEIGHT: "HEALTHY_
 	// Applies to both Ring Hash and Maglev load balancers.
 	//
 	// This is implemented based on the method described in the paper https://arxiv.org/abs/1608.01350. For the specified
-	// “hash_balance_factor“, requests to any upstream host are capped at “hash_balance_factor/100“ times the average number of requests
+	// ``hash_balance_factor``, requests to any upstream host are capped at ``hash_balance_factor/100`` times the average number of requests
 	// across the cluster. When a request arrives for an upstream host that is currently serving at its max capacity, linear probing
 	// is used to identify an eligible host. Further, the linear probe is implemented using a random jump in hosts ring/table to identify
 	// the eligible host (this technique is as described in the paper https://arxiv.org/abs/1908.08762 - the random jump avoids the
@@ -69,11 +69,10 @@ LocalityLbConfig_ZoneAwareLbConfig_LocalityBasis_HEALTHY_HOSTS_WEIGHT: "HEALTHY_
 	//
 	// If weights are specified on the hosts, they are respected.
 	//
-	// This is an O(N) algorithm, unlike other load balancers. Using a lower “hash_balance_factor“ results in more hosts
+	// This is an O(N) algorithm, unlike other load balancers. Using a lower ``hash_balance_factor`` results in more hosts
 	// being probed, so use a higher value if you require better performance.
 	hash_balance_factor?: uint32
-	//	Specifies a list of hash policies to use for ring hash load balancing. If ``hash_policy`` is
-	//
+	//  Specifies a list of hash policies to use for ring hash load balancing. If ``hash_policy`` is
 	// set, then
 	// :ref:`route level hash policy <envoy_v3_api_field_config.route.v3.RouteAction.hash_policy>`
 	// will be ignored.
@@ -92,14 +91,14 @@ LocalityLbConfig_ZoneAwareLbConfig_LocalityBasis_HEALTHY_HOSTS_WEIGHT: "HEALTHY_
 	// port of the host's ORCA reporting address is used. Ignored for non-IP
 	// (pipe/UDS) host addresses.
 	port_value?: uint32
-	// Value of the “:authority“ header on the OOB gRPC stream. If empty, the
+	// Value of the ``:authority`` header on the OOB gRPC stream. If empty, the
 	// endpoint hostname is used, then the dialed address, then the cluster name.
 	authority?: string
 	// Optional key/value pairs used to select a transport socket from the
 	// cluster's :ref:`transport_socket_matches
 	// <envoy_v3_api_field_config.cluster.v3.Cluster.transport_socket_matches>`
 	// for the OOB connection. If unset, or if no match is found, the cluster's
-	// default transport socket is used. ALPN “h2“ is always forced on the OOB
+	// default transport socket is used. ALPN ``h2`` is always forced on the OOB
 	// connection regardless of this setting.
 	transport_socket_match_criteria?: structpb.#Struct
 }

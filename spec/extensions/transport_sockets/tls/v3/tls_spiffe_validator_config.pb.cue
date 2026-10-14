@@ -52,13 +52,13 @@ import (
 
 #SPIFFECertValidatorConfig_TrustDomain: {
 	"@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.SPIFFECertValidatorConfig_TrustDomain"
-	// Name of the trust domain, “example.com“, “foo.bar.gov“ for example.
+	// Name of the trust domain, ``example.com``, ``foo.bar.gov`` for example.
 	// Note that this must *not* have "spiffe://" prefix.
 	name?: string
 	// Specify a data source holding x.509 trust bundle used for validating incoming SVID(s) in this trust domain.
 	trust_bundle?: v3.#DataSource
 	// Optional workload trust domain selection condition. The filter object
-	// “envoy.tls.cert_validator.spiffe.workload_trust_domain“ must match exactly the value of this field.
+	// ``envoy.tls.cert_validator.spiffe.workload_trust_domain`` must match exactly the value of this field.
 	// If not specified, the filter state object must be absent or be empty to match this trust domain.
 	workload_trust_domain?: string
 }

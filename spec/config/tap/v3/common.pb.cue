@@ -41,7 +41,7 @@ OutputSink_Format_PROTO_TEXT:                    "PROTO_TEXT"
 	// Specifies the fraction of requests (HTTP tap filter) or connections (transport
 	// socket tap) for which the tap match predicate is evaluated. When unset, every
 	// request/connection proceeds to match evaluation (equivalent to sampling at 100%),
-	// the runtime layer is not consulted, and “configured_sample_rate“ is not set on
+	// the runtime layer is not consulted, and ``configured_sample_rate`` is not set on
 	// emitted traces. When set, only the configured fraction is matched; the remainder
 	// is not tapped. The value can be overridden at runtime via :ref:`runtime_key
 	// <envoy_v3_api_field_config.core.v3.RuntimeFractionalPercent.runtime_key>`. The
@@ -146,10 +146,10 @@ OutputSink_Format_PROTO_TEXT:                    "PROTO_TEXT"
 	//
 	// .. attention::
 	//
-	//	It is only allowed to specify the streaming admin output sink if the tap is being
-	//	configured from the :http:post:`/tap` admin endpoint. Thus, if an extension has
-	//	been configured to receive tap configuration from some other source (e.g., static
-	//	file, XDS, etc.) configuring the streaming admin output type will fail.
+	//   It is only allowed to specify the streaming admin output sink if the tap is being
+	//   configured from the :http:post:`/tap` admin endpoint. Thus, if an extension has
+	//   been configured to receive tap configuration from some other source (e.g., static
+	//   file, XDS, etc.) configuring the streaming admin output type will fail.
 	streaming_admin?: #StreamingAdminSink
 	// Tap output will be written to a file per tap sink.
 	file_per_tap?: #FilePerTapSink
@@ -161,10 +161,10 @@ OutputSink_Format_PROTO_TEXT:                    "PROTO_TEXT"
 	//
 	// .. attention::
 	//
-	//	It is only allowed to specify the buffered admin output sink if the tap is being
-	//	configured from the :http:post:`/tap` admin endpoint. Thus, if an extension has
-	//	been configured to receive tap configuration from some other source (e.g., static
-	//	file, XDS, etc.) configuring the buffered admin output type will fail.
+	//   It is only allowed to specify the buffered admin output sink if the tap is being
+	//   configured from the :http:post:`/tap` admin endpoint. Thus, if an extension has
+	//   been configured to receive tap configuration from some other source (e.g., static
+	//   file, XDS, etc.) configuring the buffered admin output type will fail.
 	buffered_admin?: #BufferedAdminSink
 	// Tap output filter will be defined by an extension type
 	custom_sink?: v31.#TypedExtensionConfig

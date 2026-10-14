@@ -4,7 +4,7 @@ package v3
 #AsyncFileManagerConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.common.async_files.v3.AsyncFileManagerConfig"
 	// An optional identifier for the manager. An empty string is a valid identifier
-	// for a common, default “AsyncFileManager“.
+	// for a common, default ``AsyncFileManager``.
 	//
 	// Reusing the same id with different configurations in the same envoy instance
 	// is an error.

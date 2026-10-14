@@ -36,21 +36,20 @@ import (
 	// See :ref:`format string<config_access_log_format_strings>` documentation for a specific command operator details.
 	//
 	// .. validated-code-block:: yaml
+	//   :type-name: envoy.extensions.access_loggers.fluentd.v3.FluentdAccessLogConfig
 	//
-	//	:type-name: envoy.extensions.access_loggers.fluentd.v3.FluentdAccessLogConfig
-	//
-	//	record:
-	//	  status: "%RESPONSE_CODE%"
-	//	  message: "%LOCAL_REPLY_BODY%"
+	//   record:
+	//     status: "%RESPONSE_CODE%"
+	//     message: "%LOCAL_REPLY_BODY%"
 	//
 	// The following msgpack record would be created:
 	//
 	// .. code-block:: json
 	//
-	//	{
-	//	  "status": 500,
-	//	  "message": "My error message"
-	//	}
+	//  {
+	//    "status": 500,
+	//    "message": "My error message"
+	//  }
 	record?: structpb.#Struct
 	// Optional retry, in case upstream connection has failed. If this field is not set, the default values will be applied,
 	// as specified in the :ref:`RetryOptions <envoy_v3_api_msg_extensions.access_loggers.fluentd.v3.FluentdAccessLogConfig.RetryOptions>`

@@ -57,13 +57,14 @@ HeaderValidatorConfig_UriPathNormalizationOptions_PathWithEscapedSlashesAction_U
 	//
 	// By default Envoy normalizes URI path using the default values of the :ref:`UriPathNormalizationOptions
 	// <envoy_v3_api_msg_extensions.http.header_validators.envoy_default.v3.HeaderValidatorConfig.UriPathNormalizationOptions>`.
-	// URI path transformations specified by the “uri_path_normalization_options“ configuration can be applied to a portion
-	// of requests by setting the “envoy_default_header_validator.uri_path_transformations“ runtime value.
+	// URI path transformations specified by the ``uri_path_normalization_options`` configuration can be applied to a portion
+	// of requests by setting the ``envoy_default_header_validator.uri_path_transformations`` runtime value.
 	//
 	// .. attention::
 	//
-	//	Disabling path normalization may lead to path confusion vulnerabilities in access control or incorrect service
-	//	selection.
+	//   Disabling path normalization may lead to path confusion vulnerabilities in access control or incorrect service
+	//   selection.
+	//
 	uri_path_normalization_options?: #HeaderValidatorConfig_UriPathNormalizationOptions
 	// Restrict HTTP methods to these defined in the `RFC 7231 section 4.1 <https://datatracker.ietf.org/doc/html/rfc7231#section-4.1>`_.
 	//
@@ -75,7 +76,7 @@ HeaderValidatorConfig_UriPathNormalizationOptions_PathWithEscapedSlashesAction_U
 	restrict_http_methods?: bool
 	// Action to take when a client request with a header name containing underscore characters is received.
 	//
-	// If this setting is not specified, the value defaults to “ALLOW“.
+	// If this setting is not specified, the value defaults to ``ALLOW``.
 	//
 	// This setting provides security control over headers with underscores, which can be a source
 	// of security issues when different systems interpret underscores and hyphens differently.
@@ -83,7 +84,7 @@ HeaderValidatorConfig_UriPathNormalizationOptions_PathWithEscapedSlashesAction_U
 	// Allow requests with fragment in URL path and strip the fragment before request processing.
 	//
 	// By default Envoy rejects requests with fragment in URL path. When this option is enabled,
-	// the fragment portion (everything after “#“) will be removed from the path before
+	// the fragment portion (everything after ``#``) will be removed from the path before
 	// further processing.
 	//
 	// Fragments are typically used by client-side applications and should not normally
@@ -112,26 +113,28 @@ HeaderValidatorConfig_UriPathNormalizationOptions_PathWithEscapedSlashesAction_U
 	//
 	// .. note::
 	//
-	//	Envoy does not perform
-	//	`case normalization <https://datatracker.ietf.org/doc/html/rfc3986#section-6.2.2.1>`_.
-	//	URI path normalization can be applied to a portion of requests by setting the
-	//	``envoy_default_header_validator.path_normalization`` runtime value.
+	//   Envoy does not perform
+	//   `case normalization <https://datatracker.ietf.org/doc/html/rfc3986#section-6.2.2.1>`_.
+	//   URI path normalization can be applied to a portion of requests by setting the
+	//   ``envoy_default_header_validator.path_normalization`` runtime value.
+	//
 	skip_path_normalization?: bool
 	// Determines if adjacent slashes in the path are merged into one.
 	//
 	// This operation overwrites the original request URI path and the new path is used for processing of
 	// the request by HTTP filters and proxied to the upstream service.
-	// Setting this option to “true“ will cause incoming requests with path “//dir///file“ to not match against
-	// route with “prefix“ match set to “/dir“. Defaults to “false“.
+	// Setting this option to ``true`` will cause incoming requests with path ``//dir///file`` to not match against
+	// route with ``prefix`` match set to ``/dir``. Defaults to ``false``.
 	//
 	// .. note::
 	//
-	//	Slash merging is not part of the
-	//	`HTTP spec <https://datatracker.ietf.org/doc/html/rfc3986>`_ and is provided for convenience.
-	//	Merging of slashes in URI path can be applied to a portion of requests by setting the
-	//	``envoy_default_header_validator.merge_slashes`` runtime value.
+	//   Slash merging is not part of the
+	//   `HTTP spec <https://datatracker.ietf.org/doc/html/rfc3986>`_ and is provided for convenience.
+	//   Merging of slashes in URI path can be applied to a portion of requests by setting the
+	//   ``envoy_default_header_validator.merge_slashes`` runtime value.
+	//
 	skip_merging_slashes?: bool
-	// The action to take when request URL path contains escaped slash sequences (“%2F“, “%2f“, “%5C“ and “%5c“).
+	// The action to take when request URL path contains escaped slash sequences (``%2F``, ``%2f``, ``%5C`` and ``%5c``).
 	//
 	// This operation may overwrite the original request URI path and the new path is used for processing of
 	// the request by HTTP filters and proxied to the upstream service.
@@ -147,15 +150,16 @@ HeaderValidatorConfig_UriPathNormalizationOptions_PathWithEscapedSlashesAction_U
 // that may not apply to HTTP/2 or HTTP/3 protocols.
 #HeaderValidatorConfig_Http1ProtocolOptions: {
 	"@type": "type.googleapis.com/envoy.extensions.http.header_validators.envoy_default.v3.HeaderValidatorConfig_Http1ProtocolOptions"
-	// Allows Envoy to process HTTP/1 requests/responses with both “Content-Length“ and “Transfer-Encoding“
+	// Allows Envoy to process HTTP/1 requests/responses with both ``Content-Length`` and ``Transfer-Encoding``
 	// headers set. By default such messages are rejected, but if option is enabled - Envoy will
-	// remove the “Content-Length“ header and process the message.
+	// remove the ``Content-Length`` header and process the message.
 	//
 	// See `RFC7230, sec. 3.3.3 <https://datatracker.ietf.org/doc/html/rfc7230#section-3.3.3>`_ for details.
 	//
 	// .. attention::
 	//
-	//	Enabling this option might lead to request smuggling vulnerabilities, especially if traffic
-	//	is proxied via multiple layers of proxies.
+	//   Enabling this option might lead to request smuggling vulnerabilities, especially if traffic
+	//   is proxied via multiple layers of proxies.
+	//
 	allow_chunked_length?: bool
 }

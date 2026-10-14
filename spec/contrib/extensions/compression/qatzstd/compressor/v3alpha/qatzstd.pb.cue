@@ -42,6 +42,6 @@ Qatzstd_Strategy_BTULTRA2: "BTULTRA2"
 	// they don't have to change the config too much or prepare for another config that has software zstd compressor and just changing the value of this filed.
 	enable_qat_zstd?: bool
 	// Fallback to software for Qatzstd when input size is less than this value.
-	// Valid only “enable_qat_zstd“ is “true“. 0 means no fallback at all. If not set, defaults to 4000.
+	// Valid only ``enable_qat_zstd`` is ``true``. 0 means no fallback at all. If not set, defaults to 4000.
 	qat_zstd_fallback_threshold?: uint32
 }

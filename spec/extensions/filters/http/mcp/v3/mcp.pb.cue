@@ -1,10 +1,11 @@
 package v3
 
 // Traffic handling mode for non-MCP traffic.
-#Mcp_TrafficMode: "PASS_THROUGH" | "REJECT_NO_MCP"
+#Mcp_TrafficMode: "PASS_THROUGH" | "REJECT_NO_MCP" | "NOOP"
 
 Mcp_TrafficMode_PASS_THROUGH:  "PASS_THROUGH"
 Mcp_TrafficMode_REJECT_NO_MCP: "REJECT_NO_MCP"
+Mcp_TrafficMode_NOOP:          "NOOP"
 
 // Where to store parsed MCP request attributes.
 #Mcp_RequestStorageMode: "MODE_UNSPECIFIED" | "DYNAMIC_METADATA" | "FILTER_STATE" | "DYNAMIC_METADATA_AND_FILTER_STATE"
@@ -14,8 +15,15 @@ Mcp_RequestStorageMode_DYNAMIC_METADATA:                  "DYNAMIC_METADATA"
 Mcp_RequestStorageMode_FILTER_STATE:                      "FILTER_STATE"
 Mcp_RequestStorageMode_DYNAMIC_METADATA_AND_FILTER_STATE: "DYNAMIC_METADATA_AND_FILTER_STATE"
 
+// Source used to obtain MCP request attributes.
+#Mcp_AttributeSource: "BODY" | "VERIFY" | "HEADERS"
+
+Mcp_AttributeSource_BODY:    "BODY"
+Mcp_AttributeSource_VERIFY:  "VERIFY"
+Mcp_AttributeSource_HEADERS: "HEADERS"
+
 // This filter will inspect and get attributes from MCP traffic.
-// [#next-free-field: 9]
+// [#next-free-field: 12]
 #Mcp: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.mcp.v3.Mcp"
 	// Configures how the filter handles non-MCP traffic.
@@ -25,11 +33,11 @@ Mcp_RequestStorageMode_DYNAMIC_METADATA_AND_FILTER_STATE: "DYNAMIC_METADATA_AND_
 	// Defaults to false.
 	clear_route_cache?: bool
 	// Maximum size of the request body to buffer for JSON-RPC parsing.
-	// Only the first “max_request_body_size“ bytes are parsed for MCP attribute extraction.
+	// Only the first ``max_request_body_size`` bytes are parsed for MCP attribute extraction.
 	//
 	// When the body exceeds this limit:
-	// - In “PASS_THROUGH“ mode: the request is allowed through with an “is_exceeding_limit“ marker in the dynamic metadata, indicating that the MCP payload was only partially parsed.
-	// - In “REJECT_NO_MCP“ mode: the request is rejected with “400 Bad Request“ because the complete root JSON object must fit within the size limit.
+	// - In ``PASS_THROUGH`` mode: the request is allowed through with an ``is_exceeding_limit`` marker in the dynamic metadata, indicating that the MCP payload was only partially parsed.
+	// - In ``REJECT_NO_MCP`` mode: the request is rejected with ``400 Bad Request`` because the complete root JSON object must fit within the size limit.
 	//
 	// It defaults to 8KB (8192 bytes) and the maximum allowed value is 10MB (10485760 bytes).
 	//
@@ -43,23 +51,56 @@ Mcp_RequestStorageMode_DYNAMIC_METADATA_AND_FILTER_STATE: "DYNAMIC_METADATA_AND_
 	request_storage_mode?: #Mcp_RequestStorageMode
 	// If set, extract and validate W3C trace context from the MCP request body
 	// (params._meta.traceparent & params._meta.tracestate) and propagate it in HTTP headers
-	// “traceparent“ and “tracestate“ (respectively).
+	// ``traceparent`` and ``tracestate`` (respectively).
 	//
 	// The traceparent and tracestate fields are validated and propagated according to the spec at
-	// “https://www.w3.org/TR/trace-context/“.
+	// ``https://www.w3.org/TR/trace-context/``.
 	//
 	// If unset (default), do not extract or inject trace context.
 	propagate_trace_context?: #Mcp_TraceContextPropagationConfig
-	// Note that this is independent of “propagate_trace_context“.
+	// Note that this is independent of ``propagate_trace_context``.
 	// Also note that if this is set, the downstream request's baggage header will be overwritten if
 	// the MCP request body contains a valid baggage field.
 	//
 	// If unset (default), do not extract or inject baggage.
 	propagate_baggage?: #Mcp_BaggagePropagationConfig
-	// When true, reject requests that contain duplicate JSON keys at any
-	// nesting level. RFC 8259 Section 4 states that names within an object SHOULD be
-	// unique. Defaults to false (last-key-wins / last-win).
+	// When true, disallow requests that contain duplicate JSON keys at any
+	// nesting level. RFC 8259 Section 4 states that names within an object SHOULD
+	// be unique. Defaults to false (last-key-wins / last-win). If traffic mode is
+	// REJECT_NO_MCP, reject these requests; if PASS_THROUGH, log an error status
+	// but don't reject the request.
 	reject_duplicate_keys?: bool
+	// Controls whether MCP request attributes are obtained from the request body
+	// or from MCP request headers. Header-based extraction is limited to ``method``
+	// and the method-specific identifier carried by ``Mcp-Name``; other configured
+	// extraction rules still require body parsing.
+	attribute_source?: #Mcp_AttributeSource
+	// When true, stop parsing (and buffering) the request body as soon as all the
+	// required routing attributes for the request's method have been collected
+	// (for example ``method`` and ``params.name`` for ``tools/call``), even if
+	// optional attributes such as ``params._meta`` or the remainder of the body
+	// have not been parsed yet. This decouples routing from body size, so a large
+	// trailing payload (for example ``params.arguments``) does not need to be
+	// buffered at the proxy just to route the request.
+	//
+	// Early termination is intentionally skipped when it could change observable
+	// behavior, so it has no effect when any of the following holds:
+	//
+	// - ``reject_duplicate_keys`` is set (duplicate detection needs a full-body scan);
+	// - ``propagate_trace_context`` or ``propagate_baggage`` is set (both read
+	//   ``params._meta``, which may appear after the routing attributes);
+	// - ``attribute_source`` is not ``BODY``.
+	//
+	// Requests whose body arrives complete in a single chunk are unaffected, since
+	// the whole root object is observed before iteration continues.
+	//
+	// Defaults to false.
+	early_terminate_when_routable?: bool
+	// The latest MCP protocol revision supported by the filter.
+	//
+	// Requests using a known protocol revision newer than this value are rejected.
+	// When unset, no protocol-version restriction is applied.
+	max_supported_protocol_version?: string
 }
 
 // Parser configuration with method-specific rules.
@@ -77,14 +118,23 @@ Mcp_RequestStorageMode_DYNAMIC_METADATA_AND_FILTER_STATE: "DYNAMIC_METADATA_AND_
 }
 
 // Per-route override configuration for MCP filter
+// [#next-free-field: 7]
 #McpOverride: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.mcp.v3.McpOverride"
-	// Optional per-route traffic mode override
+	// Overrides the global traffic mode for this route.
 	traffic_mode?: #Mcp_TrafficMode
 	// Optional per-route max request body size override.
 	// When set, this overrides the global max_request_body_size for this route.
 	// It defaults to 8KB (8192 bytes) and the maximum allowed value is 10MB (10485760 bytes).
 	max_request_body_size?: uint32
+	// Overrides the global clear_route_cache setting for this route.
+	clear_route_cache?: bool
+	// Overrides the global parser config for this route.
+	parser_config?: #ParserConfig
+	// Overrides the global request storage mode for this route.
+	request_storage_mode?: #Mcp_RequestStorageMode
+	// Overrides the global reject_duplicate_keys setting for this route.
+	reject_duplicate_keys?: bool
 }
 
 #Mcp_TraceContextPropagationConfig: {

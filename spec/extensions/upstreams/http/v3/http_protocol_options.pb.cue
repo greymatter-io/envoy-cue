@@ -56,7 +56,7 @@ import (
 	common_http_protocol_options?: v3.#HttpProtocolOptions
 	// This contains common protocol options which are only applied upstream.
 	upstream_http_protocol_options?: v3.#UpstreamHttpProtocolOptions
-	// To explicitly configure either HTTP/1 or HTTP/2 (but not both!) use “explicit_http_config“.
+	// To explicitly configure either HTTP/1 or HTTP/2 (but not both!) use ``explicit_http_config``.
 	explicit_http_config?: #HttpProtocolOptions_ExplicitHttpConfig
 	// This allows switching on protocol based on what protocol the downstream
 	// connection used.
@@ -66,8 +66,8 @@ import (
 	// Optional HTTP filters for the upstream HTTP filter chain.
 	//
 	// .. note::
+	//   Upstream HTTP filters are currently in alpha.
 	//
-	//	Upstream HTTP filters are currently in alpha.
 	//
 	// These filters will be applied for all HTTP streams which flow through this
 	// cluster. Unlike downstream HTTP filters, they will *not* be applied to terminated CONNECT requests.
@@ -81,7 +81,7 @@ import (
 	// UHV is an extensible mechanism for checking validity of HTTP responses.
 	//
 	// [#comment:TODO(yanavlasov): Make it a link to the default header validator doc when it becomes visible.]
-	// Leaving this field unspecified, selects the default header validator “envoy.http.header_validators.envoy_default“.
+	// Leaving this field unspecified, selects the default header validator ``envoy.http.header_validators.envoy_default``.
 	//
 	// [#not-implemented-hide:]
 	// [#extension-category: envoy.http.header_validators]
@@ -93,8 +93,8 @@ import (
 	//
 	// .. note::
 	//
-	//	Mirroring will not be triggered if the :ref:`primary cluster
-	//	<envoy_v3_api_field_config.route.v3.RouteAction.cluster>` does not exist.
+	//   Mirroring will not be triggered if the :ref:`primary cluster
+	//   <envoy_v3_api_field_config.route.v3.RouteAction.cluster>` does not exist.
 	request_mirror_policies?: [...v32.#RouteAction_RequestMirrorPolicy]
 	// Specifies a list of hash policies for consistent hashing load balancing (e.g., Ring Hash or
 	// Maglev) for requests routed to this cluster. When configured, cluster-level policies override
@@ -106,9 +106,9 @@ import (
 	//
 	// .. note::
 	//
-	//	Hash policies are only effective when the cluster is configured with a hash-based load
-	//	balancing policy (e.g., :ref:`RING_HASH <envoy_v3_api_enum_value_config.cluster.v3.Cluster.LbPolicy.RING_HASH>`
-	//	or :ref:`MAGLEV <envoy_v3_api_enum_value_config.cluster.v3.Cluster.LbPolicy.MAGLEV>`).
+	//   Hash policies are only effective when the cluster is configured with a hash-based load
+	//   balancing policy (e.g., :ref:`RING_HASH <envoy_v3_api_enum_value_config.cluster.v3.Cluster.LbPolicy.RING_HASH>`
+	//   or :ref:`MAGLEV <envoy_v3_api_enum_value_config.cluster.v3.Cluster.LbPolicy.MAGLEV>`).
 	hash_policy?: [...v32.#RouteAction_HashPolicy]
 	// Specifies the retry policy for requests routed to this cluster. When configured,
 	// cluster-level retry policy overrides route-level retry policy. When not configured,
@@ -116,8 +116,8 @@ import (
 	//
 	// .. note::
 	//
-	//	Cluster-level retry policy will override route-level retry policy entirely. Policies are
-	//	not merged.
+	//   Cluster-level retry policy will override route-level retry policy entirely. Policies are
+	//   not merged.
 	retry_policy?: v32.#RetryPolicy
 }
 
@@ -127,10 +127,6 @@ import (
 	"@type":                 "type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions_ExplicitHttpConfig"
 	http_protocol_options?:  v3.#Http1ProtocolOptions
 	http2_protocol_options?: v3.#Http2ProtocolOptions
-	// .. warning::
-	//
-	//	QUIC upstream support is currently not ready for internet use.
-	//	Please see :ref:`here <arch_overview_http3>` for details.
 	http3_protocol_options?: v3.#Http3ProtocolOptions
 }
 
@@ -143,10 +139,6 @@ import (
 	"@type":                 "type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions_UseDownstreamHttpConfig"
 	http_protocol_options?:  v3.#Http1ProtocolOptions
 	http2_protocol_options?: v3.#Http2ProtocolOptions
-	// .. warning::
-	//
-	//	QUIC upstream support is currently not ready for internet use.
-	//	Please see :ref:`here <arch_overview_http3>` for details.
 	http3_protocol_options?: v3.#Http3ProtocolOptions
 }
 
@@ -164,15 +156,10 @@ import (
 	http_protocol_options?:  v3.#Http1ProtocolOptions
 	http2_protocol_options?: v3.#Http2ProtocolOptions
 	// Unlike HTTP/1 and HTTP/2, HTTP/3 will not be configured unless it is
-	// present, and (soon) only if there is an indication of server side
+	// present, and only if there is an indication of server side
 	// support.
 	// See :ref:`here <arch_overview_http3_upstream>` for more information on
 	// when HTTP/3 will be used, and when Envoy will fail over to TCP.
-	//
-	// .. warning::
-	//
-	//	QUIC upstream support is currently not ready for internet use.
-	//	Please see :ref:`here <arch_overview_http3>` for details.
 	http3_protocol_options?: v3.#Http3ProtocolOptions
 	// The presence of alternate protocols cache options causes the use of the
 	// alternate protocols cache, which is responsible for parsing and caching
@@ -180,8 +167,7 @@ import (
 	// advertise supporting it.
 	//
 	// .. note::
-	//
-	//	This is required when HTTP/3 is enabled.
+	//   This is required when HTTP/3 is enabled.
 	alternate_protocols_cache_options?: v3.#AlternateProtocolsCacheOptions
 }
 

@@ -34,15 +34,15 @@ SocketAddress_Protocol_UDP: "UDP"
 	"@type":   "type.googleapis.com/envoy.config.core.v3.SocketAddress"
 	protocol?: #SocketAddress_Protocol
 	// The address for this socket. :ref:`Listeners <config_listeners>` will bind
-	// to the address. An empty address is not allowed. Specify “0.0.0.0“ or “::“
+	// to the address. An empty address is not allowed. Specify ``0.0.0.0`` or ``::``
 	// to bind to any address. [#comment:TODO(zuercher) reinstate when implemented:
 	// It is possible to distinguish a Listener address via the prefix/suffix matching
 	// in :ref:`FilterChainMatch <envoy_v3_api_msg_config.listener.v3.FilterChainMatch>`.] When used
 	// within an upstream :ref:`BindConfig <envoy_v3_api_msg_config.core.v3.BindConfig>`, the address
 	// controls the source address of outbound connections. For :ref:`clusters
 	// <envoy_v3_api_msg_config.cluster.v3.Cluster>`, the cluster type determines whether the
-	// address must be an IP (“STATIC“ or “EDS“ clusters) or a hostname resolved by DNS
-	// (“STRICT_DNS“ or “LOGICAL_DNS“ clusters). Address resolution can be customized
+	// address must be an IP (``STATIC`` or ``EDS`` clusters) or a hostname resolved by DNS
+	// (``STRICT_DNS`` or ``LOGICAL_DNS`` clusters). Address resolution can be customized
 	// via :ref:`resolver_name <envoy_v3_api_field_config.core.v3.SocketAddress.resolver_name>`.
 	address?:    string
 	port_value?: uint32
@@ -54,24 +54,22 @@ SocketAddress_Protocol_UDP: "UDP"
 	// this is empty, a context dependent default applies. If the address is a concrete
 	// IP address, no resolution will occur. If address is a hostname this
 	// should be set for resolution other than DNS. Specifying a custom resolver with
-	// “STRICT_DNS“ or “LOGICAL_DNS“ will generate an error at runtime.
+	// ``STRICT_DNS`` or ``LOGICAL_DNS`` will generate an error at runtime.
 	resolver_name?: string
 	// When binding to an IPv6 address above, this enables `IPv4 compatibility
-	// <https://tools.ietf.org/html/rfc3493#page-11>`_. Binding to “::“ will
+	// <https://tools.ietf.org/html/rfc3493#page-11>`_. Binding to ``::`` will
 	// allow both IPv4 and IPv6 connections, with peer IPv4 addresses mapped into
-	// IPv6 space as “::FFFF:<IPv4-address>“.
+	// IPv6 space as ``::FFFF:<IPv4-address>``.
 	ipv4_compat?: bool
-	// Filepath that specifies the Linux network namespace this socket will be created in (see “man 7
-	// network_namespaces“). If this field is set, Envoy will create the socket in the specified
+	// Filepath that specifies the Linux network namespace this socket will be created in (see ``man 7
+	// network_namespaces``). If this field is set, Envoy will create the socket in the specified
 	// network namespace.
 	//
 	// .. note::
-	//
-	//	Setting this parameter requires Envoy to run with the ``CAP_NET_ADMIN`` capability.
+	//    Setting this parameter requires Envoy to run with the ``CAP_SYS_ADMIN`` capability.
 	//
 	// .. attention::
-	//
-	//	Network namespaces are only configurable on Linux. Otherwise, this field has no effect.
+	//     Network namespaces are only configurable on Linux. Otherwise, this field has no effect.
 	network_namespace_filepath?: string
 }
 
@@ -79,16 +77,16 @@ SocketAddress_Protocol_UDP: "UDP"
 	"@type": "type.googleapis.com/envoy.config.core.v3.TcpKeepalive"
 	// Maximum number of keepalive probes to send without response before deciding
 	// the connection is dead. Default is to use the OS level configuration (unless
-	// overridden, Linux defaults to 9.) Setting this to “0“ disables TCP keepalive.
+	// overridden, Linux defaults to 9.) Setting this to ``0`` disables TCP keepalive.
 	keepalive_probes?: uint32
 	// The number of seconds a connection needs to be idle before keep-alive probes
 	// start being sent. Default is to use the OS level configuration (unless
-	// overridden, Linux defaults to 7200s (i.e., 2 hours.) Setting this to “0“ disables
+	// overridden, Linux defaults to 7200s (i.e., 2 hours.) Setting this to ``0`` disables
 	// TCP keepalive.
 	keepalive_time?: uint32
 	// The number of seconds between keep-alive probes. Default is to use the OS
 	// level configuration (unless overridden, Linux defaults to 75s.) Setting this to
-	// “0“ disables TCP keepalive.
+	// ``0`` disables TCP keepalive.
 	keepalive_interval?: uint32
 }
 
@@ -106,23 +104,23 @@ SocketAddress_Protocol_UDP: "UDP"
 	socket_options?: #SocketOptionsOverride
 }
 
-// [#next-free-field: 7]
+// [#next-free-field: 8]
 #BindConfig: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.BindConfig"
 	// The address to bind to when creating a socket.
 	source_address?: #SocketAddress
-	// Whether to set the “IP_FREEBIND“ option when creating the socket. When this
+	// Whether to set the ``IP_FREEBIND`` option when creating the socket. When this
 	// flag is set to true, allows the :ref:`source_address
 	// <envoy_v3_api_field_config.core.v3.BindConfig.source_address>` to be an IP address
 	// that is not configured on the system running Envoy. When this flag is set
-	// to false, the option “IP_FREEBIND“ is disabled on the socket. When this
+	// to false, the option ``IP_FREEBIND`` is disabled on the socket. When this
 	// flag is not set (default), the socket is not modified, i.e. the option is
 	// neither enabled nor disabled.
 	freebind?: bool
 	// Additional socket options that may not be present in Envoy source code or
 	// precompiled binaries.
 	socket_options?: [...#SocketOption]
-	// Extra source addresses appended to the address specified in the “source_address“
+	// Extra source addresses appended to the address specified in the ``source_address``
 	// field. This enables to specify multiple source addresses.
 	// The source address selection is determined by :ref:`local_address_selector
 	// <envoy_v3_api_field_config.core.v3.BindConfig.local_address_selector>`.
@@ -137,6 +135,23 @@ SocketAddress_Protocol_UDP: "UDP"
 	// <envoy_v3_api_msg_config.upstream.local_address_selector.v3.DefaultLocalAddressSelector>`).
 	// [#extension-category: envoy.upstream.local_address_selector]
 	local_address_selector?: #TypedExtensionConfig
+	// If set to true, the :ref:`network_namespace_filepath
+	// <envoy_v3_api_field_config.core.v3.SocketAddress.network_namespace_filepath>` of every source
+	// address in this bind config is validated when the configuration is loaded, and the
+	// configuration is rejected if a referenced network namespace cannot be opened.
+	//
+	// By default no such validation is performed: a network namespace that does not exist when the
+	// configuration is loaded may be created later, before connections are actually established, so
+	// eager validation would wrongly reject such configurations. If a namespace is unavailable when
+	// a connection is created, the connection attempt fails gracefully.
+	//
+	// Listener addresses do not need an equivalent option: a listener creates and binds its socket
+	// in the configured network namespace when the listener configuration is loaded, so an
+	// unavailable namespace always rejects the listener configuration.
+	//
+	// .. attention::
+	//     Network namespaces are only configurable on Linux. Otherwise, this field has no effect.
+	validate_network_namespaces?: bool
 }
 
 // Addresses specify either a logical or physical address and port, which are
@@ -155,7 +170,7 @@ SocketAddress_Protocol_UDP: "UDP"
 // the subnet mask for a `CIDR <https://tools.ietf.org/html/rfc4632>`_ range.
 #CidrRange: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.CidrRange"
-	// IPv4 or IPv6 address, e.g. “192.0.0.0“ or “2001:db8::“.
+	// IPv4 or IPv6 address, e.g. ``192.0.0.0`` or ``2001:db8::``.
 	address_prefix?: string
 	// Length of prefix, e.g. 0, 32. Defaults to 0 when unset.
 	prefix_len?: uint32

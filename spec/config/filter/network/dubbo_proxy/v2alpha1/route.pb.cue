@@ -76,7 +76,7 @@ import (
 	//
 	// Examples:
 	//
-	//   - For range [-10,0), route will match for header value -1, but not for 0,
-	//     "somestring", 10.9, "-1somestring"
+	// * For range [-10,0), route will match for header value -1, but not for 0,
+	//   "somestring", 10.9, "-1somestring"
 	range_match?: _type.#Int64Range
 }

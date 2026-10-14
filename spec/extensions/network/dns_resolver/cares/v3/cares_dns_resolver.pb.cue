@@ -16,7 +16,7 @@ import (
 	// If true use the resolvers listed in the
 	// :ref:`resolvers <envoy_v3_api_field_extensions.network.dns_resolver.cares.v3.CaresDnsResolverConfig.resolvers>`
 	// field only if c-ares is unable to obtain a
-	// nameserver from the system (e.g., “/etc/resolv.conf“).
+	// nameserver from the system (e.g., ``/etc/resolv.conf``).
 	// Otherwise, the resolvers listed in the resolvers list will override the default system
 	// resolvers. Defaults to false.
 	use_resolvers_as_fallback?: bool
@@ -30,31 +30,31 @@ import (
 	// This option allows the number of UDP based DNS queries to be capped.
 	//
 	// .. note::
+	//   This is only applicable to c-ares DNS resolver currently.
 	//
-	//	This is only applicable to c-ares DNS resolver currently.
 	udp_max_queries?: uint32
 	// The number of seconds each name server is given to respond to a query on the first try of any given server.
 	//
 	// .. note::
+	//   While the c-ares library defaults to 2 seconds, Envoy's default (if this field is unset) is 5 seconds.
+	//   This adjustment was made to maintain the previous behavior after users reported an increase in DNS resolution times.
 	//
-	//	While the c-ares library defaults to 2 seconds, Envoy's default (if this field is unset) is 5 seconds.
-	//	This adjustment was made to maintain the previous behavior after users reported an increase in DNS resolution times.
 	query_timeout_seconds?: uint64
 	// The maximum number of query attempts the resolver will make before giving up.
 	// Each attempt may use a different name server.
 	//
 	// .. note::
+	//   While the c-ares library defaults to 3 attempts, Envoy's default (if this field is unset) is 4 attempts.
+	//   This adjustment was made to maintain the previous behavior after users reported an increase in DNS resolution times.
 	//
-	//	While the c-ares library defaults to 3 attempts, Envoy's default (if this field is unset) is 4 attempts.
-	//	This adjustment was made to maintain the previous behavior after users reported an increase in DNS resolution times.
 	query_tries?: uint32
 	// Enable round-robin selection of name servers for DNS resolution. When enabled, the resolver will cycle through the
 	// list of name servers for each resolution request. This can help distribute the query load across multiple name
 	// servers. If disabled (default), the resolver will try name servers in the order they are configured.
 	//
 	// .. note::
+	//   This setting overrides any system configuration for name server rotation.
 	//
-	//	This setting overrides any system configuration for name server rotation.
 	rotate_nameservers?: bool
 	// Maximum EDNS0 UDP payload size in bytes.
 	// If set, c-ares will include EDNS0 in DNS queries and use this value as the maximum UDP response size.
@@ -74,7 +74,7 @@ import (
 	//
 	// If not specified, no periodic refresh will be performed.
 	max_udp_channel_duration?: string
-	// If true, reinitialize the c-ares channel when a DNS query fails with “ARES_ETIMEOUT“.
+	// If true, reinitialize the c-ares channel when a DNS query fails with ``ARES_ETIMEOUT``.
 	//
 	// This can help recover from rare cases where the UDP sockets held by the c-ares
 	// channel become unusable after timeouts, causing subsequent queries to fail or
@@ -93,8 +93,7 @@ import (
 	// TTL provided in the DNS response, up to this maximum limit.
 	//
 	// .. note::
-	//
-	//	While the underlying c-ares library defaults to 1 hour, Envoy's default
-	//	for this field is 0, which disables the query cache entirely.
+	//   While the underlying c-ares library defaults to 1 hour, Envoy's default
+	//   for this field is 0, which disables the query cache entirely.
 	qcache_max_ttl?: uint32
 }

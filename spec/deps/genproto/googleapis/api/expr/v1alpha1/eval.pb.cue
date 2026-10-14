@@ -6,7 +6,7 @@ import (
 
 // The state of an evaluation.
 //
-// Can represent an inital, partial, or completed state of evaluation.
+// Can represent an initial, partial, or completed state of evaluation.
 #EvalState: {
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.EvalState"
 	// The unique values referenced in this message.
@@ -23,14 +23,14 @@ import (
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.ExprValue"
 	// A concrete value.
 	value?: #Value
-	// The set of errors in the critical path of evalution.
+	// The set of errors in the critical path of evaluation.
 	//
 	// Only errors in the critical path are included. For example,
 	// `(<error1> || true) && <error2>` will only result in `<error2>`,
 	// while `<error1> || <error2>` will result in both `<error1>` and
 	// `<error2>`.
 	//
-	// Errors cause by the presence of other errors are not included in the
+	// Errors caused by the presence of other errors are not included in the
 	// set. For example `<error1>.foo`, `foo(<error1>)`, and `<error1> + 1` will
 	// only result in `<error1>`.
 	//
@@ -54,13 +54,13 @@ import (
 	//	foo(<unknown[1]>) -> <unknown[1]>
 	//	<unknown[1]> + <unknown[2]> -> <unknown[1]> or <unknown[2[>
 	//
-	// Unknown takes precidence over Error in cases where a `Value` can short
+	// Unknown takes precedence over Error in cases where a `Value` can short
 	// circuit the result:
 	//
 	//	<error> || <unknown> -> <unknown>
 	//	<error> && <unknown> -> <unknown>
 	//
-	// Errors take precidence in all other cases:
+	// Errors take precedence in all other cases:
 	//
 	//	<unknown> + <error> -> <error>
 	//	foo(<unknown>, <error>) -> <error>
@@ -85,10 +85,10 @@ import (
 	exprs?: [...int64]
 }
 
-// A single evalution result.
+// A single evaluation result.
 #EvalState_Result: {
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.EvalState_Result"
-	// The id of the expression this result if for.
+	// The id of the expression this result is for.
 	expr?: int64
 	// The index in `values` of the resulting value.
 	value?: int64

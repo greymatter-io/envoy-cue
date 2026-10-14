@@ -7,7 +7,7 @@ import (
 	v32 "envoyproxy.io/envoy-cue/spec/config/route/v3"
 )
 
-// [#next-free-field: 6]
+// [#next-free-field: 7]
 #FaultAbort: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.fault.v3.FaultAbort"
 	// HTTP status code to use to abort the HTTP request.
@@ -19,6 +19,9 @@ import (
 	// The percentage of requests/operations/connections that will be aborted with the error code
 	// provided.
 	percentage?: v3.#FractionalPercent
+	// The response body to be returned when aborting the request.
+	// If not specified, defaults to "fault filter abort".
+	response_body?: string
 }
 
 // [#next-free-field: 17]
@@ -28,7 +31,7 @@ import (
 	// object.
 	delay?: v31.#FaultDelay
 	// If specified, the filter will abort requests based on the values in
-	// the object. At least “abort“ or “delay“ must be specified.
+	// the object. At least ``abort`` or ``delay`` must be specified.
 	abort?: #FaultAbort
 	// Specifies the name of the (destination) upstream cluster that the
 	// filter should match on. Fault injection will be restricted to requests
@@ -42,7 +45,7 @@ import (
 	// The filter will check the request's headers against all the specified
 	// headers in the filter config. A match will happen if all the headers in the
 	// config are present in the request with the same values (or based on
-	// presence if the “value“ field is not in the config).
+	// presence if the ``value`` field is not in the config).
 	headers?: [...v32.#HeaderMatcher]
 	// Faults are injected for the specified list of downstream hosts. If this
 	// setting is not set, faults are injected for all downstream nodes.
@@ -55,24 +58,22 @@ import (
 	// filter. Note that because this setting can be overridden at the route level, it's possible
 	// for the number of active faults to be greater than this value (if injected via a different
 	// route). If not specified, defaults to unlimited. This setting can be overridden via
-	// “runtime <config_http_filters_fault_injection_runtime>“ and any faults that are not injected
-	// due to overflow will be indicated via the “faults_overflow
-	// <config_http_filters_fault_injection_stats>“ stat.
+	// ``runtime <config_http_filters_fault_injection_runtime>`` and any faults that are not injected
+	// due to overflow will be indicated via the ``faults_overflow
+	// <config_http_filters_fault_injection_stats>`` stat.
 	//
 	// .. attention::
-	//
-	//	Like other :ref:`circuit breakers <arch_overview_circuit_break>` in Envoy, this is a fuzzy
-	//	limit. It's possible for the number of active faults to rise slightly above the configured
-	//	amount due to the implementation details.
+	//   Like other :ref:`circuit breakers <arch_overview_circuit_break>` in Envoy, this is a fuzzy
+	//   limit. It's possible for the number of active faults to rise slightly above the configured
+	//   amount due to the implementation details.
 	max_active_faults?: uint32
 	// The response rate limit to be applied to the response body of the stream. When configured,
 	// the percentage can be overridden by the :ref:`fault.http.rate_limit.response_percent
 	// <config_http_filters_fault_injection_runtime>` runtime key.
 	//
 	// .. attention::
-	//
-	//	This is a per-stream limit versus a connection level limit. This means that concurrent streams
-	//	will each get an independent limit.
+	//  This is a per-stream limit versus a connection level limit. This means that concurrent streams
+	//  will each get an independent limit.
 	response_rate_limit?: v31.#FaultRateLimit
 	// The runtime key to override the :ref:`default <config_http_filters_fault_injection_runtime>`
 	// runtime. The default is: fault.http.delay.fixed_delay_percent

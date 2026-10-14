@@ -21,7 +21,7 @@ import (
 	// If configured, the filter will buffer datagrams in case that it is waiting for a DNS response.
 	// If this field is not configured, there will be no buffering and downstream datagrams that arrive
 	// while the DNS resolution is in progress will be dropped. In case this field is set but the options
-	// are not configured, the default values will be applied as described in the “BufferOptions“.
+	// are not configured, the default values will be applied as described in the ``BufferOptions``.
 	buffer_options?: #FilterConfig_BufferOptions
 }
 

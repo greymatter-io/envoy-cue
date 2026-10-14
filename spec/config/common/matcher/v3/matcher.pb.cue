@@ -21,8 +21,8 @@ import (
 	matcher_list?: #Matcher_MatcherList
 	// A match tree to evaluate.
 	matcher_tree?: #Matcher_MatcherTree
-	// Optional “OnMatch“ to use if the matcher failed.
-	// If specified, the “OnMatch“ is used, and the matcher is considered
+	// Optional ``OnMatch`` to use if the matcher failed.
+	// If specified, the ``OnMatch`` is used, and the matcher is considered
 	// to have matched.
 	// If not specified, the matcher is considered not to have matched.
 	on_no_match?: #Matcher_OnMatch

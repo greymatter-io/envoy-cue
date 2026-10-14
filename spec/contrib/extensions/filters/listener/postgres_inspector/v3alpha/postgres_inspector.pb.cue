@@ -5,7 +5,7 @@ package v3alpha
 	// Enable extraction of connection metadata (user, database, application name) from
 	// the startup message. This metadata is made available for access logging and stats.
 	//
-	// Defaults to “true“.
+	// Defaults to ``true``.
 	enable_metadata_extraction?: bool
 	// The maximum size of the startup message that the postgres inspector will accept.
 	// Messages larger than this will be rejected. If not specified, defaults to 10KB.

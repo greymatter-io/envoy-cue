@@ -16,7 +16,8 @@ import (
 	//
 	// .. note::
 	//
-	//	When both ``rules`` and ``matcher`` are configured, ``rules`` will be ignored.
+	//   When both ``rules`` and ``matcher`` are configured, ``rules`` will be ignored.
+	//
 	rules?: v3.#RBAC
 	// If specified, rules will emit stats with the given prefix.
 	// This is useful for distinguishing metrics when multiple RBAC filters are configured.
@@ -25,13 +26,15 @@ import (
 	//
 	// * If absent, no RBAC enforcement occurs.
 	// * If set but empty, all requests are denied.
+	//
 	matcher?: v31.#Matcher
 	// Shadow policy for testing RBAC rules without enforcing them. These rules generate stats and logs but do not deny
 	// requests. If absent, no shadow RBAC policy will be applied.
 	//
 	// .. note::
 	//
-	//	When both ``shadow_rules`` and ``shadow_matcher`` are configured, ``shadow_rules`` will be ignored.
+	//   When both ``shadow_rules`` and ``shadow_matcher`` are configured, ``shadow_rules`` will be ignored.
+	//
 	shadow_rules?: v3.#RBAC
 	// If absent, no shadow matcher will be applied.
 	// Match tree for testing RBAC rules through stats and logs without enforcing them.
@@ -40,7 +43,7 @@ import (
 	// If specified, shadow rules will emit stats with the given prefix.
 	// This is useful for distinguishing metrics when multiple RBAC filters use shadow rules.
 	shadow_rules_stat_prefix?: string
-	// If “track_per_rule_stats“ is “true“, counters will be published for each rule and shadow rule.
+	// If ``track_per_rule_stats`` is ``true``, counters will be published for each rule and shadow rule.
 	track_per_rule_stats?: bool
 }
 

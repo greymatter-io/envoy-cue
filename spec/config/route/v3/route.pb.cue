@@ -4,7 +4,7 @@ import (
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
-// [#next-free-field: 19]
+// [#next-free-field: 20]
 #RouteConfiguration: {
 	"@type": "type.googleapis.com/envoy.config.route.v3.RouteConfiguration"
 	// The name of the route configuration. For example, it might match
@@ -15,10 +15,10 @@ import (
 	// An array of virtual hosts that make up the route table.
 	virtual_hosts?: [...#VirtualHost]
 	// An array of virtual hosts will be dynamically loaded via the VHDS API.
-	// Both “virtual_hosts“ and “vhds“ fields will be used when present. “virtual_hosts“ can be used
-	// for a base routing table or for infrequently changing virtual hosts. “vhds“ is used for
+	// Both ``virtual_hosts`` and ``vhds`` fields will be used when present. ``virtual_hosts`` can be used
+	// for a base routing table or for infrequently changing virtual hosts. ``vhds`` is used for
 	// on-demand discovery of virtual hosts. The contents of these two fields will be merged to
-	// generate a routing table for a given RouteConfiguration, with “vhds“ derived configuration
+	// generate a routing table for a given RouteConfiguration, with ``vhds`` derived configuration
 	// taking precedence.
 	vhds?: #Vhds
 	// Optionally specifies a list of HTTP headers that the connection manager
@@ -51,6 +51,7 @@ import (
 	// mutations may override earlier mutations.
 	// This order can be reversed by setting this field to true. In other words, most specific level mutation
 	// is evaluated last.
+	//
 	most_specific_header_mutations_wins?: bool
 	// An optional boolean that specifies whether the clusters that the route
 	// table refers to will be validated by the cluster manager. If set to true
@@ -72,14 +73,15 @@ import (
 	//
 	// .. warning::
 	//
-	//	Envoy currently holds the content of :ref:`direct response body
-	//	<envoy_v3_api_field_config.route.v3.DirectResponseAction.body>` in memory. Be careful setting
-	//	this to be larger than the default 4KB, since the allocated memory for direct response body
-	//	is not subject to data plane buffering controls.
+	//   Envoy currently holds the content of :ref:`direct response body
+	//   <envoy_v3_api_field_config.route.v3.DirectResponseAction.body>` in memory. Be careful setting
+	//   this to be larger than the default 4KB, since the allocated memory for direct response body
+	//   is not subject to data plane buffering controls.
+	//
 	max_direct_response_body_size_bytes?: uint32
 	// A list of plugins and their configurations which may be used by a
 	// :ref:`cluster specifier plugin name <envoy_v3_api_field_config.route.v3.RouteAction.cluster_specifier_plugin>`
-	// within the route. All “extension.name“ fields in this list must be unique.
+	// within the route. All ``extension.name`` fields in this list must be unique.
 	cluster_specifier_plugins?: [...#ClusterSpecifierPlugin]
 	// Specify a set of default request mirroring policies which apply to all routes under its virtual hosts.
 	// Note that policies are not merged, the most specific non-empty one becomes the mirror policies.
@@ -88,9 +90,8 @@ import (
 	// With this option enabled, Envoy will ignore the port number in the :authority header (if any) when picking VirtualHost.
 	//
 	// .. note::
-	//
-	//	This option will not strip the port number (if any) contained in route config
-	//	:ref:`envoy_v3_api_msg_config.route.v3.VirtualHost`.domains field.
+	//     This option will not strip the port number (if any) contained in route config
+	//     :ref:`envoy_v3_api_msg_config.route.v3.VirtualHost`.domains field.
 	ignore_port_in_host_matching?: bool
 	// Normally, virtual host matching is done using the :authority (or
 	// Host: in HTTP < 2) HTTP header. Setting this will instead, use a
@@ -114,8 +115,35 @@ import (
 	// about the route configuration. It can be used for configuration, stats, and logging.
 	// The metadata should go under the filter namespace that will need it.
 	// For instance, if the metadata is intended for the Router filter,
-	// the filter name should be specified as “envoy.filters.http.router“.
+	// the filter name should be specified as ``envoy.filters.http.router``.
 	metadata?: v3.#Metadata
+	// After the route matching has resolved a route for incoming request, the route specifiers
+	// are applied to the route to customize or monitor it and the output of the specifiers will be
+	// used as the final route by Envoy for the request. The specifiers here will not modify/affect
+	// the request attributes (e.g., headers, path) directly.
+	//
+	// Specifiers are executed in order, and the output of each is the input of the next. The route
+	// that comes out of the last one is the route Envoy uses for the request.
+	//
+	// Specifiers are configured at three levels. Specifiers in three levels will run in this order:
+	//
+	// 1. The ``route_specifiers`` of resolved
+	//    :ref:`route <envoy_v3_api_msg_config.route.v3.Route>`
+	// 2. The ``route_specifiers`` of resolved
+	//    :ref:`virtual host <envoy_v3_api_msg_config.route.v3.VirtualHost>`
+	// 3. The ``route_specifiers`` of
+	//    :ref:`route configuration <envoy_v3_api_msg_config.route.v3.RouteConfiguration>`.
+	//
+	// .. note::
+	//   If the route matching resolves no route, the route specifiers at the route configuration
+	//   and the virtual host levels will still be applied to null. This allows route specifiers to
+	//   optionally generate a valid route even when no route is resolved for the request.
+	//   Similarly, if the route matching resolves a valid route, the route specifiers may drop it
+	//   and return no route. Then Envoy will treat it as route not found and result in 404 response.
+	//
+	// See :ref:`route specifiers <config_http_conn_man_route_specifiers>` for more details.
+	// [#extension-category: envoy.router.route_specifiers]
+	route_specifiers?: [...v3.#TypedExtensionConfig]
 }
 
 #Vhds: {

@@ -29,12 +29,12 @@ SerializationFormat_PROTOBUF: "PROTOBUF"
 	emit_tags_as_labels?: bool
 	// Additional librdkafka producer configuration properties as key-value pairs.
 	// These are passed directly to librdkafka and can be used to configure
-	// compression (“compression.type“), authentication (“security.protocol“,
-	// “sasl.mechanism“, etc.), batching (“batch.num.messages“), and more.
+	// compression (``compression.type``), authentication (``security.protocol``,
+	// ``sasl.mechanism``, etc.), batching (``batch.num.messages``), and more.
 	// See https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md
 	producer_config?: [string]: string
 	// Maximum time in milliseconds to buffer messages before forcing a produce.
-	// Maps to librdkafka's “linger.ms“. If not set, defaults to 500ms.
+	// Maps to librdkafka's ``linger.ms``. If not set, defaults to 500ms.
 	buffer_flush_timeout_ms?: uint32
 	// Serialization format for metric messages produced to Kafka.
 	// Defaults to JSON.

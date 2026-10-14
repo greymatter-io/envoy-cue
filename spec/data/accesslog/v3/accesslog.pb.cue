@@ -84,9 +84,8 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	// This field is the remote/origin address on which the request from the user was received.
 	//
 	// .. note::
-	//
-	//	This may not be the actual peer address. For example, it might be derived from headers like ``x-forwarded-for``,
-	//	the proxy protocol, or similar sources.
+	//   This may not be the actual peer address. For example, it might be derived from headers like ``x-forwarded-for``,
+	//   the proxy protocol, or similar sources.
 	downstream_remote_address?: v3.#Address
 	// This field is the local/destination address on which the request from the user was received.
 	downstream_local_address?: v3.#Address
@@ -99,13 +98,13 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	// downstream byte received (i.e. time it takes to receive a request).
 	time_to_last_rx_byte?: string
 	// Interval between the first downstream byte received and the first upstream byte sent. There may
-	// be considerable delta between “time_to_last_rx_byte“ and this value due to filters.
-	// Additionally, the same caveats apply as documented in “time_to_last_downstream_tx_byte“ about
+	// be considerable delta between ``time_to_last_rx_byte`` and this value due to filters.
+	// Additionally, the same caveats apply as documented in ``time_to_last_downstream_tx_byte`` about
 	// not accounting for kernel socket buffer time, etc.
 	time_to_first_upstream_tx_byte?: string
 	// Interval between the first downstream byte received and the last upstream byte sent. There may
-	// by considerable delta between “time_to_last_rx_byte“ and this value due to filters.
-	// Additionally, the same caveats apply as documented in “time_to_last_downstream_tx_byte“ about
+	// by considerable delta between ``time_to_last_rx_byte`` and this value due to filters.
+	// Additionally, the same caveats apply as documented in ``time_to_last_downstream_tx_byte`` about
 	// not accounting for kernel socket buffer time, etc.
 	time_to_last_upstream_tx_byte?: string
 	// Interval between the first downstream byte received and the first upstream
@@ -115,13 +114,13 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	// byte received (i.e. time it takes to receive a complete response).
 	time_to_last_upstream_rx_byte?: string
 	// Interval between the first downstream byte received and the first downstream byte sent.
-	// There may be a considerable delta between the “time_to_first_upstream_rx_byte“ and this field
+	// There may be a considerable delta between the ``time_to_first_upstream_rx_byte`` and this field
 	// due to filters. Additionally, the same caveats apply as documented in
-	// “time_to_last_downstream_tx_byte“ about not accounting for kernel socket buffer time, etc.
+	// ``time_to_last_downstream_tx_byte`` about not accounting for kernel socket buffer time, etc.
 	time_to_first_downstream_tx_byte?: string
 	// Interval between the first downstream byte received and the last downstream byte sent.
 	// Depending on protocol, buffering, windowing, filters, etc. there may be a considerable delta
-	// between “time_to_last_upstream_rx_byte“ and this field. Note also that this is an approximate
+	// between ``time_to_last_upstream_rx_byte`` and this field. Note also that this is an approximate
 	// time. In the current implementation it does not include kernel socket buffer time. In the
 	// current implementation it also does not include send window buffering inside the HTTP/2 codec.
 	// In the future it is likely that work will be done to make this duration more accurate.
@@ -131,7 +130,7 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	upstream_remote_address?: v3.#Address
 	// The upstream local/origin address that handles this exchange. This does not include retries.
 	upstream_local_address?: v3.#Address
-	// The upstream cluster that “upstream_remote_address“ belongs to.
+	// The upstream cluster that ``upstream_remote_address`` belongs to.
 	upstream_cluster?: string
 	// Flags indicating occurrences during request/response processing.
 	response_flags?: #ResponseFlags
@@ -156,8 +155,8 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	// for example the x-forwarder-for header, proxy protocol, etc.
 	downstream_direct_remote_address?: v3.#Address
 	// Map of filter state in stream info that have been configured to be logged. If the filter
-	// state serialized to any message other than “google.protobuf.Any“ it will be packed into
-	// “google.protobuf.Any“.
+	// state serialized to any message other than ``google.protobuf.Any`` it will be packed into
+	// ``google.protobuf.Any``.
 	filter_state_objects?: [string]: _
 	// A list of custom tags, which annotate logs with additional information.
 	// To configure this value, see the documentation for
@@ -166,7 +165,7 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	// For HTTP: Total duration in milliseconds of the request from the start time to the last byte out.
 	// For TCP: Total duration in milliseconds of the downstream connection.
 	// This is the total duration of the request (i.e., when the request's ActiveStream is destroyed)
-	// and may be longer than “time_to_last_downstream_tx_byte“.
+	// and may be longer than ``time_to_last_downstream_tx_byte``.
 	duration?: string
 	// For HTTP: Number of times the request is attempted upstream. Note that the field is omitted when the request was never attempted upstream.
 	// For TCP: Number of times the connection request is attempted upstream. Note that the field is omitted when the connect request was never attempted upstream.
@@ -187,8 +186,8 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	//
 	// .. attention::
 	//
-	//	This field is deprecated in favor of ``access_log_type``, which provides a clearer indication of the log entry
-	//	type.
+	//   This field is deprecated in favor of ``access_log_type``, which provides a clearer indication of the log entry
+	//   type.
 	//
 	// Deprecated: Marked as deprecated in envoy/data/accesslog/v3/accesslog.proto.
 	intermediate_log_entry?: bool
@@ -211,7 +210,7 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	// The type of the access log, which indicates when the log was recorded.
 	// See :ref:`ACCESS_LOG_TYPE <config_access_log_format_access_log_type>` for the available values.
 	// In case the access log was recorded by a flow which does not correspond to one of the supported
-	// values, then the default value will be “NotSet“.
+	// values, then the default value will be ``NotSet``.
 	// For more information about how access log behaves and when it is being recorded,
 	// please refer to :ref:`access logging <arch_overview_access_logs>`.
 	access_log_type?: #AccessLogType
@@ -288,7 +287,7 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	tls_version?: #TLSProperties_TLSVersion
 	// TLS cipher suite negotiated during handshake. The value is a
 	// four-digit hex code defined by the IANA TLS Cipher Suite Registry
-	// (e.g. “009C“ for “TLS_RSA_WITH_AES_128_GCM_SHA256“).
+	// (e.g. ``009C`` for ``TLS_RSA_WITH_AES_128_GCM_SHA256``).
 	//
 	// Here it is expressed as an integer.
 	tls_cipher_suite?: uint32
@@ -300,7 +299,7 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	peer_certificate_properties?: #TLSProperties_CertificateProperties
 	// The TLS session ID.
 	tls_session_id?: string
-	// The “JA3“ fingerprint when “JA3“ fingerprinting is enabled.
+	// The ``JA3`` fingerprint when ``JA3`` fingerprinting is enabled.
 	ja3_fingerprint?: string
 }
 
@@ -311,26 +310,26 @@ TLSProperties_TLSVersion_TLSv1_3:             "TLSv1_3"
 	request_method?: v3.#RequestMethod
 	// The scheme portion of the incoming request URI.
 	scheme?: string
-	// HTTP/2 “:authority“ or HTTP/1.1 “Host“ header value.
+	// HTTP/2 ``:authority`` or HTTP/1.1 ``Host`` header value.
 	authority?: string
 	// The port of the incoming request URI
 	// (unused currently, as port is composed onto authority).
 	port?: uint32
 	// The path portion from the incoming request URI.
 	path?: string
-	// Value of the “User-Agent“ request header.
+	// Value of the ``User-Agent`` request header.
 	user_agent?: string
-	// Value of the “Referer“ request header.
+	// Value of the ``Referer`` request header.
 	referer?: string
-	// Value of the “X-Forwarded-For“ request header.
+	// Value of the ``X-Forwarded-For`` request header.
 	forwarded_for?: string
-	// Value of the “X-Request-Id“ request header
+	// Value of the ``X-Request-Id`` request header
 	//
 	// This header is used by Envoy to uniquely identify a request.
 	// It will be generated for all external requests and internal requests that
 	// do not already have a request ID.
 	request_id?: string
-	// Value of the “x-envoy-original-path“ request header.
+	// Value of the ``x-envoy-original-path`` request header.
 	original_path?: string
 	// Size of the HTTP request headers in bytes.
 	//

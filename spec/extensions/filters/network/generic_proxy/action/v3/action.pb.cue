@@ -32,9 +32,8 @@ import (
 	// Specifies the retry policy for the route. If not specified, then no retries will be performed.
 	//
 	// .. note::
-	//
-	//	Only simplest retry policy is supported and only ``num_retries`` field is used for generic
-	//	proxy. The default value for ``num_retries`` is 1 means that the request will be tried once
-	//	and no additional retries will be performed.
+	//   Only simplest retry policy is supported and only ``num_retries`` field is used for generic
+	//   proxy. The default value for ``num_retries`` is 1 means that the request will be tried once
+	//   and no additional retries will be performed.
 	retry_policy?: v3.#RetryPolicy
 }

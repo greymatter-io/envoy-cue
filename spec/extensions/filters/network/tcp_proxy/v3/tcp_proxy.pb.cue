@@ -41,17 +41,16 @@ ProxyProtocolTlvMergePolicy_APPEND_IF_EXISTS_OR_ADD:            "APPEND_IF_EXIST
 	on_demand?: #TcpProxy_OnDemand
 	// Optional endpoint metadata match criteria used by the subset load balancer. Only endpoints
 	// in the upstream cluster with metadata matching what is set in this field will be considered
-	// for load balancing. The filter name should be specified as “envoy.lb“.
+	// for load balancing. The filter name should be specified as ``envoy.lb``.
 	metadata_match?: v3.#Metadata
 	// The idle timeout for connections managed by the TCP proxy filter. The idle timeout is defined as the
 	// period in which there are no bytes sent or received on either the upstream or downstream connection.
-	// If not set, the default idle timeout is 1 hour. If set to “0s“, the timeout is disabled.
+	// If not set, the default idle timeout is 1 hour. If set to ``0s``, the timeout is disabled.
 	// It is possible to dynamically override this configuration by setting a per-connection filter state
-	// object for the key “envoy.tcp_proxy.per_connection_idle_timeout_ms“.
+	// object for the key ``envoy.tcp_proxy.per_connection_idle_timeout_ms``.
 	//
 	// .. warning::
-	//
-	//	Disabling this timeout is likely to yield connection leaks due to lost TCP FIN packets, etc.
+	//   Disabling this timeout is likely to yield connection leaks due to lost TCP FIN packets, etc.
 	idle_timeout?: string
 	// [#not-implemented-hide:] The idle timeout for connections managed by the TCP proxy
 	// filter. The idle timeout is defined as the period in which there is no
@@ -76,15 +75,15 @@ ProxyProtocolTlvMergePolicy_APPEND_IF_EXISTS_OR_ADD:            "APPEND_IF_EXIST
 	// If set, this configures tunneling, for example configuration options to tunnel TCP payload over
 	// HTTP CONNECT. If this message is absent, the payload is proxied upstream as usual.
 	// It is possible to dynamically override this configuration and disable tunneling per connection by
-	// setting a per-connection filter state object for the key “envoy.tcp_proxy.disable_tunneling“.
+	// setting a per-connection filter state object for the key ``envoy.tcp_proxy.disable_tunneling``.
 	tunneling_config?: #TcpProxy_TunnelingConfig
 	// The maximum duration of a connection. The duration is defined as the period since a connection was
-	// established. If not set, there is no maximum duration. When “max_downstream_connection_duration“ is
-	// reached, the connection is closed. The duration must be at least “1ms“.
+	// established. If not set, there is no maximum duration. When ``max_downstream_connection_duration`` is
+	// reached, the connection is closed. The duration must be at least ``1ms``.
 	max_downstream_connection_duration?: string
-	// Percentage-based jitter for “max_downstream_connection_duration“. The jitter increases the
-	// “max_downstream_connection_duration“ by a random duration up to the provided percentage.
-	// This field is ignored if “max_downstream_connection_duration“ is not set. If not set, no jitter
+	// Percentage-based jitter for ``max_downstream_connection_duration``. The jitter increases the
+	// ``max_downstream_connection_duration`` by a random duration up to the provided percentage.
+	// This field is ignored if ``max_downstream_connection_duration`` is not set. If not set, no jitter
 	// is added.
 	max_downstream_connection_duration_jitter_percentage?: v32.#Percent
 	// If both this field and :ref:`access_log_flush_interval
@@ -92,10 +91,9 @@ ProxyProtocolTlvMergePolicy_APPEND_IF_EXISTS_OR_ADD:            "APPEND_IF_EXIST
 	// are specified, the former (deprecated field) is ignored.
 	//
 	// .. attention::
-	//
-	//	This field is deprecated in favor of
-	//	:ref:`access_log_flush_interval
-	//	<envoy_v3_api_field_extensions.filters.network.tcp_proxy.v3.TcpProxy.TcpAccessLogOptions.access_log_flush_interval>`.
+	//   This field is deprecated in favor of
+	//   :ref:`access_log_flush_interval
+	//   <envoy_v3_api_field_extensions.filters.network.tcp_proxy.v3.TcpProxy.TcpAccessLogOptions.access_log_flush_interval>`.
 	//
 	// Deprecated: Marked as deprecated in envoy/extensions/filters/network/tcp_proxy/v3/tcp_proxy.proto.
 	access_log_flush_interval?: string
@@ -104,10 +102,9 @@ ProxyProtocolTlvMergePolicy_APPEND_IF_EXISTS_OR_ADD:            "APPEND_IF_EXIST
 	// are specified, the former (deprecated field) is ignored.
 	//
 	// .. attention::
-	//
-	//	This field is deprecated in favor of
-	//	:ref:`flush_access_log_on_connected
-	//	<envoy_v3_api_field_extensions.filters.network.tcp_proxy.v3.TcpProxy.TcpAccessLogOptions.flush_access_log_on_connected>`.
+	//   This field is deprecated in favor of
+	//   :ref:`flush_access_log_on_connected
+	//   <envoy_v3_api_field_extensions.filters.network.tcp_proxy.v3.TcpProxy.TcpAccessLogOptions.flush_access_log_on_connected>`.
 	//
 	// Deprecated: Marked as deprecated in envoy/extensions/filters/network/tcp_proxy/v3/tcp_proxy.proto.
 	flush_access_log_on_connected?: bool
@@ -115,26 +112,24 @@ ProxyProtocolTlvMergePolicy_APPEND_IF_EXISTS_OR_ADD:            "APPEND_IF_EXIST
 	access_log_options?: #TcpProxy_TcpAccessLogOptions
 	// TLVs to add to the PROXY protocol header sent upstream. Behavior when PROXY protocol
 	// state already exists (e.g., downstream TLVs from proxy_protocol listener filter) is
-	// controlled by “proxy_protocol_tlv_merge_policy“.
+	// controlled by ``proxy_protocol_tlv_merge_policy``.
 	//
 	// .. note::
-	//
-	//	To ensure the TLVs are allowed upstream, configure passthrough TLVs on the upstream
-	//	proxy protocol transport. See :ref:`core.v3.ProxyProtocolConfig.pass_through_tlvs
-	//	<envoy_v3_api_field_config.core.v3.ProxyProtocolConfig.pass_through_tlvs>` for details.
+	//   To ensure the TLVs are allowed upstream, configure passthrough TLVs on the upstream
+	//   proxy protocol transport. See :ref:`core.v3.ProxyProtocolConfig.pass_through_tlvs
+	//   <envoy_v3_api_field_config.core.v3.ProxyProtocolConfig.pass_through_tlvs>` for details.
 	proxy_protocol_tlvs?: [...v3.#TlvEntry]
-	// Specifies how TLVs in “proxy_protocol_tlvs“ are merged with existing PROXY protocol state
+	// Specifies how TLVs in ``proxy_protocol_tlvs`` are merged with existing PROXY protocol state
 	// (e.g., downstream TLVs from the proxy_protocol listener filter). See
 	// :ref:`ProxyProtocolTlvMergePolicy
 	// <envoy_v3_api_enum_extensions.filters.network.tcp_proxy.v3.ProxyProtocolTlvMergePolicy>`.
 	proxy_protocol_tlv_merge_policy?: #ProxyProtocolTlvMergePolicy
 	// Specifies when to establish the upstream connection.
 	//
-	// When not specified, defaults to “IMMEDIATE“ for backward compatibility.
+	// When not specified, defaults to ``IMMEDIATE`` for backward compatibility.
 	//
 	// .. attention::
-	//
-	//	Server-first protocols (e.g., SMTP, MySQL, POP3) require ``IMMEDIATE`` mode.
+	//   Server-first protocols (e.g., SMTP, MySQL, POP3) require ``IMMEDIATE`` mode.
 	upstream_connect_mode?: #UpstreamConnectMode
 	// Maximum bytes of early data to buffer from the downstream connection before
 	// the upstream connection is established.
@@ -142,21 +137,20 @@ ProxyProtocolTlvMergePolicy_APPEND_IF_EXISTS_OR_ADD:            "APPEND_IF_EXIST
 	// If not set, the TCP proxy will read-disable the downstream connection until the
 	// upstream connection is established (legacy behavior).
 	//
-	// If set, enables “receive_before_connect“ mode where the filter allows the filter
+	// If set, enables ``receive_before_connect`` mode where the filter allows the filter
 	// chain to read downstream data before the upstream connection exists. The data is
 	// buffered and forwarded once the upstream connection is ready. When the buffer exceeds
 	// this limit, the downstream connection is read-disabled to prevent excessive memory usage.
 	//
-	// This field is required when “upstream_connect_mode“ is not “IMMEDIATE“.
+	// This field is required when ``upstream_connect_mode`` is not ``IMMEDIATE``.
 	//
 	// .. note::
-	//
-	//	Use this carefully with server-first protocols. The upstream may send data before
-	//	receiving anything from downstream, which could fill the early data buffer.
+	//   Use this carefully with server-first protocols. The upstream may send data before
+	//   receiving anything from downstream, which could fill the early data buffer.
 	max_early_data_bytes?: uint32
-	// If set to “true“, the TCP proxy checks if the downstream connection was marked as drained
+	// If set to ``true``, the TCP proxy checks if the downstream connection was marked as drained
 	// after each read or write. When drain close is requested for the listener's traffic direction,
-	// the downstream connection is closed with “FlushWrite“.
+	// the downstream connection is closed with ``FlushWrite``.
 	//
 	// This is disabled by default for backward compatibility.
 	check_drain_close?: bool
@@ -183,35 +177,36 @@ ProxyProtocolTlvMergePolicy_APPEND_IF_EXISTS_OR_ADD:            "APPEND_IF_EXIST
 	//
 	// .. code-block:: yaml
 	//
-	//	tunneling_config:
-	//	  hostname: "%REQUESTED_SERVER_NAME%:443"
+	//    tunneling_config:
+	//      hostname: "%REQUESTED_SERVER_NAME%:443"
 	//
 	// For example, dynamically set the hostname using dynamic metadata:
 	//
 	// .. code-block:: yaml
 	//
-	//	tunneling_config:
-	//	  hostname: "%DYNAMIC_METADATA(tunnel:address)%"
+	//    tunneling_config:
+	//      hostname: "%DYNAMIC_METADATA(tunnel:address)%"
+	//
 	hostname?: string
-	// Use the “POST“ method instead of the “CONNECT“ method to tunnel the TCP stream.
-	// The “protocol: bytestream“ header is not set for HTTP/2 to comply with the specification.
+	// Use the ``POST`` method instead of the ``CONNECT`` method to tunnel the TCP stream.
+	// The ``protocol: bytestream`` header is not set for HTTP/2 to comply with the specification.
 	//
 	// The upstream proxy is expected to interpret the POST payload as raw TCP.
 	use_post?: bool
 	// Additional request headers to send to the upstream proxy. This is mainly used to
 	// trigger the upstream to convert POST requests back to CONNECT requests.
 	//
-	// Neither “:“-prefixed pseudo-headers like “:path“ nor the “host“ header can be overridden.
+	// Neither ``:``-prefixed pseudo-headers like ``:path`` nor the ``host`` header can be overridden.
 	headers_to_add?: [...v3.#HeaderValueOption]
 	// Save response headers to the downstream connection's filter state for consumption
-	// by network filters. The filter state key is “envoy.tcp_proxy.propagate_response_headers“.
+	// by network filters. The filter state key is ``envoy.tcp_proxy.propagate_response_headers``.
 	propagate_response_headers?: bool
-	// The path used with the POST method. The default path is “/“. If this field is specified and
+	// The path used with the POST method. The default path is ``/``. If this field is specified and
 	// :ref:`use_post field <envoy_v3_api_field_extensions.filters.network.tcp_proxy.v3.TcpProxy.TunnelingConfig.use_post>`
-	// is not set to “true“, the configuration will be rejected.
+	// is not set to ``true``, the configuration will be rejected.
 	post_path?: string
 	// Save response trailers to the downstream connection's filter state for consumption
-	// by network filters. The filter state key is “envoy.tcp_proxy.propagate_response_trailers“.
+	// by network filters. The filter state key is ``envoy.tcp_proxy.propagate_response_trailers``.
 	propagate_response_trailers?: bool
 	// The configuration of the request ID extension used for generation, validation, and
 	// associated tracing operations when tunneling.
@@ -220,31 +215,30 @@ ProxyProtocolTlvMergePolicy_APPEND_IF_EXISTS_OR_ADD:            "APPEND_IF_EXIST
 	// this field is not set, no request ID is generated.
 	//
 	// When a request ID is generated, it is also stored in the downstream connection's
-	// dynamic metadata under the namespace “envoy.filters.network.tcp_proxy“ with the key
-	// “tunnel_request_id“ to allow emission from TCP proxy access logs via the
-	// “%DYNAMIC_METADATA(envoy.filters.network.tcp_proxy:tunnel_request_id)%“ formatter.
+	// dynamic metadata under the namespace ``envoy.filters.network.tcp_proxy`` with the key
+	// ``tunnel_request_id`` to allow emission from TCP proxy access logs via the
+	// ``%DYNAMIC_METADATA(envoy.filters.network.tcp_proxy:tunnel_request_id)%`` formatter.
 	// [#extension-category: envoy.request_id]
 	request_id_extension?: v33.#RequestIDExtension
 	// The request header name to use for emitting the generated request ID on the tunneling
 	// HTTP request.
 	//
-	// If not specified or set to an empty string, the default header name “x-request-id“ is
+	// If not specified or set to an empty string, the default header name ``x-request-id`` is
 	// used.
 	//
 	// .. note::
-	//
-	//	This setting does not alter the internal request ID handling elsewhere in Envoy and
-	//	only controls the header emitted on the tunneling request.
+	//   This setting does not alter the internal request ID handling elsewhere in Envoy and
+	//   only controls the header emitted on the tunneling request.
 	request_id_header?: string
 	// The dynamic metadata key to use when storing the generated request ID. The metadata is
-	// stored under the namespace “envoy.filters.network.tcp_proxy“.
+	// stored under the namespace ``envoy.filters.network.tcp_proxy``.
 	//
-	// If not specified or set to an empty string, the default key “tunnel_request_id“ is used.
+	// If not specified or set to an empty string, the default key ``tunnel_request_id`` is used.
 	// This enables customizing the key used by access log formatters such as
-	// “%DYNAMIC_METADATA(envoy.filters.network.tcp_proxy:<key>)%“.
+	// ``%DYNAMIC_METADATA(envoy.filters.network.tcp_proxy:<key>)%``.
 	request_id_metadata_key?: string
 	// Specifies a collection of Formatter plugins that can be used in substitution formatters
-	// in “headers_to_add“.
+	// in ``headers_to_add``.
 	// See the formatters extensions documentation for details.
 	// [#extension-category: envoy.formatter]
 	formatters?: [...v3.#TypedExtensionConfig]
@@ -273,10 +267,10 @@ ProxyProtocolTlvMergePolicy_APPEND_IF_EXISTS_OR_ADD:            "APPEND_IF_EXIST
 	// specified interval.
 	// The interval must be at least 1ms.
 	access_log_flush_interval?: string
-	// If set to “true“, the access log is flushed when the TCP proxy successfully establishes a
+	// If set to ``true``, the access log is flushed when the TCP proxy successfully establishes a
 	// connection with the upstream. If the connection fails, the access log is not flushed.
 	flush_access_log_on_connected?: bool
-	// If set to “true“, the access log is flushed when the TCP proxy accepts a connection.
+	// If set to ``true``, the access log is flushed when the TCP proxy accepts a connection.
 	flush_access_log_on_start?: bool
 }
 
@@ -293,6 +287,6 @@ ProxyProtocolTlvMergePolicy_APPEND_IF_EXISTS_OR_ADD:            "APPEND_IF_EXIST
 	// for load balancing. Note that this will be merged with what's provided in
 	// :ref:`TcpProxy.metadata_match
 	// <envoy_v3_api_field_extensions.filters.network.tcp_proxy.v3.TcpProxy.metadata_match>`, with values
-	// here taking precedence. The filter name should be specified as “envoy.lb“.
+	// here taking precedence. The filter name should be specified as ``envoy.lb``.
 	metadata_match?: v3.#Metadata
 }

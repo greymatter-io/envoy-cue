@@ -2,6 +2,7 @@ package v3
 
 import (
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
+	v31 "envoyproxy.io/envoy-cue/spec/type/matcher/v3"
 )
 
 // [#next-free-field: 10]
@@ -12,40 +13,41 @@ import (
 	// Deprecated: Marked as deprecated in envoy/extensions/filters/http/compressor/v3/compressor.proto.
 	content_length?: uint32
 	// Set of strings that allows specifying which mime-types yield compression; e.g.,
-	// “application/json“, “text/html“, etc.
+	// ``application/json``, ``text/html``, etc.
 	//
 	// When this field is not specified, compression will be applied to these following mime-types
 	// and their synonyms:
 	//
-	// * “application/javascript“
-	// * “application/json“
-	// * “application/xhtml+xml“
-	// * “image/svg+xml“
-	// * “text/css“
-	// * “text/html“
-	// * “text/plain“
-	// * “text/xml“
+	// * ``application/javascript``
+	// * ``application/json``
+	// * ``application/xhtml+xml``
+	// * ``image/svg+xml``
+	// * ``text/css``
+	// * ``text/html``
+	// * ``text/plain``
+	// * ``text/xml``
+	//
 	//
 	// Deprecated: Marked as deprecated in envoy/extensions/filters/http/compressor/v3/compressor.proto.
 	content_type?: [...string]
-	// When this field is “true“, disables compression when the response contains an “ETag“ header.
-	// When this field is “false“, the filter will preserve weak “ETag“ values and remove those that
+	// When this field is ``true``, disables compression when the response contains an ``ETag`` header.
+	// When this field is ``false``, the filter will preserve weak ``ETag`` values and remove those that
 	// require strong validation.
 	//
 	// Deprecated: Marked as deprecated in envoy/extensions/filters/http/compressor/v3/compressor.proto.
 	disable_on_etag_header?: bool
-	// When this field is “true“, removes “Accept-Encoding“ from the request headers before dispatching
+	// When this field is ``true``, removes ``Accept-Encoding`` from the request headers before dispatching
 	// the request to the upstream so that responses do not get compressed before reaching the filter.
 	//
 	// .. attention::
 	//
-	//	To avoid interfering with other compression filters in the same chain, use this option in
-	//	the filter closest to the upstream.
+	//    To avoid interfering with other compression filters in the same chain, use this option in
+	//    the filter closest to the upstream.
 	//
 	// Deprecated: Marked as deprecated in envoy/extensions/filters/http/compressor/v3/compressor.proto.
 	remove_accept_encoding_header?: bool
-	// Runtime flag that controls whether the filter is enabled. When this field is “false“, the
-	// filter will operate as a pass-through filter, unless overridden by “CompressorPerRoute“.
+	// Runtime flag that controls whether the filter is enabled. When this field is ``false``, the
+	// filter will operate as a pass-through filter, unless overridden by ``CompressorPerRoute``.
 	// If this field is not specified, the filter is enabled by default.
 	//
 	// Deprecated: Marked as deprecated in envoy/extensions/filters/http/compressor/v3/compressor.proto.
@@ -59,17 +61,17 @@ import (
 	//
 	// .. attention::
 	//
-	//	When this field is set, duplicate deprecated fields of the ``Compressor`` message,
-	//	such as ``content_length``, ``content_type``, ``disable_on_etag_header``,
-	//	``remove_accept_encoding_header``, and ``runtime_enabled``, are ignored.
+	//    When this field is set, duplicate deprecated fields of the ``Compressor`` message,
+	//    such as ``content_length``, ``content_type``, ``disable_on_etag_header``,
+	//    ``remove_accept_encoding_header``, and ``runtime_enabled``, are ignored.
 	//
-	//	Additionally, all statistics related to response compression will be rooted in
-	//	``<stat_prefix>.compressor.<compressor_library.name>.<compressor_library_stat_prefix>.response.*``
-	//	instead of
-	//	``<stat_prefix>.compressor.<compressor_library.name>.<compressor_library_stat_prefix>.*``.
+	//    Additionally, all statistics related to response compression will be rooted in
+	//    ``<stat_prefix>.compressor.<compressor_library.name>.<compressor_library_stat_prefix>.response.*``
+	//    instead of
+	//    ``<stat_prefix>.compressor.<compressor_library.name>.<compressor_library_stat_prefix>.*``.
 	response_direction_config?: #Compressor_ResponseDirectionConfig
-	// When this field is “true“, this compressor is preferred when q-values in “Accept-Encoding“ are equal.
-	// If multiple compressor filters set “choose_first“ to “true“, the last one in the filter chain is chosen.
+	// When this field is ``true``, this compressor is preferred when q-values in ``Accept-Encoding`` are equal.
+	// If multiple compressor filters set ``choose_first`` to ``true``, the last one in the filter chain is chosen.
 	choose_first?: bool
 }
 
@@ -90,44 +92,57 @@ import (
 	// If present, response compression is enabled.
 	response_direction_config?: #ResponseDirectionOverrides
 	// A compressor library to use for compression. If specified, this overrides
-	// the filter-level “compressor_library“ configuration for this route.
+	// the filter-level ``compressor_library`` configuration for this route.
 	compressor_library?: v3.#TypedExtensionConfig
 }
 
 #CompressorPerRoute: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.compressor.v3.CompressorPerRoute"
 	// If set, the filter will operate as a pass-through filter.
-	// Overrides “Compressor.runtime_enabled“ and “CommonDirectionConfig.enabled“.
+	// Overrides ``Compressor.runtime_enabled`` and ``CommonDirectionConfig.enabled``.
 	disabled?: bool
-	// Per-route overrides. Fields set here will override corresponding fields in “Compressor“.
+	// Per-route overrides. Fields set here will override corresponding fields in ``Compressor``.
 	overrides?: #CompressorOverrides
 }
 
 #Compressor_CommonDirectionConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.compressor.v3.Compressor_CommonDirectionConfig"
 	// Runtime flag that controls whether compression is enabled for the direction this
-	// common config is applied to. When this field is “false“, the filter will operate as a
-	// pass-through filter in the chosen direction, unless overridden by “CompressorPerRoute“.
+	// common config is applied to. When this field is ``false``, the filter will operate as a
+	// pass-through filter in the chosen direction, unless overridden by ``CompressorPerRoute``.
 	// If this field is not specified, the filter will be enabled.
 	enabled?: v3.#RuntimeFeatureFlag
-	// Minimum value of the “Content-Length“ header in request or response messages (depending on the
+	// Minimum value of the ``Content-Length`` header in request or response messages (depending on the
 	// direction this common config is applied to), in bytes, that will trigger compression. Defaults to 30.
 	min_content_length?: uint32
+	//    Using ``content_type`` is deprecated. Use ``content_type_matcher`` instead.
+	//
 	// Set of strings that allows specifying which mime-types yield compression; e.g.,
-	// “application/json“, “text/html“, etc.
+	// ``application/json``, ``text/html``, etc.
 	//
 	// When this field is not specified, compression will be applied to these following mime-types
 	// and their synonyms:
 	//
-	// * “application/javascript“
-	// * “application/json“
-	// * “application/xhtml+xml“
-	// * “image/svg+xml“
-	// * “text/css“
-	// * “text/html“
-	// * “text/plain“
-	// * “text/xml“
+	// * ``application/javascript``
+	// * ``application/json``
+	// * ``application/xhtml+xml``
+	// * ``image/svg+xml``
+	// * ``text/css``
+	// * ``text/html``
+	// * ``text/plain``
+	// * ``text/xml``
+	//
+	//
+	// Deprecated: Marked as deprecated in envoy/extensions/filters/http/compressor/v3/compressor.proto.
 	content_type?: [...string]
+	// Allows specifying which content types yield compression using
+	// envoy.type.matcher.v3.StringMatcher.
+	//
+	// When this field is specified, the default content type list is not used.
+	// If both ``content_type`` and ``content_type_matcher`` are specified,
+	// ``content_type_matcher`` takes precedence and the deprecated ``content_type``
+	// field is ignored.
+	content_type_matcher?: [...v31.#StringMatcher]
 }
 
 // Configuration for filter behavior on the request direction.
@@ -141,37 +156,37 @@ import (
 #Compressor_ResponseDirectionConfig: {
 	"@type":        "type.googleapis.com/envoy.extensions.filters.http.compressor.v3.Compressor_ResponseDirectionConfig"
 	common_config?: #Compressor_CommonDirectionConfig
-	// When this field is “true“, disables compression when the response contains an “ETag“ header.
-	// When this field is “false“, the filter will preserve weak “ETag“ values and remove those that
-	// require strong validation (unless “weaken_etag_on_compress“ is set).
-	// When both “disable_on_etag_header“ and “weaken_etag_on_compress“ are “true“,
-	// “weaken_etag_on_compress“ takes precedence (compression is applied and the ETag is weakened).
+	// When this field is ``true``, disables compression when the response contains an ``ETag`` header.
+	// When this field is ``false``, the filter will preserve weak ``ETag`` values and remove those that
+	// require strong validation (unless ``weaken_etag_on_compress`` is set).
+	// When both ``disable_on_etag_header`` and ``weaken_etag_on_compress`` are ``true``,
+	// ``weaken_etag_on_compress`` takes precedence (compression is applied and the ETag is weakened).
 	disable_on_etag_header?: bool
-	// When this field is “true“ and the filter compresses a response that contains a strong
-	// “ETag“, the filter will weaken the ETag by prepending “W/“ to its value instead of
+	// When this field is ``true`` and the filter compresses a response that contains a strong
+	// ``ETag``, the filter will weaken the ETag by prepending ``W/`` to its value instead of
 	// removing it. This allows caching and conditional requests to work while indicating the
-	// response body was modified by compression. When “false“ (default), strong ETags are
-	// removed when compression is applied. When both “weaken_etag_on_compress“ and
-	// “disable_on_etag_header“ are “true“, this field takes precedence so that compression
+	// response body was modified by compression. When ``false`` (default), strong ETags are
+	// removed when compression is applied. When both ``weaken_etag_on_compress`` and
+	// ``disable_on_etag_header`` are ``true``, this field takes precedence so that compression
 	// is applied and the ETag is weakened, supporting gradual rollout to clients and servers.
 	weaken_etag_on_compress?: bool
-	// When this field is “true“, removes “Accept-Encoding“ from the request headers before dispatching
+	// When this field is ``true``, removes ``Accept-Encoding`` from the request headers before dispatching
 	// the request to the upstream so that responses do not get compressed before reaching the filter.
 	//
 	// .. attention::
 	//
-	//	To avoid interfering with other compression filters in the same chain, use this option in
-	//	the filter closest to the upstream.
+	//    To avoid interfering with other compression filters in the same chain, use this option in
+	//    the filter closest to the upstream.
 	remove_accept_encoding_header?: bool
 	// Set of response codes for which compression is disabled; e.g., 206 Partial Content should not
 	// be compressed.
 	uncompressible_response_codes?: [...uint32]
-	// If true, the filter adds the “x-envoy-compression-status“ response
+	// If true, the filter adds the ``x-envoy-compression-status`` response
 	// header to indicate whether the compression occurred and, if not, provide
 	// the reason why. The header's value format is
-	// “<encoder-type>;<status>[;<additional-params>]“, where “<status>“ is
-	// “Compressed“ or the reason compression was skipped (e.g.,
-	// “ContentLengthTooSmall“). When this field is enabled, the compressor
+	// ``<encoder-type>;<status>[;<additional-params>]``, where ``<status>`` is
+	// ``Compressed`` or the reason compression was skipped (e.g.,
+	// ``ContentLengthTooSmall``). When this field is enabled, the compressor
 	// filter alters the order of the compression eligibility checks to report
 	// the most valid reason for skipping the compression.
 	status_header_enabled?: bool

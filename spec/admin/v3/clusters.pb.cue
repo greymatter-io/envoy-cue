@@ -24,22 +24,23 @@ import (
 	added_via_api?: bool
 	// The success rate threshold used in the last interval.
 	//
-	//   - If :ref:`outlier_detection.split_external_local_origin_errors<envoy_v3_api_field_config.cluster.v3.OutlierDetection.split_external_local_origin_errors>`
-	//     is “false“, all errors: externally and locally generated were used to calculate the threshold.
-	//   - If :ref:`outlier_detection.split_external_local_origin_errors<envoy_v3_api_field_config.cluster.v3.OutlierDetection.split_external_local_origin_errors>`
-	//     is “true“, only externally generated errors were used to calculate the threshold.
+	// * If :ref:`outlier_detection.split_external_local_origin_errors<envoy_v3_api_field_config.cluster.v3.OutlierDetection.split_external_local_origin_errors>`
+	//   is ``false``, all errors: externally and locally generated were used to calculate the threshold.
+	// * If :ref:`outlier_detection.split_external_local_origin_errors<envoy_v3_api_field_config.cluster.v3.OutlierDetection.split_external_local_origin_errors>`
+	//   is ``true``, only externally generated errors were used to calculate the threshold.
 	//
 	// The threshold is used to eject hosts based on their success rate. For more information, see the
 	// :ref:`Cluster outlier detection <arch_overview_outlier_detection>` documentation.
 	//
 	// .. note::
 	//
-	//	This field may be omitted in any of the three following cases:
+	//   This field may be omitted in any of the three following cases:
 	//
-	//	1. There were not enough hosts with enough request volume to proceed with success rate based outlier ejection.
-	//	2. The threshold is computed to be < 0 because a negative value implies that there was no threshold for that
-	//	   interval.
-	//	3. Outlier detection is not enabled for this cluster.
+	//   1. There were not enough hosts with enough request volume to proceed with success rate based outlier ejection.
+	//   2. The threshold is computed to be < 0 because a negative value implies that there was no threshold for that
+	//      interval.
+	//   3. Outlier detection is not enabled for this cluster.
+	//
 	success_rate_ejection_threshold?: v3.#Percent
 	// Mapping from host address to the host's current status.
 	host_statuses?: [...#HostStatus]
@@ -47,18 +48,19 @@ import (
 	// taken into account and externally originated errors were treated as success.
 	// This field should be interpreted only when
 	// :ref:`outlier_detection.split_external_local_origin_errors<envoy_v3_api_field_config.cluster.v3.OutlierDetection.split_external_local_origin_errors>`
-	// is “true“. The threshold is used to eject hosts based on their success rate.
+	// is ``true``. The threshold is used to eject hosts based on their success rate.
 	//
 	// For more information, see the :ref:`Cluster outlier detection <arch_overview_outlier_detection>` documentation.
 	//
 	// .. note::
 	//
-	//	This field may be omitted in any of the three following cases:
+	//   This field may be omitted in any of the three following cases:
 	//
-	//	1. There were not enough hosts with enough request volume to proceed with success rate based outlier ejection.
-	//	2. The threshold is computed to be < 0 because a negative value implies that there was no threshold for that
-	//	   interval.
-	//	3. Outlier detection is not enabled for this cluster.
+	//   1. There were not enough hosts with enough request volume to proceed with success rate based outlier ejection.
+	//   2. The threshold is computed to be < 0 because a negative value implies that there was no threshold for that
+	//      interval.
+	//   3. Outlier detection is not enabled for this cluster.
+	//
 	local_origin_success_rate_ejection_threshold?: v3.#Percent
 	// :ref:`Circuit breaking <arch_overview_circuit_break>` settings of the cluster.
 	circuit_breakers?: v31.#CircuitBreakers
@@ -80,17 +82,18 @@ import (
 	health_status?: #HostHealthStatus
 	// The success rate for this host during the last measurement interval.
 	//
-	//   - If :ref:`outlier_detection.split_external_local_origin_errors<envoy_v3_api_field_config.cluster.v3.OutlierDetection.split_external_local_origin_errors>`
-	//     is “false“, all errors: externally and locally generated were used in success rate calculation.
-	//   - If :ref:`outlier_detection.split_external_local_origin_errors<envoy_v3_api_field_config.cluster.v3.OutlierDetection.split_external_local_origin_errors>`
-	//     is “true“, only externally generated errors were used in success rate calculation.
+	// * If :ref:`outlier_detection.split_external_local_origin_errors<envoy_v3_api_field_config.cluster.v3.OutlierDetection.split_external_local_origin_errors>`
+	//   is ``false``, all errors: externally and locally generated were used in success rate calculation.
+	// * If :ref:`outlier_detection.split_external_local_origin_errors<envoy_v3_api_field_config.cluster.v3.OutlierDetection.split_external_local_origin_errors>`
+	//   is ``true``, only externally generated errors were used in success rate calculation.
 	//
 	// For more information, see the :ref:`Cluster outlier detection <arch_overview_outlier_detection>` documentation.
 	//
 	// .. note::
 	//
-	//	The message will be missing if the host didn't receive enough traffic to calculate a reliable success rate, or
-	//	if the cluster had too few hosts to apply outlier ejection based on success rate.
+	//   The message will be missing if the host didn't receive enough traffic to calculate a reliable success rate, or
+	//   if the cluster had too few hosts to apply outlier ejection based on success rate.
+	//
 	success_rate?: v3.#Percent
 	// The host's weight. If not configured, the value defaults to 1.
 	weight?: uint32
@@ -103,14 +106,15 @@ import (
 	//
 	// This field is only relevant when
 	// :ref:`outlier_detection.split_external_local_origin_errors<envoy_v3_api_field_config.cluster.v3.OutlierDetection.split_external_local_origin_errors>`
-	// is set to “true“.
+	// is set to ``true``.
 	//
 	// For more information, see the :ref:`Cluster outlier detection <arch_overview_outlier_detection>` documentation.
 	//
 	// .. note::
 	//
-	//	The message will be missing if the host didn't receive enough traffic to compute a success rate, or if the
-	//	cluster didn't have enough hosts to perform outlier ejection based on success rate.
+	//   The message will be missing if the host didn't receive enough traffic to compute a success rate, or if the
+	//   cluster didn't have enough hosts to perform outlier ejection based on success rate.
+	//
 	local_origin_success_rate?: v3.#Percent
 	// locality of the host.
 	locality?: v32.#Locality
@@ -142,7 +146,7 @@ import (
 	//
 	// .. note::
 	//
-	//	Currently, only ``HEALTHY`` and ``UNHEALTHY`` are supported.
+	//   Currently, only ``HEALTHY`` and ``UNHEALTHY`` are supported.
 	//
 	// [#comment:TODO(mrice32): pipe through remaining EDS health status possibilities.]
 	eds_health_status?: v32.#HealthStatus

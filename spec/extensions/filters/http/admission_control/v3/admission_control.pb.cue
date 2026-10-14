@@ -17,7 +17,7 @@ import (
 	sampling_window?: string
 	// Rejection probability is defined by the formula::
 	//
-	//	max(0, (rq_count -  rq_success_count / sr_threshold) / (rq_count + 1)) ^ (1 / aggression)
+	//     max(0, (rq_count -  rq_success_count / sr_threshold) / (rq_count + 1)) ^ (1 / aggression)
 	//
 	// The aggression dictates how heavily the admission controller will throttle requests upon SR
 	// dropping at or below the threshold. A value of 1 will result in a linear increase in
@@ -49,10 +49,10 @@ import (
 	//
 	// .. note::
 	//
-	//	The default HTTP codes considered successful by the admission controller are done so due
-	//	to the unlikelihood that sending fewer requests would change their behavior (for example:
-	//	redirects, unauthorized access, or bad requests won't be alleviated by sending less
-	//	traffic).
+	//    The default HTTP codes considered successful by the admission controller are done so due
+	//    to the unlikelihood that sending fewer requests would change their behavior (for example:
+	//    redirects, unauthorized access, or bad requests won't be alleviated by sending less
+	//    traffic).
 	http_criteria?: #AdmissionControl_SuccessCriteria_HttpCriteria
 	// GRPC status codes to consider as request successes. If unspecified, defaults to: Ok,
 	// Cancelled, Unknown, InvalidArgument, NotFound, AlreadyExists, Unauthenticated,
@@ -60,8 +60,8 @@ import (
 	//
 	// .. note::
 	//
-	//	The default gRPC codes that are considered successful by the admission controller are
-	//	chosen because of the unlikelihood that sending fewer requests will change the behavior.
+	//    The default gRPC codes that are considered successful by the admission controller are
+	//    chosen because of the unlikelihood that sending fewer requests will change the behavior.
 	grpc_criteria?: #AdmissionControl_SuccessCriteria_GrpcCriteria
 }
 

@@ -26,7 +26,7 @@ Gzip_CompressionLevel_Enum_SPEED:   "SPEED"
 	// Minimum response length, in bytes, which will trigger compression. The default value is 30.
 	// .. attention:
 	//
-	//	**This field is deprecated**. Set the `compressor` field instead.
+	//    **This field is deprecated**. Set the `compressor` field instead.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/filter/http/gzip/v2/gzip.proto.
 	content_length?: uint32
@@ -49,7 +49,7 @@ Gzip_CompressionLevel_Enum_SPEED:   "SPEED"
 	// "application/xhtml+xml", "image/svg+xml", "text/css", "text/html", "text/plain", "text/xml".
 	// .. attention:
 	//
-	//	**This field is deprecated**. Set the `compressor` field instead.
+	//    **This field is deprecated**. Set the `compressor` field instead.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/filter/http/gzip/v2/gzip.proto.
 	content_type?: [...string]
@@ -57,7 +57,7 @@ Gzip_CompressionLevel_Enum_SPEED:   "SPEED"
 	// filter will preserve weak etags and remove the ones that require strong validation.
 	// .. attention:
 	//
-	//	**This field is deprecated**. Set the `compressor` field instead.
+	//    **This field is deprecated**. Set the `compressor` field instead.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/filter/http/gzip/v2/gzip.proto.
 	disable_on_etag_header?: bool
@@ -65,7 +65,7 @@ Gzip_CompressionLevel_Enum_SPEED:   "SPEED"
 	// so that responses do not get compressed before reaching the filter.
 	// .. attention:
 	//
-	//	**This field is deprecated**. Set the `compressor` field instead.
+	//    **This field is deprecated**. Set the `compressor` field instead.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/filter/http/gzip/v2/gzip.proto.
 	remove_accept_encoding_header?: bool

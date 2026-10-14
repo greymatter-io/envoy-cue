@@ -26,12 +26,12 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 // Expressions are abstractly represented as a collection of identifiers,
 // select statements, function calls, literals, and comprehensions. All
 // operators with the exception of the '.' operator are modelled as function
-// calls. This makes it easy to represent new operators into the existing AST.
+// calls. This makes it easy to represent new operators in the existing AST.
 //
 // All references within expressions must resolve to a
 // [Decl][google.api.expr.v1alpha1.Decl] provided at type-check for an
 // expression to be valid. A reference may either be a bare identifier `name` or
-// a qualified identifier `google.api.name`. References may either refer to a
+// a qualified identifier `google.api.name`. References may refer to either a
 // value or a function declaration.
 //
 // For example, the expression `google.api.name.startsWith('expr')` references
@@ -42,7 +42,7 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.Expr"
 	// Required. An id assigned to this node by the parser which is unique in a
 	// given expression tree. This is used to associate type information and other
-	// attributes to a node in the parse tree.
+	// attributes with a node in the parse tree.
 	id?: int64
 	// A literal expression.
 	const_expr?: #Constant
@@ -64,7 +64,7 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 //
 // Named 'Constant' here for backwards compatibility.
 //
-// This is similar as the primitives supported in the well-known type
+// This is similar to the primitives supported in the well-known type
 // `google.protobuf.Value`, but richer so it can represent CEL's full range of
 // primitives.
 //
@@ -92,15 +92,15 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 	bytes_value?: bytes
 	// protobuf.Duration value.
 	//
-	// Deprecated: duration is no longer considered a builtin cel type.
+	// Deprecated: duration is no longer considered a builtin CEL type.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/api/expr/v1alpha1/syntax.proto.
 	duration_value?: string
 	// protobuf.Timestamp value.
 	//
-	// Deprecated: timestamp is no longer considered a builtin cel type.
+	// Deprecated: timestamp is no longer considered a builtin CEL type.
 	//
-	// Deprecated: Do not use.
+	// Deprecated: Marked as deprecated in google/api/expr/v1alpha1/syntax.proto.
 	timestamp_value?: string
 }
 
@@ -120,7 +120,7 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 	//
 	// The line number of a given position is the index `i` where for a given
 	// `id` the `line_offsets[i] < id_positions[id] < line_offsets[i+1]`. The
-	// column may be derivd from `id_positions[id] - line_offsets[i]`.
+	// column may be derived from `id_positions[id] - line_offsets[i]`.
 	line_offsets?: [...int32]
 	// A map from the parse node id (e.g. `Expr.id`) to the code point offset
 	// within the source.
@@ -147,7 +147,7 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 // A specific position in source.
 #SourcePosition: {
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.SourcePosition"
-	// The soucre location name (e.g. file name).
+	// The source location name (e.g. file name).
 	location?: string
 	// The UTF-8 code unit offset.
 	offset?: int32
@@ -194,7 +194,7 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 // For example, `value == 10`, `size(map_value)`.
 #Expr_Call: {
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.Expr_Call"
-	// The target of an method call-style expression. For example, `x` in
+	// The target of a method call-style expression. For example, `x` in
 	// `x.f()`.
 	target?: #Expr
 	// Required. The name of the function or method being called.
@@ -205,7 +205,7 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 
 // A list creation expression.
 //
-// Lists may either be homogenous, e.g. `[1, 2, 3]`, or heterogeneous, e.g.
+// Lists may either be homogeneous, e.g. `[1, 2, 3]`, or heterogeneous, e.g.
 // `dyn([1, 'hello', 2.0])`
 #Expr_CreateList: {
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.Expr_CreateList"
@@ -227,7 +227,7 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 // `types.MyType{field_id: 'value'}`.
 #Expr_CreateStruct: {
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.Expr_CreateStruct"
-	// The type name of the message to be created, empty when creating map
+	// The type name of the message to be created; empty when creating map
 	// literals.
 	message_name?: string
 	// The entries in the creation expression.
@@ -257,7 +257,7 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 //
 // The `has(m.x)` macro tests whether the property `x` is present in struct
 // `m`. The semantics of this macro depend on the type of `m`. For proto2
-// messages `has(m.x)` is defined as 'defined, but not set`. For proto3, the
+// messages `has(m.x)` is defined as 'defined, but not set'. For proto3, the
 // macro tests whether the property is set to its default. For map and struct
 // types, the macro tests whether the property `x` is defined on `m`.
 //
@@ -279,7 +279,7 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 //
 // Comprehensions for the optional V2 macros which support map-to-map
 // translation differ slightly from the standard environment macros in that
-// they expose both the key or index in addition to the value for each list
+// they expose the key or index in addition to the value for each list
 // or map entry:
 //
 // ```
@@ -297,12 +297,11 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 #Expr_Comprehension: {
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.Expr_Comprehension"
 	// The name of the first iteration variable.
-	// When the iter_range is a list, this variable is the list element.
-	// When the iter_range is a map, this variable is the map entry key.
+	// For the single iteration variable macros, when iter_range is a list, this
+	// variable is the list element and when the iter_range is a map, this
+	// variable is the map key.
 	iter_var?: string
-	// The name of the second iteration variable, empty if not set.
-	// When the iter_range is a list, this variable is the integer index.
-	// When the iter_range is a map, this variable is the map entry value.
+	// The name of the second iteration variable; empty if not set.
 	// This field is only set for comprehension v2 macros.
 	iter_var2?: string
 	// The range over which the comprehension iterates.
@@ -331,7 +330,7 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.Expr_CreateStruct_Entry"
 	// Required. An id assigned to this node by the parser which is unique
 	// in a given expression tree. This is used to associate type
-	// information and other attributes to the node.
+	// information and other attributes with the node.
 	id?: int64
 	// The field key for a message creator statement.
 	field_key?: string
@@ -355,7 +354,7 @@ SourceInfo_Extension_Component_COMPONENT_RUNTIME:      "COMPONENT_RUNTIME"
 	// If set, the listed components must understand the extension for the
 	// expression to evaluate correctly.
 	//
-	// This field has set semantics, repeated values should be deduplicated.
+	// This field has set semantics; repeated values should be deduplicated.
 	affected_components?: [...#SourceInfo_Extension_Component]
 	// Version info. May be skipped if it isn't meaningful for the extension.
 	// (for example constant_folding might always be v0.0).

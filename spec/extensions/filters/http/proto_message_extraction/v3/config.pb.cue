@@ -18,8 +18,8 @@ MethodExtraction_ExtractDirective_EXTRACT_REPEATED_CARDINALITY: "EXTRACT_REPEATE
 
 #ProtoMessageExtractionConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.proto_message_extraction.v3.ProtoMessageExtractionConfig"
-	// It could be passed by a local file through “Datasource.filename“ or
-	// embedded in the “Datasource.inline_bytes“.
+	// It could be passed by a local file through ``Datasource.filename`` or
+	// embedded in the ``Datasource.inline_bytes``.
 	data_source?: v3.#DataSource
 	// Unimplemented, the key of proto descriptor TypedMetadata.
 	// Among filters depending on the proto descriptor, we can have a
@@ -29,8 +29,8 @@ MethodExtraction_ExtractDirective_EXTRACT_REPEATED_CARDINALITY: "EXTRACT_REPEATE
 	mode?:                            #ProtoMessageExtractionConfig_ExtractMode
 	// Specify the message extraction info.
 	// The key is the fully qualified gRPC method name.
-	// “${package}.${Service}.${Method}“, like
-	// “endpoints.examples.bookstore.BookStore.GetShelf“
+	// ``${package}.${Service}.${Method}``, like
+	// ``endpoints.examples.bookstore.BookStore.GetShelf``
 	//
 	// The value is the message extraction information for individual gRPC
 	// methods.

@@ -19,8 +19,8 @@ Config_Histogram_Unit_Percent:      "Percent"
 #Config: {
 	"@type": "type.googleapis.com/envoy.extensions.access_loggers.stats.v3.Config"
 	// The stat prefix for the generated stats.
-	// Deprecated: please use “stats_scope.prefix“ instead.
-	// It will override “stats_scope.prefix“ if non-empty.
+	// Deprecated: please use ``stats_scope.prefix`` instead.
+	// It will override ``stats_scope.prefix`` if non-empty.
 	//
 	// Deprecated: Marked as deprecated in envoy/extensions/access_loggers/stats/v3/stats.proto.
 	stat_prefix?: string
@@ -77,10 +77,10 @@ Config_Histogram_Unit_Percent:      "Percent"
 	// The name and tags of this counter.
 	stat?: #Config_Stat
 	// The format string for the value to add to this counter, using :ref:`command operators <config_access_log_command_operators>`.
-	// One of “value_format“ or “value_fixed“ must be configured.
+	// One of ``value_format`` or ``value_fixed`` must be configured.
 	value_format?: string
 	// A fixed value to add to this counter.
-	// One of “value_format“ or “value_fixed“ must be configured.
+	// One of ``value_format`` or ``value_fixed`` must be configured.
 	value_fixed?: uint64
 }
 
@@ -97,7 +97,7 @@ Config_Histogram_Unit_Percent:      "Percent"
 	// positive number.
 	value_format?: string
 	// A fixed value to add/subtract/set to this gauge.
-	// One of “value_format“ or “value_fixed“ must be configured.
+	// One of ``value_format`` or ``value_fixed`` must be configured.
 	value_fixed?: uint64
 	// The PairedAddSubtract operation.
 	// Only one of PairedAddSubtract and Set can be defined.

@@ -2,6 +2,7 @@ package v3
 
 import (
 	v3 "envoyproxy.io/envoy-cue/spec/type/metadata/v3"
+	v31 "envoyproxy.io/envoy-cue/spec/type/matcher/v3"
 )
 
 #ValidationPolicy_Mode: "MODE_UNSPECIFIED" | "DISABLED" | "ENFORCE"
@@ -60,10 +61,10 @@ ValidationPolicy_Mode_ENFORCE:          "ENFORCE"
 	// If not set, sessions are created without identity binding.
 	session_identity?: #SessionIdentity
 	// If true, backend initialization is deferred until the first request that targets each backend.
-	// The “initialize“ response is returned immediately with gateway capabilities and an empty
+	// The ``initialize`` response is returned immediately with gateway capabilities and an empty
 	// backend session map. Each backend is initialized on-demand when a request first routes to it.
-	// This avoids blocking the client “initialize“ on slow or misbehaving backends.
-	// Default is false (eager initialization of all backends during “initialize“).
+	// This avoids blocking the client ``initialize`` on slow or misbehaving backends.
+	// Default is false (eager initialization of all backends during ``initialize``).
 	lazy_initialization?: bool
 }
 
@@ -78,6 +79,14 @@ ValidationPolicy_Mode_ENFORCE:          "ENFORCE"
 	name?: string
 	// Backend target specification.
 	mcp_cluster?: #McpRouter_McpCluster
+	// Controls which downstream request headers are forwarded to this backend.
+	// If not set, no downstream-controlled headers are forwarded beyond those the
+	// router itself must synthesize (e.g. ``content-type``, ``accept``, the session
+	// header) — in particular, a client's ``authorization`` header is NOT forwarded
+	// by default. Router-owned, framing, session, and hop-by-hop headers are never
+	// affected by this policy; they are handled separately and can never be forwarded
+	// via this mechanism.
+	header_forwarding?: #McpRouter_HeaderForwarding
 }
 
 // Cluster-based backend configuration.
@@ -93,4 +102,37 @@ ValidationPolicy_Mode_ENFORCE:          "ENFORCE"
 	// Indicates that during forwarding, the host header will be swapped with
 	// this value.
 	host_rewrite_literal?: string
+}
+
+// Specifies which downstream request headers are allowed to be forwarded to an MCP
+// backend. Modeled after
+// :ref:`ext_proc's HeaderForwardingRules <envoy_v3_api_msg_extensions.filters.http.ext_proc.v3.ExternalProcessor>`,
+// but MCP-local and secure-by-default: unlike ext_proc, an unset/empty policy
+// forwards nothing rather than everything, because MCP requires audience-bound
+// tokens and prohibits implicit token passthrough between a client and a backend it
+// did not authenticate to.
+//
+// Evaluation order per header:
+//
+//  1. If the header matches “disallowed_headers“, it is never forwarded — this
+//     takes precedence over everything below, including “forward_all“.
+//  2. Otherwise, if “forward_all“ is true, the header is forwarded.
+//  3. Otherwise, if the header matches “allowed_headers“, it is forwarded.
+//  4. Otherwise, the header is not forwarded.
+//
+// This does not cover header *mutation* or credential injection, which remain a
+// separate concern from this filter's forwarding policy.
+#McpRouter_HeaderForwarding: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.mcp_router.v3.McpRouter_HeaderForwarding"
+	// If true, forward all downstream request headers to this backend (subject to
+	// ``disallowed_headers`` above), matching the legacy forward-everything behavior.
+	// Defaults to false. Users relying on the legacy behavior must set this explicitly.
+	forward_all?: bool
+	// If set, specifically allow any header in this list to be forwarded. Ignored for a
+	// header that also matches ``disallowed_headers``, and redundant (but harmless) for
+	// any header covered by ``forward_all``.
+	allowed_headers?: v31.#ListStringMatcher
+	// If set, specifically disallow any header in this list from being forwarded. This
+	// takes precedence over both ``forward_all`` and ``allowed_headers``.
+	disallowed_headers?: v31.#ListStringMatcher
 }

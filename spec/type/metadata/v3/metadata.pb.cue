@@ -29,13 +29,12 @@ package v3
 	key?: string
 	// The path used to retrieve a specific Value from the Struct.
 	// This can be either a prefix or a full path, depending on the use case.
-	// For example, “[prop, xyz]“ would retrieve a struct or “[prop, foo]“ would retrieve a string
-	// in the example above.
+	// For example, ``[{key: prop}, {key: xyz}]`` would retrieve a struct or ``[{key: prop}, {key: foo}]``
+	// would retrieve a string in the example above.
 	//
-	// .. note::
-	//
-	//	Since only key-type segments are supported, a path cannot specify a list
-	//	unless the list is the last segment.
+	// Path segments support both struct field access (via ``key``) and list element access (via ``index``).
+	// For example, to access the first element of a list at ``envoy.filters.http.grpc_field_extraction.tenant_id``,
+	// use ``path: [{key: tenant_id}, {index: 0}]``.
 	path?: [...#MetadataKey_PathSegment]
 }
 
@@ -53,11 +52,14 @@ package v3
 }
 
 // Specifies a segment in a path for retrieving values from Metadata.
-// Currently, only key-based segments (field names) are supported.
+// Supports both key-based segments (field names in a Struct) and index-based
+// segments (element access in a ListValue).
 #MetadataKey_PathSegment: {
 	"@type": "type.googleapis.com/envoy.type.metadata.v3.MetadataKey_PathSegment"
 	// If specified, use this key to retrieve the value in a Struct.
 	key?: string
+	// If specified, use this index to retrieve a value from a ListValue.
+	index?: uint32
 }
 
 // Represents dynamic metadata associated with the request.

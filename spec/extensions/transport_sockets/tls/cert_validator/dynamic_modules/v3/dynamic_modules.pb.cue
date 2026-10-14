@@ -25,7 +25,7 @@ import (
 	// <envoy_v3_api_msg_extensions.dynamic_modules.v3.DynamicModuleConfig>` for details.
 	dynamic_module_config?: v3.#DynamicModuleConfig
 	// The name of the cert validator implementation in the dynamic module.
-	// This is passed to the module's “envoy_dynamic_module_on_cert_validator_config_new“
+	// This is passed to the module's ``envoy_dynamic_module_on_cert_validator_config_new``
 	// function.
 	validator_name?: string
 	// Optional configuration for the cert validator. This is passed as bytes to the dynamic module.

@@ -1,10 +1,24 @@
 package v3
 
+// The cache scope of a cacheable MCP result, emitted as the “cacheScope“ result field.
+#CacheScope: "CACHE_SCOPE_UNSPECIFIED" | "CACHE_SCOPE_PUBLIC" | "CACHE_SCOPE_PRIVATE"
+
+CacheScope_CACHE_SCOPE_UNSPECIFIED: "CACHE_SCOPE_UNSPECIFIED"
+CacheScope_CACHE_SCOPE_PUBLIC:      "CACHE_SCOPE_PUBLIC"
+CacheScope_CACHE_SCOPE_PRIVATE:     "CACHE_SCOPE_PRIVATE"
+
 // Where to store parsed MCP request attributes.
 #McpJsonRestBridge_RequestStorageMode: "MODE_UNSPECIFIED" | "DYNAMIC_METADATA"
 
 McpJsonRestBridge_RequestStorageMode_MODE_UNSPECIFIED: "MODE_UNSPECIFIED"
 McpJsonRestBridge_RequestStorageMode_DYNAMIC_METADATA: "DYNAMIC_METADATA"
+
+// The target HTTP element type to bind to.
+#HttpRule_ParameterBinding_Type: "TYPE_UNSPECIFIED" | "HEADER" | "COOKIE"
+
+HttpRule_ParameterBinding_Type_TYPE_UNSPECIFIED: "TYPE_UNSPECIFIED"
+HttpRule_ParameterBinding_Type_HEADER:           "HEADER"
+HttpRule_ParameterBinding_Type_COOKIE:           "COOKIE"
 
 // Configuration for the MCP MCP JSON REST Bridge.
 //
@@ -78,7 +92,7 @@ McpJsonRestBridge_RequestStorageMode_DYNAMIC_METADATA: "DYNAMIC_METADATA"
 //	  (Only the "payload" field from arguments is used as the body. Other arguments not in the
 //	  path, like 'resource_id', become query parameters.)
 //
-// [#next-free-field: 8]
+// [#next-free-field: 9]
 #McpJsonRestBridge: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.mcp_json_rest_bridge.v3.McpJsonRestBridge"
 	// General server information.
@@ -86,7 +100,7 @@ McpJsonRestBridge_RequestStorageMode_DYNAMIC_METADATA: "DYNAMIC_METADATA"
 	// Configuration for the MCP tools.
 	tool_config?: #ServerToolConfig
 	// Maximum size of the request body to buffer for transcoding and validation.
-	// If the request body exceeds this size, the request is rejected with “413 Payload Too Large“.
+	// If the request body exceeds this size, the request is rejected with ``413 Payload Too Large``.
 	// This limit applies to prevent unbounded buffering.
 	//
 	// It defaults to 64KB (65536 bytes) as the MCP calls (tools, resources, or prompts)
@@ -105,18 +119,20 @@ McpJsonRestBridge_RequestStorageMode_DYNAMIC_METADATA: "DYNAMIC_METADATA"
 	max_response_body_size?: uint32
 	// Where to store parsed MCP request attributes.
 	// Default is not storing anything.
-	// When set to “DYNAMIC_METADATA“, attributes are stored in dynamic metadata
-	// using the filter's config name (i.e. the “name“ field of this filter's entry
-	// in the “http_filters“ list) as the metadata namespace.
+	// When set to ``DYNAMIC_METADATA``, attributes are stored in dynamic metadata
+	// using the filter's config name (i.e. the ``name`` field of this filter's entry
+	// in the ``http_filters`` list) as the metadata namespace.
 	request_storage_mode?: #McpJsonRestBridge_RequestStorageMode
 	// If set, extract OpenTelemetry (OTel) trace context from MCP requests and propagate it to
-	// request headers. The keys “traceparent“, “tracestate“, and “baggage“
-	// will be extracted from “_meta“.
+	// request headers. The keys ``traceparent``, ``tracestate``, and ``baggage``
+	// will be extracted from ``_meta``.
 	// Ref: `Request Meta SEP <https://modelcontextprotocol.io/seps/414-request-meta>`_
 	trace_context_extraction?: #TraceContextExtractionOptions
 	// When set to true, the filter will not clear the route cache after transcoding.
 	// This allows the route to be re-selected based on the updated request path or method.
 	disable_clear_route_cache?: bool
+	// When set to true, the filter will take no action unless per-route config is available.
+	per_route_only?: bool
 }
 
 // Options for trace context extraction.
@@ -124,32 +140,47 @@ McpJsonRestBridge_RequestStorageMode_DYNAMIC_METADATA: "DYNAMIC_METADATA"
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.mcp_json_rest_bridge.v3.TraceContextExtractionOptions"
 }
 
+// Cache configuration for a locally-generated, cacheable MCP result.
+#CacheConfig: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.mcp_json_rest_bridge.v3.CacheConfig"
+	// How long the result may be reused, emitted as the MCP ``ttlMs`` result field.
+	//
+	// If not provided: Defaults to 0, meaning clients should revalidate before reusing the result.
+	ttl?: string
+	// The cache scope of the result.
+	//
+	// If not provided: Defaults to ``CACHE_SCOPE_PUBLIC``.
+	cache_scope?: #CacheScope
+}
+
 // Configuration for the server metadata.
 #ServerInfo: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.mcp_json_rest_bridge.v3.ServerInfo"
-	// [#not-implemented-hide:]
-	// [#comment:TODO(guoyilin42): Implement supported_protocol_versions]
-	// Lists the MCP protocol versions supported by this MCP endpoint.
+	// The maximum MCP protocol version supported by this MCP endpoint.
 	//
-	//   - If provided: The extension enforces version negotiation according to the MCP specification:
-	//     https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle#version-negotiation
-	//   - If not provided: The extension accepts any version sent by the client during negotiation and
-	//     skips validation of the mcp-protocol-version header on subsequent requests.
+	// Supported values are ``2025-11-25`` and ``2026-07-28``. Versions prior
+	// to ``2025-11-25`` are rejected because the filter unconditionally supports features
+	// up to ``2025-11-25`` and does not support downgrading below that baseline.
+	// If not provided: Defaults to ``2025-11-25``.
 	//
-	// Example values: ["2025-11-25", "2025-06-18"]
-	supported_protocol_versions?: [...string]
+	// Example value: "2026-07-28"
+	max_supported_protocol_version?: string
 	// [#not-implemented-hide:]
 	// [#comment:TODO(guoyilin42): Implement description]
 	// Optional description of the server.
 	description?: string
-	// The fallback protocol version to use if the client does not provide the “mcp-protocol-version“ header.
+	// The fallback protocol version to use if the client does not provide the ``mcp-protocol-version`` header.
 	//
-	//   - If provided: The extension uses this version as the fallback protocol version.
-	//   - If not provided: The extension uses the fallback protocol version defined in the latest MCP
-	//     specification. For example, the current latest 2025-11-25 specification designates "2025-03-26"
-	//     as the fallback protocol version.
-	//     See https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#protocol-version-header
+	// - If provided: The extension uses this version as the fallback protocol version.
+	// - If not provided: The extension uses the fallback protocol version defined in the latest MCP
+	//   specification. For example, the current latest 2026-07-28 specification designates "2025-03-26"
+	//   as the fallback protocol version.
+	//   See https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http#protocol-version-header
 	fallback_protocol_version?: string
+	// Cache configuration advertised in locally-generated ``server/discover`` responses.
+	//
+	// If not provided: the response advertises ``ttlMs: 0`` and ``cacheScope: public``.
+	server_discovery_cache_config?: #CacheConfig
 }
 
 // Configuration for sending locally-generated responses to tools/list requests.
@@ -169,15 +200,14 @@ McpJsonRestBridge_RequestStorageMode_DYNAMIC_METADATA: "DYNAMIC_METADATA"
 	list_changed?: bool
 	// Configuration to transcode the tools/list requests to a standard HTTP request. If provided:
 	// The extension transcodes the request and forwards it down the filter chain. The response
-	// (whether from an upstream backend, a configured “direct_response“, or another extension)
-	// MUST be a JSON body strictly matching the MCP “ListToolsResult“ schema. Ref:
+	// (whether from an upstream backend, a configured ``direct_response``, or another extension)
+	// MUST be a JSON body strictly matching the MCP ``ListToolsResult`` schema. Ref:
 	// https://modelcontextprotocol.io/specification/2025-11-25/schema#listtoolsresult
 	tool_list_http_rule?: #HttpRule
 	// If provided: The extension sends a local response, according to each tool's
 	// ToolsListSpecificConfig.
 	tool_list_local?: #ToolsListLocal
-	// [#not-implemented-hide:]
-	// Default server info for tools without specific ones.
+	// Default server info for tools without specific ones. If not provided, a fallback path of '/mcp' will be used.
 	default_server_info?: #McpServerInfo
 }
 
@@ -213,17 +243,21 @@ McpJsonRestBridge_RequestStorageMode_DYNAMIC_METADATA: "DYNAMIC_METADATA"
 	// Config for this tool's entry in a local tools/list response. Used when tool_list_local is set
 	// in the ServerToolConfig.
 	tool_list_config?: #ToolsListSpecificConfig
-	// Enables streaming transcoding for unstructured text responses (“content“ field of a result).
+	// Enables streaming transcoding for unstructured text responses (``content`` field of a result).
 	//
 	// When enabled, the response body is streamed directly to the client without buffering. Each
 	// chunk is JSON escaped as it arrives and wrapped with a pre-built JSON-RPC prefix and suffix.
+	//
+	// For Server-Sent Events (SSE) responses (i.e. ``text/event-stream`` content type), Envoy parses
+	// the stream and wraps each extracted complete event payload into a distinct text content item
+	// within the JSON-RPC ``content`` array on the fly.
 	//
 	// Streaming flow:
 	//
 	// .. code-block:: text
 	//
-	//	input:  [chunk1] → [chunk2] → [chunk3]
-	//	output: [prefix+escaped_chunk1] → [escaped_chunk2] → [escaped_chunk3+suffix]
+	//   input:  [chunk1] → [chunk2] → [chunk3]
+	//   output: [prefix+escaped_chunk1] → [escaped_chunk2] → [escaped_chunk3+suffix]
 	//
 	// Disabled by default.
 	text_content_streaming_enabled?: bool
@@ -245,12 +279,12 @@ McpJsonRestBridge_RequestStorageMode_DYNAMIC_METADATA: "DYNAMIC_METADATA"
 //     - If empty: No body is sent.
 //  3. Query: Any leaf arguments not mapped to Path or Body are added as URL query parameters.
 //
-// [#next-free-field: 7]
+// [#next-free-field: 8]
 #HttpRule: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.mcp_json_rest_bridge.v3.HttpRule"
 	// Determines the HTTP method and the URL path template.
 	//
-	// Path templating uses curly braces “{}“ to mark a section of the URL path as replaceable.
+	// Path templating uses curly braces ``{}`` to mark a section of the URL path as replaceable.
 	// Each template variable MUST correspond to a field in the JSON-RPC "arguments".
 	// Use dot-notation to access fields within nested objects (e.g., "user.id" maps the value of the
 	// "id" field inside "user").
@@ -271,15 +305,39 @@ McpJsonRestBridge_RequestStorageMode_DYNAMIC_METADATA: "DYNAMIC_METADATA"
 	patch?: string
 	// The name of the request field whose value is mapped to the HTTP request body.
 	//
-	//   - If "*": All fields not bound by the path template are mapped to the request body.
-	//   - If specify a field: This specific field is mapped to the body. Uses dot-notation for nested
-	//     fields (e.g., "user.data" maps the value of the "data" field inside "user").
-	//   - If omitted: There is no HTTP request body; fields not in the path become query parameters.
+	// - If "*": All fields not bound by the path template are mapped to the request body.
+	// - If specify a field: This specific field is mapped to the body. Uses dot-notation for nested
+	//   fields (e.g., "user.data" maps the value of the "data" field inside "user").
+	// - If omitted: There is no HTTP request body; fields not in the path become query parameters.
 	body?: string
+	// Bindings to extract values from the 'arguments' object of a tools/call
+	// request and inject them as HTTP elements.
+	bindings?: [...#HttpRule_ParameterBinding]
 }
 
 // Per-route override configuration for the MCP JSON REST Bridge filter.
 #McpJsonRestBridgePerRoute: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.mcp_json_rest_bridge.v3.McpJsonRestBridgePerRoute"
 	tool_config?: [...#ServerToolConfig]
+}
+
+// Represents a mapping from a request message field to an HTTP element.
+// If the specified argument is missing from the tools/call request, the binding is silently
+// ignored and the corresponding HTTP element (header or cookie) is not added.
+#HttpRule_ParameterBinding: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.mcp_json_rest_bridge.v3.HttpRule_ParameterBinding"
+	// The type of the HTTP element to bind to.
+	type?: #HttpRule_ParameterBinding_Type
+	// The name of the HTTP header (e.g., "X-API-Key", "Authorization") or the
+	// name of the cookie (e.g.,"SESSION_ID"). Note: Envoy normalizes the header names to lowercase.
+	// The following headers are reserved for Envoy's internal use and cannot be overridden by
+	// bindings: ``content-length``, ``transfer-encoding``, ``host``, ``:authority``, ``cookie``,
+	// ``accept-encoding``, and any header starting with ``x-envoy-``. Attempting to bind to these
+	// will be ignored.
+	name?: string
+	// Path to the field within the JSON arguments object from a tools/call
+	// request. Uses dot-notation for nested fields.
+	// E.g. if arguments object is ``{"user":{"auth_token":"foo"}}``, then
+	// ``argument_path`` should be "user.auth_token".
+	argument_path?: string
 }

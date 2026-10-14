@@ -14,10 +14,9 @@ import (
 	// the socket will be allowed. If no tokens are available, the socket will be immediately closed.
 	//
 	// .. note::
-	//
-	//	In the current implementation the token bucket's :ref:`fill_interval
-	//	<envoy_v3_api_field_type.v3.TokenBucket.fill_interval>` must be >= 50ms to avoid too aggressive
-	//	refills.
+	//   In the current implementation the token bucket's :ref:`fill_interval
+	//   <envoy_v3_api_field_type.v3.TokenBucket.fill_interval>` must be >= 50ms to avoid too aggressive
+	//   refills.
 	token_bucket?: v3.#TokenBucket
 	// Runtime flag that controls whether the filter is enabled or not. If not specified, defaults
 	// to enabled.

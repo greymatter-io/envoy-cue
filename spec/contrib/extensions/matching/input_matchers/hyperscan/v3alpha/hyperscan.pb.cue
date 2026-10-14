@@ -22,17 +22,17 @@ package v3alpha
 	id?: uint32
 	// Matching will be performed case-insensitively.
 	//
-	// The expression may still use PCRE tokens (notably “(?i)“ and “(?-i)“) to switch
+	// The expression may still use PCRE tokens (notably ``(?i)`` and ``(?-i)``) to switch
 	// case-insensitive matching on and off.
 	caseless?: bool
-	// Matching a “.“ will not exclude newlines.
+	// Matching a ``.`` will not exclude newlines.
 	dot_all?: bool
-	// “^“ and “$“ anchors match any newlines in data.
+	// ``^`` and ``$`` anchors match any newlines in data.
 	multiline?: bool
 	// Allow expressions which can match against an empty string.
 	//
 	// This option instructs the compiler to allow expressions that can match against empty buffers,
-	// such as “.?“, “.*“, “(a|)“. Since Hyperscan can return every possible match for an expression,
+	// such as ``.?``, ``.*``, ``(a|)``. Since Hyperscan can return every possible match for an expression,
 	// such expressions generally execute very slowly.
 	allow_empty?: bool
 	// Treat the pattern as a sequence of UTF-8 characters.
@@ -40,14 +40,14 @@ package v3alpha
 	// Use Unicode properties for character classes.
 	//
 	// This option instructs Hyperscan to use Unicode properties, rather than the default ASCII
-	// interpretations, for character mnemonics like “\w“ and “\s“ as well as the POSIX character
-	// classes. It is only meaningful in conjunction with “utf8“.
+	// interpretations, for character mnemonics like ``\w`` and ``\s`` as well as the POSIX character
+	// classes. It is only meaningful in conjunction with ``utf8``.
 	ucp?: bool
 	// Logical combination.
 	//
 	// This option instructs Hyperscan to parse this expression as logical combination syntax.
 	// Logical constraints consist of operands, operators and parentheses. The operands are
-	// expression indices, and operators can be “!“, “&“ or “|“.
+	// expression indices, and operators can be ``!``, ``&`` or ``|``.
 	combination?: bool
 	// Don’t do any match reporting.
 	//

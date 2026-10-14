@@ -150,7 +150,7 @@ ClientResourceStatus_TIMEOUT:        "TIMEOUT"
 	// configuration dump, the draining listeners should generally be discarded.
 	draining_state?: #ListenersConfigDump_DynamicListenerState
 	// Set if the last update failed, cleared after the next successful update.
-	// The “error_state“ field contains the rejected version of this particular
+	// The ``error_state`` field contains the rejected version of this particular
 	// resource along with the reason and timestamp. For successfully updated or
 	// acknowledged resource, this field should be empty.
 	error_state?: #UpdateFailureState
@@ -182,7 +182,7 @@ ClientResourceStatus_TIMEOUT:        "TIMEOUT"
 	// The timestamp when the Cluster was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.
-	// The “error_state“ field contains the rejected version of this particular
+	// The ``error_state`` field contains the rejected version of this particular
 	// resource along with the reason and timestamp. For successfully updated or
 	// acknowledged resource, this field should be empty.
 	// [#not-implemented-hide:]
@@ -212,7 +212,7 @@ ClientResourceStatus_TIMEOUT:        "TIMEOUT"
 	// The timestamp when the Route was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.
-	// The “error_state“ field contains the rejected version of this particular
+	// The ``error_state`` field contains the rejected version of this particular
 	// resource along with the reason and timestamp. For successfully updated or
 	// acknowledged resource, this field should be empty.
 	// [#not-implemented-hide:]
@@ -246,7 +246,7 @@ ClientResourceStatus_TIMEOUT:        "TIMEOUT"
 	// The timestamp when the scoped route config set was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.
-	// The “error_state“ field contains the rejected version of this particular
+	// The ``error_state`` field contains the rejected version of this particular
 	// resource along with the reason and timestamp. For successfully updated or
 	// acknowledged resource, this field should be empty.
 	// [#not-implemented-hide:]
@@ -276,7 +276,7 @@ ClientResourceStatus_TIMEOUT:        "TIMEOUT"
 	// [#not-implemented-hide:] The timestamp when the Endpoint was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.
-	// The “error_state“ field contains the rejected version of this particular
+	// The ``error_state`` field contains the rejected version of this particular
 	// resource along with the reason and timestamp. For successfully updated or
 	// acknowledged resource, this field should be empty.
 	// [#not-implemented-hide:]
@@ -299,7 +299,7 @@ ClientResourceStatus_TIMEOUT:        "TIMEOUT"
 	// The timestamp when the ECDS filter was last updated.
 	last_updated?: string
 	// Set if the last update failed, cleared after the next successful update.
-	// The “error_state“ field contains the rejected version of this
+	// The ``error_state`` field contains the rejected version of this
 	// particular resource along with the reason and timestamp. For successfully
 	// updated or acknowledged resource, this field should be empty.
 	// [#not-implemented-hide:]

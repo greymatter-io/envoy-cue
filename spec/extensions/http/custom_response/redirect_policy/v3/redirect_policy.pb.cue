@@ -18,15 +18,16 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//	uri: https://www.mydomain.com/path/to/404.txt
+	//    uri: https://www.mydomain.com/path/to/404.txt
+	//
 	uri?: string
 	// Specify elements of the redirect url individually.
-	// Note: Do not specify the “response_code“ field in “redirect_action“, use
-	// “status_code“ instead.
-	// The following fields in “redirect_action“ are currently not supported,
+	// Note: Do not specify the ``response_code`` field in ``redirect_action``, use
+	// ``status_code`` instead.
+	// The following fields in ``redirect_action`` are currently not supported,
 	// and specifying them will cause the config to be rejected:
-	// - “prefix_rewrite“
-	// - “regex_rewrite“
+	// - ``prefix_rewrite``
+	// - ``regex_rewrite``
 	redirect_action?: v31.#RedirectAction
 	// The new response status code if specified. This is used to override the
 	// status code of the response from the new upstream if it is not an error status.

@@ -34,12 +34,12 @@ IPTagging_IpTagHeader_HeaderAction_APPEND_IF_EXISTS_OR_ADD: "APPEND_IF_EXISTS_OR
 	ip_tags?: [...#IPTagging_IPTag]
 	// Specify to which header the tags will be written.
 	//
-	// If left unspecified, the tags will be appended to the “x-envoy-ip-tags“ header.
+	// If left unspecified, the tags will be appended to the ``x-envoy-ip-tags`` header.
 	ip_tag_header?: #IPTagging_IpTagHeader
 	// Data source from which to retrieve ip tags.
 	// Only filename based data source is currently supported for IP tags.
-	// When using this data source, if a “watched_directory“ is provided, the IP tags file will be re-read when a file move is detected.
-	// See :ref:`watched_directory <envoy_v3_api_msg_config.core.v3.DataSource>` for more information about the “watched_directory“ field.
+	// When using this data source, if a ``watched_directory`` is provided, the IP tags file will be re-read when a file move is detected.
+	// See :ref:`watched_directory <envoy_v3_api_msg_config.core.v3.DataSource>` for more information about the ``watched_directory`` field.
 	ip_tags_datasource?: v3.#DataSource
 }
 

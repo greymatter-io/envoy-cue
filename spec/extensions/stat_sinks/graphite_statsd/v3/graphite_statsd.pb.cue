@@ -4,6 +4,7 @@ import (
 	v3 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
+// [#next-free-field: 6]
 #GraphiteStatsdSink: {
 	"@type": "type.googleapis.com/envoy.extensions.stat_sinks.graphite_statsd.v3.GraphiteStatsdSink"
 	// The UDP address of a running Graphite-compliant listener. If specified,
@@ -19,4 +20,9 @@ import (
 	//
 	// Note that this value may not be respected if smaller than a single metric.
 	max_bytes_per_datagram?: uint64
+	// If true, histogram samples are scaled to milliseconds according to the histogram's unit
+	// before being reported as timers. See :ref:`StatsdSink's scale_histogram_units_to_milliseconds
+	// field <envoy_v3_api_field_config.metrics.v3.StatsdSink.scale_histogram_units_to_milliseconds>`
+	// for more details.
+	scale_histogram_units_to_milliseconds?: bool
 }

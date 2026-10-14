@@ -1,5 +1,9 @@
 package v3
 
+import (
+	v3 "envoyproxy.io/envoy-cue/spec/extensions/dynamic_modules/v3"
+)
+
 // Configuration for the dynamic modules HTTP match input. This input extracts HTTP request and
 // response data from the matching context and makes it available to the dynamic module matcher
 // via ABI callbacks during match evaluation.
@@ -9,4 +13,35 @@ package v3
 // <envoy_v3_api_msg_extensions.matching.input_matchers.dynamic_modules.v3.DynamicModuleMatcher>`.
 #HttpDynamicModuleMatchInput: {
 	"@type": "type.googleapis.com/envoy.extensions.matching.http.dynamic_modules.v3.HttpDynamicModuleMatchInput"
+}
+
+// Configuration for the dynamic modules data input. This input loads a shared object file
+// via “dlopen“ and invokes it during match evaluation to extract a value from the HTTP
+// request and response. The extracted value is a string that an exact match map can dispatch on,
+// so a module can select one of many matches with a single evaluation.
+//
+// Unlike :ref:`HttpDynamicModuleMatchInput
+// <envoy_v3_api_msg_extensions.matching.http.dynamic_modules.v3.HttpDynamicModuleMatchInput>`, the
+// module produces the value directly rather than pairing with the dynamic modules input matcher.
+// [#extension: envoy.matching.inputs.dynamic_module_string_data_input]
+#DynamicModuleDataInput: {
+	"@type": "type.googleapis.com/envoy.extensions.matching.http.dynamic_modules.v3.DynamicModuleDataInput"
+	// Specifies the shared-object level configuration. This field is required. Remote module sources
+	// are not supported for data inputs, so the module must be available locally or by name.
+	dynamic_module_config?: v3.#DynamicModuleConfig
+	// The name for this data input configuration. If not specified, defaults to an empty string.
+	//
+	// This can be used to distinguish between different data input implementations inside a dynamic
+	// module. When Envoy receives this configuration, it passes the ``input_name`` to the dynamic
+	// module's data input config init function together with the ``input_config``. That way a module
+	// can decide which in-module implementation to use based on the name at load time.
+	input_name?: string
+	// The configuration for the data input chosen by ``input_name``. If not specified, an empty
+	// configuration is passed to the module.
+	//
+	// ``google.protobuf.Struct`` and the ``value`` field of ``xds.type.v3.TypedStruct`` are
+	// serialized as JSON before passing them to the module.
+	// ``google.protobuf.BytesValue`` and ``google.protobuf.StringValue`` are passed directly without
+	// the wrapper.
+	input_config?: _
 }

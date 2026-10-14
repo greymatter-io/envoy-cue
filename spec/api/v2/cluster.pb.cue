@@ -91,17 +91,17 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. code-block:: yaml
 	//
-	//	transport_socket_matches:
-	//	- name: "enableMTLS"
-	//	  match:
-	//	    acceptMTLS: true
-	//	  transport_socket:
-	//	    name: envoy.transport_sockets.tls
-	//	    config: { ... } # tls socket configuration
-	//	- name: "defaultToPlaintext"
-	//	  match: {}
-	//	  transport_socket:
-	//	    name: envoy.transport_sockets.raw_buffer
+	//  transport_socket_matches:
+	//  - name: "enableMTLS"
+	//    match:
+	//      acceptMTLS: true
+	//    transport_socket:
+	//      name: envoy.transport_sockets.tls
+	//      config: { ... } # tls socket configuration
+	//  - name: "defaultToPlaintext"
+	//    match: {}
+	//    transport_socket:
+	//      name: envoy.transport_sockets.raw_buffer
 	//
 	// Connections to the endpoints whose metadata value under *envoy.transport_socket_match*
 	// having "acceptMTLS"/"true" key/value pair use the "enableMTLS" socket configuration.
@@ -132,10 +132,10 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// The cluster name is used when emitting
 	// :ref:`statistics <config_cluster_manager_cluster_stats>` if :ref:`alt_stat_name
 	// <envoy_api_field_Cluster.alt_stat_name>` is not provided.
-	// Any “:“ in the cluster name will be converted to “_“ when emitting statistics.
+	// Any ``:`` in the cluster name will be converted to ``_`` when emitting statistics.
 	name?: string
 	// An optional alternative to the cluster name to be used while emitting stats.
-	// Any “:“ in the name will be converted to “_“ when emitting statistics. This should not be
+	// Any ``:`` in the name will be converted to ``_`` when emitting statistics. This should not be
 	// confused with :ref:`Router Filter Header
 	// <config_http_filters_router_x-envoy-upstream-alt-stat-name>`.
 	alt_stat_name?: string
@@ -162,8 +162,9 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. attention::
 	//
-	//	**This field is deprecated**. Set the
-	//	:ref:`load_assignment<envoy_api_field_Cluster.load_assignment>` field instead.
+	//   **This field is deprecated**. Set the
+	//   :ref:`load_assignment<envoy_api_field_Cluster.load_assignment>` field instead.
+	//
 	//
 	// Deprecated: Marked as deprecated in envoy/api/v2/cluster.proto.
 	hosts?: [...core.#Address]
@@ -175,8 +176,9 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. attention::
 	//
-	//	Setting this allows non-EDS cluster types to contain embedded EDS equivalent
-	//	:ref:`endpoint assignments<envoy_api_msg_ClusterLoadAssignment>`.
+	//   Setting this allows non-EDS cluster types to contain embedded EDS equivalent
+	//   :ref:`endpoint assignments<envoy_api_msg_ClusterLoadAssignment>`.
+	//
 	load_assignment?: #ClusterLoadAssignment
 	// Optional :ref:`active health checking <arch_overview_health_checking>`
 	// configuration for the cluster. If no
@@ -194,8 +196,8 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. attention::
 	//
-	//	**This field is deprecated**. Use `transport_socket` with name `tls` instead. If both are
-	//	set, `transport_socket` takes priority.
+	//   **This field is deprecated**. Use `transport_socket` with name `tls` instead. If both are
+	//   set, `transport_socket` takes priority.
 	//
 	// Deprecated: Marked as deprecated in envoy/api/v2/cluster.proto.
 	tls_context?: auth.#UpstreamTlsContext
@@ -264,13 +266,13 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// and :ref:`LOGICAL_DNS<envoy_api_enum_value_Cluster.DiscoveryType.LOGICAL_DNS>`
 	// this setting is ignored.
 	// Setting this value causes failure if the
-	// “envoy.restart_features.use_apple_api_for_dns_lookups“ runtime value is true during
+	// ``envoy.restart_features.use_apple_api_for_dns_lookups`` runtime value is true during
 	// server startup. Apple's API only allows overriding DNS resolvers via system settings.
 	dns_resolvers?: [...core.#Address]
 	// [#next-major-version: Reconcile DNS options in a single message.]
 	// Always use TCP queries instead of UDP queries for DNS lookups.
 	// Setting this value causes failure if the
-	// “envoy.restart_features.use_apple_api_for_dns_lookups“ runtime value is true during
+	// ``envoy.restart_features.use_apple_api_for_dns_lookups`` runtime value is true during
 	// server startup. Apple' API only uses UDP for DNS resolution.
 	use_tcp_for_dns_lookups?: bool
 	// If specified, outlier detection will be enabled for this upstream cluster.
@@ -326,14 +328,14 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. note::
 	//
-	//	This is currently only supported for connections created by tcp_proxy.
+	//   This is currently only supported for connections created by tcp_proxy.
 	//
 	// .. note::
 	//
-	//	The current implementation of this feature closes all connections immediately when
-	//	the unhealthy status is detected. If there are a large number of connections open
-	//	to an upstream host that becomes unhealthy, Envoy may spend a substantial amount of
-	//	time exclusively closing these connections, and not processing any other traffic.
+	//   The current implementation of this feature closes all connections immediately when
+	//   the unhealthy status is detected. If there are a large number of connections open
+	//   to an upstream host that becomes unhealthy, Envoy may spend a substantial amount of
+	//   time exclusively closing these connections, and not processing any other traffic.
 	close_connections_on_host_health_failure?: bool
 	// If set to true, Envoy will ignore the health value of a host when processing its removal
 	// from service discovery. This means that if active health checking is used, Envoy will *not*
@@ -472,10 +474,10 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. code-block:: json
 	//
-	//	{ "subset_selectors": [
-	//	    { "keys": [ "version" ] },
-	//	    { "keys": [ "stage", "hardware_type" ] }
-	//	]}
+	//   { "subset_selectors": [
+	//       { "keys": [ "version" ] },
+	//       { "keys": [ "stage", "hardware_type" ] }
+	//   ]}
 	//
 	// A subset is matched when the metadata from the selected route and
 	// weighted cluster contains the same keys and values as the subset's
@@ -547,13 +549,13 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	//
 	// .. attention::
 	//
-	//	This header isn't sanitized by default, so enabling this feature allows HTTP clients to
-	//	route traffic to arbitrary hosts and/or ports, which may have serious security
-	//	consequences.
+	//   This header isn't sanitized by default, so enabling this feature allows HTTP clients to
+	//   route traffic to arbitrary hosts and/or ports, which may have serious security
+	//   consequences.
 	//
 	// .. note::
 	//
-	//	If the header appears multiple times only the first value is used.
+	//   If the header appears multiple times only the first value is used.
 	use_http_header?: bool
 }
 
@@ -566,8 +568,7 @@ Cluster_RingHashLbConfig_HashFunction_MURMUR_HASH_2: "MURMUR_HASH_2"
 	// To disable panic mode, set to 0%.
 	//
 	// .. note::
-	//
-	//	The specified percent will be truncated to the nearest 1%.
+	//   The specified percent will be truncated to the nearest 1%.
 	healthy_panic_threshold?:     _type.#Percent
 	zone_aware_lb_config?:        #Cluster_CommonLbConfig_ZoneAwareLbConfig
 	locality_weighted_lb_config?: #Cluster_CommonLbConfig_LocalityWeightedLbConfig

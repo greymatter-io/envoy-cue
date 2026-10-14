@@ -169,16 +169,14 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// The default timeout is 1000 ms if this option is not specified.
 	//
 	// .. NOTE::
-	//
-	//	To be useful in avoiding the race condition described above, this timeout must be set
-	//	to *at least* <max round trip time expected between clients and Envoy>+<100ms to account for
-	//	a reasonable "worst" case processing time for a full iteration of Envoy's event loop>.
+	//    To be useful in avoiding the race condition described above, this timeout must be set
+	//    to *at least* <max round trip time expected between clients and Envoy>+<100ms to account for
+	//    a reasonable "worst" case processing time for a full iteration of Envoy's event loop>.
 	//
 	// .. WARNING::
-	//
-	//	A value of 0 will completely disable delayed close processing. When disabled, the downstream
-	//	connection's socket will be closed immediately after the write flush is completed or will
-	//	never close if the write flush does not complete.
+	//    A value of 0 will completely disable delayed close processing. When disabled, the downstream
+	//    connection's socket will be closed immediately after the write flush is completed or will
+	//    never close if the write flush does not complete.
 	delayed_close_timeout?: string
 	// Configuration for :ref:`HTTP access logs <arch_overview_access_logs>`
 	// emitted by the connection manager.
@@ -358,8 +356,7 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// specified on the parent listener, then it is used instead of this field.
 	//
 	// .. attention::
-	//
-	//	This field has been deprecated in favor of `traffic_direction`.
+	//  This field has been deprecated in favor of `traffic_direction`.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/filter/network/http_connection_manager/v2/http_connection_manager.proto.
 	operation_name?: #HttpConnectionManager_Tracing_OperationName
@@ -368,9 +365,8 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	// created if the specified header name is present in the request's headers.
 	//
 	// .. attention::
-	//
-	//	This field has been deprecated in favor of :ref:`custom_tags
-	//	<envoy_api_field_config.filter.network.http_connection_manager.v2.HttpConnectionManager.tracing.custom_tags>`.
+	//  This field has been deprecated in favor of :ref:`custom_tags
+	//  <envoy_api_field_config.filter.network.http_connection_manager.v2.HttpConnectionManager.tracing.custom_tags>`.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/filter/network/http_connection_manager/v2/http_connection_manager.proto.
 	request_headers_for_tags?: [...string]
@@ -516,7 +512,7 @@ HttpConnectionManager_Tracing_OperationName_EGRESS:  "EGRESS"
 	//
 	// .. note::
 	//
-	//	If the header appears multiple times only the first value is used.
+	//   If the header appears multiple times only the first value is used.
 	name?: string
 	// The element separator (e.g., ';' separates 'a;b;c;d').
 	// Default: empty string. This causes the entirety of the header field to be extracted.

@@ -59,28 +59,29 @@ Field_REPLY_TYPE:   "REPLY_TYPE"
 	//
 	// .. code-block:: yaml
 	//
-	//	method_name: foo
-	//	field_selector:
-	//	  name: info
-	//	  id: 2
-	//	  child:
-	//	    name: version
-	//	    id: 1
+	//    method_name: foo
+	//    field_selector:
+	//      name: info
+	//      id: 2
+	//      child:
+	//        name: version
+	//        id: 1
 	//
-	// The above yaml will match on value of “info.version“ in the below thrift schema as input of
+	// The above yaml will match on value of ``info.version`` in the below thrift schema as input of
 	// :ref:`on_present<envoy_v3_api_field_extensions.filters.http.thrift_to_metadata.v3.Rule.on_present>` or
 	// :ref:`on_missing<envoy_v3_api_field_extensions.filters.http.thrift_to_metadata.v3.Rule.on_missing>`
-	// while we are processing “foo“ method. This rule won't be applied to “bar“ method.
+	// while we are processing ``foo`` method. This rule won't be applied to ``bar`` method.
 	//
 	// .. code-block:: thrift
 	//
-	//	struct Info {
-	//	  1: required string version;
-	//	}
-	//	service Server {
-	//	  bool foo(1: i32 id, 2: Info info);
-	//	  bool bar(1: i32 id, 2: Info info);
-	//	}
+	//    struct Info {
+	//      1: required string version;
+	//    }
+	//    service Server {
+	//      bool foo(1: i32 id, 2: Info info);
+	//      bool bar(1: i32 id, 2: Info info);
+	//    }
+	//
 	field_selector?: #FieldSelector
 	// If specified, :ref:`field_selector<envoy_v3_api_field_extensions.filters.http.thrift_to_metadata.v3.Rule.field_selector>`
 	// will be used to extract the field value *only* on the thrift message with method name.
@@ -120,9 +121,9 @@ Field_REPLY_TYPE:   "REPLY_TYPE"
 	// not supported due to deprecation in envoy.
 	protocol?: v3.#ProtocolType
 	// Allowed content-type for thrift payload to filter metadata transformation.
-	// Default to “{"application/x-thrift"}“.
+	// Default to ``{"application/x-thrift"}``.
 	//
-	// Set “allow_empty_content_type“ if empty/missing content-type header
+	// Set ``allow_empty_content_type`` if empty/missing content-type header
 	// is allowed.
 	allow_content_types?: [...string]
 	// Allowed empty content-type for thrift payload to filter metadata transformation.

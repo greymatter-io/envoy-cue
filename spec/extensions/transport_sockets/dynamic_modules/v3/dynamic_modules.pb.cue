@@ -25,7 +25,7 @@ import (
 	// <envoy_v3_api_msg_extensions.dynamic_modules.v3.DynamicModuleConfig>` for details.
 	dynamic_module_config?: v3.#DynamicModuleConfig
 	// The name of the transport socket implementation in the dynamic module. This is passed to the
-	// module's “envoy_dynamic_module_on_transport_socket_factory_config_new“ function.
+	// module's ``envoy_dynamic_module_on_transport_socket_factory_config_new`` function.
 	transport_socket_name?: string
 	// Optional configuration for the transport socket. This is passed as bytes to the dynamic module.
 	// If not specified, no configuration bytes are passed to the module.

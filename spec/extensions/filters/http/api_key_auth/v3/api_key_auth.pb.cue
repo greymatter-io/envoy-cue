@@ -39,18 +39,18 @@ package v3
 	// configuration will be used.
 	key_sources?: [...#KeySource]
 	// A list of clients that are allowed to access the route or vhost. The clients listed here
-	// should be subset of the clients listed in the “credentials“ to provide authorization control
+	// should be subset of the clients listed in the ``credentials`` to provide authorization control
 	// after the authentication is successful. If the list is empty, then all authenticated clients
 	// are allowed. This provides very limited but simple authorization. If more complex authorization
 	// is required, then use the :ref:`HTTP RBAC filter <config_http_filters_rbac>` instead.
 	//
 	// .. note::
+	//   Setting this field and ``credentials`` at the same configuration entry is not an error but
+	//   also makes no much sense because they provide similar functionality. Please only use
+	//   one of them at same configuration entry except for the case that you want to share the same
+	//   credentials list across multiple routes but still use different allowed clients for each
+	//   route.
 	//
-	//	Setting this field and ``credentials`` at the same configuration entry is not an error but
-	//	also makes no much sense because they provide similar functionality. Please only use
-	//	one of them at same configuration entry except for the case that you want to share the same
-	//	credentials list across multiple routes but still use different allowed clients for each
-	//	route.
 	allowed_clients?: [...string]
 	// Optional configuration to control what information should be propagated to upstream services.
 	// If this field is non-empty, then the forwarding information in the filter level configuration
@@ -73,16 +73,16 @@ package v3
 	// used. If the header value starts with 'Bearer ', this prefix will be stripped to get the
 	// key value.
 	//
-	// If set, takes precedence over “query“ and “cookie“.
+	// If set, takes precedence over ``query`` and ``cookie``.
 	header?: string
 	// The query parameter name to fetch the key. If multiple query values are present, the first one
 	// will be used.
 	//
-	// The field will be used if “header“ is not set. If set, takes precedence over “cookie“.
+	// The field will be used if ``header`` is not set. If set, takes precedence over ``cookie``.
 	query?: string
 	// The cookie name to fetch the key.
 	//
-	// The field will be used if the “header“ and “query“ are not set.
+	// The field will be used if the ``header`` and ``query`` are not set.
 	cookie?: string
 }
 
@@ -94,6 +94,6 @@ package v3
 	header?: string
 	// If true, remove the API key from the request before forwarding upstream.
 	//
-	// This applies to all configured key sources: “header“, “query“, and “cookie“.
+	// This applies to all configured key sources: ``header``, ``query``, and ``cookie``.
 	hide_credentials?: bool
 }

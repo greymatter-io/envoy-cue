@@ -6,7 +6,7 @@ import (
 )
 
 // Configuration for the upstream reverse connection socket interface.
-// [#next-free-field: 7]
+// [#next-free-field: 8]
 #UpstreamReverseConnectionSocketInterface: {
 	"@type": "type.googleapis.com/envoy.extensions.bootstrap.reverse_tunnel.upstream_socket_interface.v3.UpstreamReverseConnectionSocketInterface"
 	// Stat prefix for upstream reverse connection socket interface stats.
@@ -22,13 +22,21 @@ import (
 	// the socket interface instantiates a reporter via the configured factory.
 	// If unset, no reporting is done.
 	reporter_config?: v3.#TypedExtensionConfig
-	// Enables tenant-aware isolation for reverse connections. When set to “true“, the socket
+	// Enables tenant-aware isolation for reverse connections. When set to ``true``, the socket
 	// interface requires tenant identifiers in addition to node and cluster identifiers and derives
-	// composite “tenant:node“ and “tenant:cluster“ keys for socket tracking. Identifiers
-	// containing the “:“ delimiter are rejected to avoid ambiguity.
-	// Defaults to “false“ for backwards compatibility.
+	// composite ``tenant:node`` and ``tenant:cluster`` keys for socket tracking. Identifiers
+	// containing the ``:`` delimiter are rejected to avoid ambiguity.
+	// Defaults to ``false`` for backwards compatibility.
 	enable_tenant_isolation?: bool
 	// Access logs emitted for reverse tunnel lifecycle events. Entries are generated for tunnel setup,
 	// socket handoff, tunnel close, and post-handoff HTTP/2 keepalive timeout observations.
 	access_log?: [...v31.#AccessLog]
+	// Maximum number of concurrently accepted reverse connections per node (and per tenant
+	// when tenant isolation is enabled). The cap is only consulted for reverse tunnel network
+	// filters that opt in via ``enable_connection_limit``; filters that leave it disabled ignore it.
+	// The cap is enforced per worker thread, so the effective ceiling is roughly this value
+	// multiplied by the number of workers; it is also only approximate when rebalancing is enabled.
+	// Defaults to 0; combined with ``enable_connection_limit: true`` a value of 0 rejects all
+	// connections, so set a non-zero value whenever a filter enables the limit.
+	max_connections_per_node?: uint32
 }

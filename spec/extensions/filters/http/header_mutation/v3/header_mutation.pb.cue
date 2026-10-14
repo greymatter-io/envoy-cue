@@ -5,12 +5,12 @@ import (
 	v31 "envoyproxy.io/envoy-cue/spec/config/core/v3"
 )
 
-// [#next-free-field: 6]
+// [#next-free-field: 7]
 #Mutations: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.header_mutation.v3.Mutations"
 	// The request mutations are applied before the request is forwarded to the upstream cluster.
 	request_mutations?: [...v3.#HeaderMutation]
-	// The “path“ header query parameter mutations are applied after “request_mutations“ and before the request
+	// The ``path`` header query parameter mutations are applied after ``request_mutations`` and before the request
 	// is forwarded to the next filter in the filter chain.
 	query_parameter_mutations?: [...v31.#KeyValueMutation]
 	// The response mutations are applied before the response is sent to the downstream client.
@@ -19,6 +19,14 @@ import (
 	response_trailers_mutations?: [...v3.#HeaderMutation]
 	// The request trailer mutations are applied before the request is sent to the upstream cluster.
 	request_trailers_mutations?: [...v3.#HeaderMutation]
+	// Specifies a collection of Formatter plugins that can be used in substitution formatters
+	// in this message.
+	// If not specified, only the built-in command operators are available.
+	// Configured plugins take precedence over the built-in command operators.
+	// The plugins apply only to this message and are not inherited from other configuration levels.
+	// See the formatters extensions documentation for details.
+	// [#extension-category: envoy.formatter]
+	formatters?: [...v31.#TypedExtensionConfig]
 }
 
 // Per route configuration for the header mutation filter.

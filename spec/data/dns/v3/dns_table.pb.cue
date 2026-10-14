@@ -98,13 +98,13 @@ import (
 #DnsTable_DnsVirtualDomain: {
 	"@type": "type.googleapis.com/envoy.data.dns.v3.DnsTable_DnsVirtualDomain"
 	// A domain name for which Envoy will respond to query requests.
-	// Wildcard records are supported on the first label only, e.g. “*.example.com“ or “*.subdomain.example.com“.
-	// Names such as “*example.com“, “subdomain.*.example.com“, “*subdomain.example.com“, etc
-	// are not valid wildcard names and asterisk will be interpreted as a literal “*“ character.
-	// Wildcard records match subdomains on any levels, e.g. “*.example.com“ will match
-	// “foo.example.com“, “bar.foo.example.com“, “baz.bar.foo.example.com“, etc. In case there are multiple
+	// Wildcard records are supported on the first label only, e.g. ``*.example.com`` or ``*.subdomain.example.com``.
+	// Names such as ``*example.com``, ``subdomain.*.example.com``, ``*subdomain.example.com``, etc
+	// are not valid wildcard names and asterisk will be interpreted as a literal ``*`` character.
+	// Wildcard records match subdomains on any levels, e.g. ``*.example.com`` will match
+	// ``foo.example.com``, ``bar.foo.example.com``, ``baz.bar.foo.example.com``, etc. In case there are multiple
 	// wildcard records, the longest wildcard match will be used, e.g. if there are wildcard records for
-	// “*.example.com“ and “*.foo.example.com“ and the query is for “bar.foo.example.com“, the latter will be used.
+	// ``*.example.com`` and ``*.foo.example.com`` and the query is for ``bar.foo.example.com``, the latter will be used.
 	// Specific records will always take precedence over wildcard records.
 	name?: string
 	// The configuration containing the method to determine the address of this endpoint

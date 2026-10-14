@@ -1,0 +1,81 @@
+package v3
+
+// The following descriptor entry is appended with a value extracted from a
+// named claim in a JWT found in an HTTP request header or cookie.
+//
+// .. code-block:: cpp
+//
+//	("<descriptor_key>", "<claim_value>")
+//
+// .. warning::
+//
+//	SECURITY WARNING: This extension does NOT verify JWT signatures. Any
+//	party can present a forged or expired JWT with arbitrary claims, and
+//	those claims will be used as rate limit descriptor values. This means
+//	an attacker can trivially evade or manipulate per-claim rate limits
+//	(e.g. impersonate another subject, or rotate a fake claim value on
+//	every request to bypass limiting entirely) unless the JWT signature
+//	is verified elsewhere in the request path — for example, by an
+//	upstream mTLS-authenticated service, or by an
+//	:ref:`envoy.filters.http.jwt_authn
+//	<envoy_v3_api_msg_extensions.filters.http.jwt_authn.v3.JwtAuthentication>`
+//	filter earlier in the same filter chain that rejects invalid tokens
+//	before this descriptor action runs.
+//
+//	DO NOT use this extension to gate access, apply differentiated rate
+//	limits by trust level, or make any authorization-adjacent decision
+//	based on the extracted claim, unless signature verification is
+//	PROVABLY performed elsewhere in the request path.
+//
+//	If you need Envoy itself to verify the JWT before rate limiting,
+//	use the :ref:`envoy.filters.http.jwt_authn
+//	<envoy_v3_api_msg_extensions.filters.http.jwt_authn.v3.JwtAuthentication>`
+//	filter (placed before the rate limit filter) together with a
+//	:ref:`request_headers
+//	<envoy_v3_api_field_config.route.v3.RateLimit.Action.request_headers>`
+//	or :ref:`metadata
+//	<envoy_v3_api_field_config.route.v3.RateLimit.Action.metadata>`
+//	descriptor action instead of this extension.
+//
+// [#next-free-field: 8]
+#Descriptor: {
+	"@type": "type.googleapis.com/envoy.extensions.rate_limit_descriptors.jwt_claim.v3.Descriptor"
+	// The key to use in the descriptor entry.
+	descriptor_key?: string
+	// The name of the HTTP header containing the JWT, e.g. "authorization".
+	//
+	// Exactly one of ``header_name`` or ``cookie`` must be set.
+	header_name?: string
+	// The name of the cookie containing the JWT, e.g. "auth_token". The cookie
+	// is looked up in the request's ``Cookie`` header.
+	//
+	// Exactly one of ``header_name`` or ``cookie`` must be set.
+	cookie?: string
+	// The value prefix to strip before parsing the remainder as a JWT, e.g.
+	// "Bearer " (with a trailing space) for an "authorization" header
+	// formatted as "Authorization: Bearer <token>". If the header or cookie
+	// value does not start with this prefix, the descriptor is not populated
+	// (falls through to ``default_value``/``skip_if_absent`` below).
+	//
+	// This is typically only needed for ``header_name``; cookie values do not
+	// usually carry a prefix.
+	value_prefix?: string
+	// The name of the JWT claim to extract. Can be a nested claim, dot-
+	// separated, e.g. "claim.nested.key". Matches the same convention as
+	// :ref:`JwtClaimToHeader.claim_name
+	// <envoy_v3_api_field_extensions.filters.http.jwt_authn.v3.JwtClaimToHeader.claim_name>`.
+	// Only string-valued claims are supported; non-string claims (numbers,
+	// booleans, arrays, objects) are treated as absent. An empty string-valued
+	// claim populates the descriptor with an empty value.
+	claim_name?: string
+	// The default value to use if the header or cookie is absent, is not a
+	// structurally valid JWT, or the named claim is absent/non-string.
+	default_value?: string
+	// If true, Envoy skips this descriptor entry (rather than aborting the
+	// whole descriptor for this action list) when the header or cookie is
+	// absent, the JWT cannot be parsed, or the named claim is absent/non-string, and
+	// ``default_value`` is not specified. An empty string-valued claim is
+	// present and produces an entry with an empty value regardless of this
+	// setting.
+	skip_if_absent?: bool
+}

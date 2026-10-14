@@ -12,18 +12,18 @@ import (
 	// the suffix or prefix form.
 	//
 	// Host search order:
-	//  1. Exact names: “www.foo.com“.
-	//  2. Suffix wildcards: “*.foo.com“ or “*-bar.foo.com“.
-	//  3. Prefix wildcards: “foo.*“ or “foo-*“.
-	//  4. Special wildcard “*“ matching any host and will be the default virtual host.
+	//  1. Exact names: ``www.foo.com``.
+	//  2. Suffix wildcards: ``*.foo.com`` or ``*-bar.foo.com``.
+	//  3. Prefix wildcards: ``foo.*`` or ``foo-*``.
+	//  4. Special wildcard ``*`` matching any host and will be the default virtual host.
 	//
 	// .. note::
 	//
-	//	The wildcard will not match the empty string.
-	//	e.g. ``*-bar.foo.com`` will match ``baz-bar.foo.com`` but not ``-bar.foo.com``.
-	//	The longest wildcards match first.
-	//	Only a single virtual host in the entire route configuration can match on ``*``. A domain
-	//	must be unique across all virtual hosts or the config will fail to load.
+	//   The wildcard will not match the empty string.
+	//   e.g. ``*-bar.foo.com`` will match ``baz-bar.foo.com`` but not ``-bar.foo.com``.
+	//   The longest wildcards match first.
+	//   Only a single virtual host in the entire route configuration can match on ``*``. A domain
+	//   must be unique across all virtual hosts or the config will fail to load.
 	hosts?: [...string]
 	// The match tree to use when resolving route actions for incoming requests.
 	routes?: v3.#Matcher
@@ -80,9 +80,9 @@ import (
 	// envoy.extensions.filters.network.generic_proxy.v3.Rds.
 	name?: string
 	// The match tree to use when resolving route actions for incoming requests.
-	// If no any virtual host is configured in the “virtual_hosts“ field or no special wildcard
-	// virtual host is configured, the “routes“ field will be used as the default route table.
-	// If both the wildcard virtual host and “routes“ are configured, the configuration will fail
+	// If no any virtual host is configured in the ``virtual_hosts`` field or no special wildcard
+	// virtual host is configured, the ``routes`` field will be used as the default route table.
+	// If both the wildcard virtual host and ``routes`` are configured, the configuration will fail
 	// to load.
 	routes?: v3.#Matcher
 	// An array of virtual hosts that make up the route table.

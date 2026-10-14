@@ -43,9 +43,9 @@ import (
 	// Filter chain to apply on this route. Must contain at least one filter.
 	//
 	// .. note::
+	//   Not all HTTP filters are compatible to be used within this route level filter chain
+	//   for now.
 	//
-	//	Not all HTTP filters are compatible to be used within this route level filter chain
-	//	for now.
 	filter_chain?: #FilterChain
 }
 
@@ -58,15 +58,13 @@ import (
 	// At least one filter must be specified.
 	//
 	// .. warning::
-	//
-	//	Please do not configure the ``filter_chain`` filter itself or ``composite`` filter
-	//	within this list recursively to avoid undefined behavior.
+	//   Please do not configure the ``filter_chain`` filter itself or ``composite`` filter
+	//   within this list recursively to avoid undefined behavior.
 	//
 	// .. note::
-	//
-	//	It is possible to configure ``terminal`` filters (filters that do not expect next filter
-	//	in the chain, e.g., ``envoy.filters.http.router``) in the middle of the chain. However,
-	//	use it with caution to avoid unexpected behavior.
+	//   It is possible to configure ``terminal`` filters (filters that do not expect next filter
+	//   in the chain, e.g., ``envoy.filters.http.router``) in the middle of the chain. However,
+	//   use it with caution to avoid unexpected behavior.
 	//
 	// [#extension-category: envoy.filters.http]
 	filters?: [...v3.#TypedExtensionConfig]

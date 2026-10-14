@@ -10,6 +10,6 @@ package v3
 	// If true, will attempt to use WDS in case the prefix peer metadata is not available.
 	enable_discovery?: bool
 	// Additional labels to be added to the peer metadata to help your understand the traffic.
-	// e.g. “role“, “location“ etc.
+	// e.g. ``role``, ``location`` etc.
 	additional_labels?: [...string]
 }

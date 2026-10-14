@@ -93,14 +93,15 @@ RBAC_AuditLoggingOptions_AuditCondition_ON_DENY_AND_ALLOW: "ON_DENY_AND_ALLOW"
 	//
 	// Actions:
 	//
-	//   - “ALLOW“: Allows the request if and only if there is a policy that matches
-	//     the request.
-	//   - “DENY“: Allows the request if and only if there are no policies that
-	//     match the request.
-	//   - “LOG“: Allows all requests. If at least one policy matches, the dynamic
-	//     metadata key “access_log_hint“ is set to the value “true“ under the shared
-	//     key namespace “envoy.common“. If no policies match, it is set to “false“.
-	//     Other actions do not modify this key.
+	//  * ``ALLOW``: Allows the request if and only if there is a policy that matches
+	//    the request.
+	//  * ``DENY``: Allows the request if and only if there are no policies that
+	//    match the request.
+	//  * ``LOG``: Allows all requests. If at least one policy matches, the dynamic
+	//    metadata key ``access_log_hint`` is set to the value ``true`` under the shared
+	//    key namespace ``envoy.common``. If no policies match, it is set to ``false``.
+	//    Other actions do not modify this key.
+	//
 	action?: #RBAC_Action
 	// Maps from policy name to policy. A match occurs when at least one policy matches the request.
 	// The policies are evaluated in lexicographic order of the policy name.
@@ -121,11 +122,11 @@ RBAC_AuditLoggingOptions_AuditCondition_ON_DENY_AND_ALLOW: "ON_DENY_AND_ALLOW"
 	"@type": "type.googleapis.com/envoy.config.rbac.v3.Policy"
 	// Required. The set of permissions that define a role. Each permission is
 	// matched with OR semantics. To match all actions for this policy, a single
-	// Permission with the “any“ field set to true should be used.
+	// Permission with the ``any`` field set to true should be used.
 	permissions?: [...#Permission]
 	// Required. The set of principals that are assigned/denied the role based on
 	// “action”. Each principal is matched with OR semantics. To match all
-	// downstreams for this policy, a single Principal with the “any“ field set to
+	// downstreams for this policy, a single Principal with the ``any`` field set to
 	// true should be used.
 	principals?: [...#Principal]
 	// An optional symbolic expression specifying an access control
@@ -137,7 +138,7 @@ RBAC_AuditLoggingOptions_AuditCondition_ON_DENY_AND_ALLOW: "ON_DENY_AND_ALLOW"
 	// An optional symbolic expression that has been successfully type checked.
 	// Only be used when condition is not used.
 	checked_condition?: v1alpha1.#CheckedExpr
-	// CEL expression configuration that modifies the evaluation behavior of the “condition“ field.
+	// CEL expression configuration that modifies the evaluation behavior of the ``condition`` field.
 	// If specified, string conversion, concatenation, and manipulation functions may be enabled
 	// for the CEL expression. See :ref:`CelExpressionConfig <envoy_v3_api_msg_config.core.v3.CelExpressionConfig>`
 	// for more details.
@@ -173,13 +174,14 @@ RBAC_AuditLoggingOptions_AuditCondition_ON_DENY_AND_ALLOW: "ON_DENY_AND_ALLOW"
 	or_rules?: #Permission_Set
 	// When any is set, it matches any action.
 	any?: bool
-	// A header (or pseudo-header such as “:path“ or “:method“) on the incoming HTTP request. Only available
+	// A header (or pseudo-header such as ``:path`` or ``:method``) on the incoming HTTP request. Only available
 	// for HTTP request.
 	//
 	// .. note::
 	//
-	//	The pseudo-header ``:path`` includes the query and fragment string. Use the ``url_path`` field if you
-	//	want to match the URL path without the query and fragment string.
+	//   The pseudo-header ``:path`` includes the query and fragment string. Use the ``url_path`` field if you
+	//   want to match the URL path without the query and fragment string.
+	//
 	header?: v32.#HeaderMatcher
 	// A URL path on the incoming HTTP request. Only available for HTTP.
 	url_path?: v31.#PathMatcher
@@ -195,25 +197,25 @@ RBAC_AuditLoggingOptions_AuditCondition_ON_DENY_AND_ALLOW: "ON_DENY_AND_ALLOW"
 	// Deprecated: Marked as deprecated in envoy/config/rbac/v3/rbac.proto.
 	metadata?: v31.#MetadataMatcher
 	// Negates matching the provided permission. For instance, if the value of
-	// “not_rule“ would match, this permission would not match. Conversely, if
-	// the value of “not_rule“ would not match, this permission would match.
+	// ``not_rule`` would match, this permission would not match. Conversely, if
+	// the value of ``not_rule`` would not match, this permission would match.
 	not_rule?: #Permission
 	// The request server from the client's connection request. This is typically TLS SNI.
 	//
 	// .. attention::
 	//
-	//	The behavior of this field may be affected by how Envoy is configured
-	//	as explained below.
+	//   The behavior of this field may be affected by how Envoy is configured
+	//   as explained below.
 	//
-	//	* If the :ref:`TLS Inspector <config_listener_filters_tls_inspector>`
-	//	  filter is not added, and if a ``FilterChainMatch`` is not defined for
-	//	  the :ref:`server name
-	//	  <envoy_v3_api_field_config.listener.v3.FilterChainMatch.server_names>`,
-	//	  a TLS connection's requested SNI server name will be treated as if it
-	//	  wasn't present.
+	//   * If the :ref:`TLS Inspector <config_listener_filters_tls_inspector>`
+	//     filter is not added, and if a ``FilterChainMatch`` is not defined for
+	//     the :ref:`server name
+	//     <envoy_v3_api_field_config.listener.v3.FilterChainMatch.server_names>`,
+	//     a TLS connection's requested SNI server name will be treated as if it
+	//     wasn't present.
 	//
-	//	* A :ref:`listener filter <arch_overview_listener_filters>` may
-	//	  overwrite a connection's requested server name within Envoy.
+	//   * A :ref:`listener filter <arch_overview_listener_filters>` may
+	//     overwrite a connection's requested server name within Envoy.
 	//
 	// Please refer to :ref:`this FAQ entry <faq_how_to_setup_sni>` to learn how to setup SNI.
 	requested_server_name?: v31.#StringMatcher
@@ -224,7 +226,7 @@ RBAC_AuditLoggingOptions_AuditCondition_ON_DENY_AND_ALLOW: "ON_DENY_AND_ALLOW"
 	// [#extension-category: envoy.path.match]
 	uri_template?: v3.#TypedExtensionConfig
 	// Matches against metadata from either dynamic state or route configuration. Preferred over the
-	// “metadata“ field as it provides more flexibility in metadata source selection.
+	// ``metadata`` field as it provides more flexibility in metadata source selection.
 	sourced_metadata?: #SourcedMetadata
 }
 
@@ -259,25 +261,28 @@ RBAC_AuditLoggingOptions_AuditCondition_ON_DENY_AND_ALLOW: "ON_DENY_AND_ALLOW"
 	//
 	// .. note::
 	//
-	//	This is always the physical peer even if the
-	//	:ref:`remote_ip <envoy_v3_api_field_config.rbac.v3.Principal.remote_ip>` is inferred from the
-	//	x-forwarder-for header, the proxy protocol, etc.
+	//   This is always the physical peer even if the
+	//   :ref:`remote_ip <envoy_v3_api_field_config.rbac.v3.Principal.remote_ip>` is inferred from the
+	//   x-forwarder-for header, the proxy protocol, etc.
+	//
 	direct_remote_ip?: v3.#CidrRange
 	// A CIDR block that describes the downstream remote/origin address.
 	//
 	// .. note::
 	//
-	//	This may not be the physical peer and could be different from the :ref:`direct_remote_ip
-	//	<envoy_v3_api_field_config.rbac.v3.Principal.direct_remote_ip>`. E.g, if the remote ip is inferred from
-	//	the x-forwarder-for header, the proxy protocol, etc.
+	//   This may not be the physical peer and could be different from the :ref:`direct_remote_ip
+	//   <envoy_v3_api_field_config.rbac.v3.Principal.direct_remote_ip>`. E.g, if the remote ip is inferred from
+	//   the x-forwarder-for header, the proxy protocol, etc.
+	//
 	remote_ip?: v3.#CidrRange
-	// A header (or pseudo-header such as “:path“ or “:method“) on the incoming HTTP request. Only available
+	// A header (or pseudo-header such as ``:path`` or ``:method``) on the incoming HTTP request. Only available
 	// for HTTP request.
 	//
 	// .. note::
 	//
-	//	The pseudo-header ``:path`` includes the query and fragment string. Use the ``url_path`` field if you
-	//	want to match the URL path without the query and fragment string.
+	//   The pseudo-header ``:path`` includes the query and fragment string. Use the ``url_path`` field if you
+	//   want to match the URL path without the query and fragment string.
+	//
 	header?: v32.#HeaderMatcher
 	// A URL path on the incoming HTTP request. Only available for HTTP.
 	url_path?: v31.#PathMatcher
@@ -289,11 +294,11 @@ RBAC_AuditLoggingOptions_AuditCondition_ON_DENY_AND_ALLOW: "ON_DENY_AND_ALLOW"
 	// Identifies the principal using a filter state object.
 	filter_state?: v31.#FilterStateMatcher
 	// Negates matching the provided principal. For instance, if the value of
-	// “not_id“ would match, this principal would not match. Conversely, if the
-	// value of “not_id“ would not match, this principal would match.
+	// ``not_id`` would match, this principal would not match. Conversely, if the
+	// value of ``not_id`` would not match, this principal would match.
 	not_id?: #Principal
 	// Matches against metadata from either dynamic state or route configuration. Preferred over the
-	// “metadata“ field as it provides more flexibility in metadata source selection.
+	// ``metadata`` field as it provides more flexibility in metadata source selection.
 	sourced_metadata?: #SourcedMetadata
 	// Extension for configuring custom principals for RBAC.
 	// [#extension-category: envoy.rbac.principals]
@@ -310,18 +315,19 @@ RBAC_AuditLoggingOptions_AuditCondition_ON_DENY_AND_ALLOW: "ON_DENY_AND_ALLOW"
 	//
 	// **Actions:**
 	//
-	//   - “ALLOW“: If the request gets matched on ALLOW, it is permitted.
-	//   - “DENY“: If the request gets matched on DENY, it is not permitted.
-	//   - “LOG“: If the request gets matched on LOG, it is permitted. Besides, the
-	//     dynamic metadata key “access_log_hint“ under the shared key namespace
-	//     “envoy.common“ will be set to the value “true“.
-	//   - If the request cannot get matched, it will fallback to “DENY“.
+	//  * ``ALLOW``: If the request gets matched on ALLOW, it is permitted.
+	//  * ``DENY``: If the request gets matched on DENY, it is not permitted.
+	//  * ``LOG``: If the request gets matched on LOG, it is permitted. Besides, the
+	//    dynamic metadata key ``access_log_hint`` under the shared key namespace
+	//    ``envoy.common`` will be set to the value ``true``.
+	//  * If the request cannot get matched, it will fallback to ``DENY``.
 	//
 	// **Log behavior:**
 	//
-	//	If the RBAC matcher contains at least one LOG action, the dynamic
-	//	metadata key ``access_log_hint`` will be set based on if the request
-	//	get matched on the LOG action.
+	//  If the RBAC matcher contains at least one LOG action, the dynamic
+	//  metadata key ``access_log_hint`` will be set based on if the request
+	//  get matched on the LOG action.
+	//
 	action?: #RBAC_Action
 }
 

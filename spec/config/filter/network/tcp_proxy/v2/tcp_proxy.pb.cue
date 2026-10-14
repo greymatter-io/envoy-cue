@@ -28,9 +28,8 @@ import (
 	// to 0s, the timeout will be disabled.
 	//
 	// .. warning::
-	//
-	//	Disabling this timeout has a highly likelihood of yielding connection leaks due to lost TCP
-	//	FIN packets, etc.
+	//   Disabling this timeout has a highly likelihood of yielding connection leaks due to lost TCP
+	//   FIN packets, etc.
 	idle_timeout?: string
 	// [#not-implemented-hide:] The idle timeout for connections managed by the TCP proxy
 	// filter. The idle timeout is defined as the period in which there is no

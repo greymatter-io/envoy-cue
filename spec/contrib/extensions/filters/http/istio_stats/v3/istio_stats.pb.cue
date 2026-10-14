@@ -55,7 +55,7 @@ Reporter_SERVER_GATEWAY: "SERVER_GATEWAY"
 	// header originates outsides the mesh, like at ingress.
 	disable_host_header_fallback?: bool
 	// Optional. Allows configuration of the time between calls out to for TCP
-	// metrics reporting. The default duration is “5s“.
+	// metrics reporting. The default duration is ``5s``.
 	tcp_reporting_duration?: string
 	// Metric overrides.
 	metrics?: [...#MetricConfig]

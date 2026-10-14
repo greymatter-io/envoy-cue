@@ -22,7 +22,7 @@ package v3
 #EndpointMetadataInput: {
 	"@type": "type.googleapis.com/envoy.extensions.matching.common_inputs.transport_socket.v3.EndpointMetadataInput"
 	// The filter name to retrieve the Struct from the endpoint metadata.
-	// If not specified, defaults to “envoy.lb“ which is commonly used for load balancing metadata.
+	// If not specified, defaults to ``envoy.lb`` which is commonly used for load balancing metadata.
 	filter?: string
 	// The path to retrieve the Value from the Struct.
 	path?: [...#EndpointMetadataInput_PathSegment]
@@ -50,7 +50,7 @@ package v3
 #LocalityMetadataInput: {
 	"@type": "type.googleapis.com/envoy.extensions.matching.common_inputs.transport_socket.v3.LocalityMetadataInput"
 	// The filter name to retrieve the Struct from the locality metadata.
-	// If not specified, defaults to “envoy.lb“ which is commonly used for load balancing metadata.
+	// If not specified, defaults to ``envoy.lb`` which is commonly used for load balancing metadata.
 	filter?: string
 	// The path to retrieve the Value from the Struct.
 	path?: [...#LocalityMetadataInput_PathSegment]

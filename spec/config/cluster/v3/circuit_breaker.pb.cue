@@ -18,9 +18,8 @@ import (
 	// Optional per-host limits which apply to each individual host in a cluster.
 	//
 	// .. note::
-	//
-	//	currently only the :ref:`max_connections
-	//	<envoy_v3_api_field_config.cluster.v3.CircuitBreakers.Thresholds.max_connections>` field is supported for per-host limits.
+	//  currently only the :ref:`max_connections
+	//  <envoy_v3_api_field_config.cluster.v3.CircuitBreakers.Thresholds.max_connections>` field is supported for per-host limits.
 	//
 	// If multiple per-host :ref:`Thresholds<envoy_v3_api_msg_config.cluster.v3.CircuitBreakers.Thresholds>`
 	// are defined with the same :ref:`RoutingPriority<envoy_v3_api_enum_config.core.v3.RoutingPriority>`,
@@ -57,8 +56,8 @@ import (
 	//
 	// .. note::
 	//
-	//	If this field is set, the retry budget will override any configured retry circuit
-	//	breaker.
+	//    If this field is set, the retry budget will override any configured retry circuit
+	//    breaker.
 	retry_budget?: #CircuitBreakers_Thresholds_RetryBudget
 	// If track_remaining is true, then stats will be published that expose
 	// the number of resources remaining until the circuit breakers open. If
@@ -66,8 +65,8 @@ import (
 	//
 	// .. note::
 	//
-	//	If a retry budget is used in lieu of the max_retries circuit breaker,
-	//	the remaining retry resources remaining will not be tracked.
+	//    If a retry budget is used in lieu of the max_retries circuit breaker,
+	//    the remaining retry resources remaining will not be tracked.
 	track_remaining?: bool
 	// The maximum number of connection pools per cluster that Envoy will concurrently support at
 	// once. If not specified, the default is unlimited. Set this for clusters which create a

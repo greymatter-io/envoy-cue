@@ -13,38 +13,38 @@ import (
 	//
 	// .. attention::
 	//
-	//	The form of host address depends on the given cluster type. For STATIC or EDS,
-	//	it is expected to be a direct IP address (or something resolvable by the
-	//	specified :ref:`resolver <envoy_v3_api_field_config.core.v3.SocketAddress.resolver_name>`
-	//	in the Address). For LOGICAL or STRICT DNS, it is expected to be hostname,
-	//	and will be resolved via DNS.
+	//   The form of host address depends on the given cluster type. For STATIC or EDS,
+	//   it is expected to be a direct IP address (or something resolvable by the
+	//   specified :ref:`resolver <envoy_v3_api_field_config.core.v3.SocketAddress.resolver_name>`
+	//   in the Address). For LOGICAL or STRICT DNS, it is expected to be hostname,
+	//   and will be resolved via DNS.
 	address?: v3.#Address
 	// The optional health check configuration is used as configuration for the
 	// health checker to contact the health checked host.
 	//
 	// .. attention::
 	//
-	//	This takes into effect only for upstream clusters with
-	//	:ref:`active health checking <arch_overview_health_checking>` enabled.
+	//   This takes into effect only for upstream clusters with
+	//   :ref:`active health checking <arch_overview_health_checking>` enabled.
 	health_check_config?: #Endpoint_HealthCheckConfig
 	// The hostname associated with this endpoint. This hostname is not used for routing or address
 	// resolution. If provided, it will be associated with the endpoint, and can be used for features
 	// that require a hostname, like
 	// :ref:`auto_host_rewrite <envoy_v3_api_field_config.route.v3.RouteAction.auto_host_rewrite>`.
 	hostname?: string
-	// An ordered list of addresses that together with “address“ comprise the
-	// list of addresses for an endpoint. The address given in the “address“ is
+	// An ordered list of addresses that together with ``address`` comprise the
+	// list of addresses for an endpoint. The address given in the ``address`` is
 	// prepended to this list. It is assumed that the list must already be
 	// sorted by preference order of the addresses. This will only be supported
 	// for STATIC and EDS clusters.
 	additional_addresses?: [...#Endpoint_AdditionalAddress]
 	// Optional alternative stat name for this endpoint. If not specified, the main address will be used
-	// as the stat name and be extracted as “envoy.endpoint_address“ tag value in generated stats.
-	// If specified, the “observability_name“ here will be used to replace the main address.
+	// as the stat name and be extracted as ``envoy.endpoint_address`` tag value in generated stats.
+	// If specified, the ``observability_name`` here will be used to replace the main address.
 	//
 	// .. note::
 	//
-	//	This field is ignored for logical DNS host implementation..
+	//   This field is ignored for logical DNS host implementation..
 	//
 	// This is useful when there are duplicate addresses in the cluster, for example when multiple
 	// endpoints share the same address but have different hostnames or metadata.
@@ -64,8 +64,8 @@ import (
 	health_status?: v3.#HealthStatus
 	// The endpoint metadata specifies values that may be used by the load
 	// balancer to select endpoints in a cluster for a given request. The filter
-	// name should be specified as “envoy.lb“. An example boolean key-value pair
-	// is “canary“, providing the optional canary status of the upstream host.
+	// name should be specified as ``envoy.lb``. An example boolean key-value pair
+	// is ``canary``, providing the optional canary status of the upstream host.
 	// This may be matched against in a route's
 	// :ref:`RouteAction <envoy_v3_api_msg_config.route.v3.RouteAction>` metadata_match field
 	// to subset the endpoints considered in cluster load balancing.
@@ -96,7 +96,7 @@ import (
 	leds_config?: v3.#ConfigSource
 	// The name of the LbEndpoint collection resource.
 	//
-	// If the name ends in “/*“, it indicates an LbEndpoint glob collection,
+	// If the name ends in ``/*``, it indicates an LbEndpoint glob collection,
 	// which is supported only in the xDS incremental protocol variants.
 	// Otherwise, it indicates an LbEndpointCollection list collection.
 	//
@@ -179,7 +179,7 @@ import (
 	//
 	// .. attention::
 	//
-	//	The form of the health check host address is expected to be a direct IP address.
+	//   The form of the health check host address is expected to be a direct IP address.
 	address?: v3.#Address
 	// Optional flag to control if perform active health check for this endpoint.
 	// Active health check is enabled by default if there is a health checker.

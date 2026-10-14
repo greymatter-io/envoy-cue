@@ -127,7 +127,7 @@ import (
 	max_ejection_time_jitter?: string
 	// If active health checking is enabled and a host is ejected by outlier detection, a successful active health check
 	// unejects the host by default and considers it as healthy. Unejection also clears all the outlier detection counters.
-	// To change this default behavior set this config to “false“ where active health checking will not uneject the host.
+	// To change this default behavior set this config to ``false`` where active health checking will not uneject the host.
 	// Defaults to true.
 	successful_active_health_check_uneject_host?: bool
 	// Set of host's passive monitors.
@@ -137,11 +137,11 @@ import (
 	// Defaults to false.
 	always_eject_one_host?: bool
 	// If set to true, outlier detection will mark hosts as degraded when they return
-	// the “x-envoy-degraded“ header.
+	// the ``x-envoy-degraded`` header.
 	// Degraded hosts are deprioritized in load balancing but are not ejected from the cluster.
 	// The degraded state is cleared using the same backoff algorithm as ejection, with the degradation
-	// period calculated as “base_ejection_time“ multiplied by the number of times the host
-	// has been marked as degraded, capped by “max_ejection_time“.
+	// period calculated as ``base_ejection_time`` multiplied by the number of times the host
+	// has been marked as degraded, capped by ``max_ejection_time``.
 	// Defaults to false.
 	detect_degraded_hosts?: bool
 }

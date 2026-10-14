@@ -21,7 +21,7 @@ package v1
 	// Profiling signal and process the data as if this value were absent or
 	// empty, ignoring its semantic content for the non-Profiling signal.
 	//
-	// Status: [Development]
+	// Status: [Alpha]
 	string_value_strindex?: int32
 }
 
@@ -54,7 +54,7 @@ package v1
 #KeyValue: {
 	"@type": "type.googleapis.com/go.opentelemetry.io.proto.otlp.common.v1.KeyValue"
 	// The key name of the pair.
-	// key_ref MUST NOT be set if key is used.
+	// key_strindex MUST NOT be set if key is used.
 	key?: string
 	// The value of the pair.
 	value?: #AnyValue
@@ -68,7 +68,7 @@ package v1
 	// Profiling signal and process the data as if this value were absent or
 	// empty, ignoring its semantic content for the non-Profiling signal.
 	//
-	// Status: [Development]
+	// Status: [Alpha]
 	key_strindex?: int32
 }
 

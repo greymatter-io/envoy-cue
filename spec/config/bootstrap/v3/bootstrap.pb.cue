@@ -49,34 +49,34 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	node?: v3.#Node
 	// A list of :ref:`Node <envoy_v3_api_msg_config.core.v3.Node>` field names
 	// that will be included in the context parameters of the effective
-	// “xdstp://“ URL that is sent in a discovery request when resource
+	// ``xdstp://`` URL that is sent in a discovery request when resource
 	// locators are used for LDS/CDS. Any non-string field will have its JSON
 	// encoding set as the context parameter value, with the exception of
 	// metadata, which will be flattened (see example below). The supported field
 	// names are:
-	// - “cluster“
-	// - “id“
-	// - “locality.region“
-	// - “locality.sub_zone“
-	// - “locality.zone“
-	// - “metadata“
-	// - “user_agent_build_version.metadata“
-	// - “user_agent_build_version.version“
-	// - “user_agent_name“
-	// - “user_agent_version“
+	// - ``cluster``
+	// - ``id``
+	// - ``locality.region``
+	// - ``locality.sub_zone``
+	// - ``locality.zone``
+	// - ``metadata``
+	// - ``user_agent_build_version.metadata``
+	// - ``user_agent_build_version.version``
+	// - ``user_agent_name``
+	// - ``user_agent_version``
 	//
 	// The node context parameters act as a base layer dictionary for the context
 	// parameters (i.e. more specific resource specific context parameters will
 	// override). Field names will be prefixed with ````"udpa.node."```` when included in
 	// context parameters.
 	//
-	// For example, if node_context_params is “["user_agent_name", "metadata"]“,
+	// For example, if node_context_params is ``["user_agent_name", "metadata"]``,
 	// the implied context parameters might be::
 	//
-	//	node.user_agent_name: "envoy"
-	//	node.metadata.foo: "{\"bar\": \"baz\"}"
-	//	node.metadata.some: "42"
-	//	node.metadata.thing: "\"thing\""
+	//   node.user_agent_name: "envoy"
+	//   node.metadata.foo: "{\"bar\": \"baz\"}"
+	//   node.metadata.some: "42"
+	//   node.metadata.thing: "\"thing\""
 	//
 	// [#not-implemented-hide:]
 	node_context_params?: [...string]
@@ -100,22 +100,22 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	stats_config?: v31.#StatsConfig
 	// Optional duration between flushes to configured stats sinks. For
 	// performance reasons Envoy latches counters and only flushes counters and
-	// gauges at a periodic interval. If not specified the default is “5000ms“ (“5“ seconds).
-	// Only one of “stats_flush_interval“ or “stats_flush_on_admin“
+	// gauges at a periodic interval. If not specified the default is ``5000ms`` (``5`` seconds).
+	// Only one of ``stats_flush_interval`` or ``stats_flush_on_admin``
 	// can be set.
-	// Duration must be at least “1ms“ and at most “5 min“.
+	// Duration must be at least ``1ms`` and at most ``5 min``.
 	stats_flush_interval?: string
 	// Flush stats to sinks only when queried for on the admin interface. If set,
-	// a flush timer is not created. Only one of “stats_flush_on_admin“ or
-	// “stats_flush_interval“ can be set.
+	// a flush timer is not created. Only one of ``stats_flush_on_admin`` or
+	// ``stats_flush_interval`` can be set.
 	stats_flush_on_admin?: bool
 	// Optional duration to perform metric eviction. At every interval, during the stats flush
 	// the unused metrics are removed from the worker caches and the used metrics
-	// are marked as unused. Must be a multiple of the “stats_flush_interval“.
+	// are marked as unused. Must be a multiple of the ``stats_flush_interval``.
 	stats_eviction_interval?: string
 	// Optional watchdog configuration.
 	// This is for a single watchdog configuration for the entire system.
-	// Deprecated in favor of “watchdogs“ which has finer granularity.
+	// Deprecated in favor of ``watchdogs`` which has finer granularity.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/bootstrap/v3/bootstrap.proto.
 	watchdog?: #Watchdog
@@ -126,9 +126,8 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	// Configuration for an external tracing provider.
 	//
 	// .. attention::
-	//
-	//	This field has been deprecated in favor of :ref:`HttpConnectionManager.Tracing.provider
-	//	<envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.Tracing.provider>`.
+	//  This field has been deprecated in favor of :ref:`HttpConnectionManager.Tracing.provider
+	//  <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.Tracing.provider>`.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/bootstrap/v3/bootstrap.proto.
 	tracing?: v32.#Tracing
@@ -140,44 +139,44 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	admin?: #Admin
 	// Optional overload manager configuration.
 	overload_manager?: v33.#OverloadManager
-	// Enable :ref:`stats for event dispatcher <operations_performance>`. Defaults to “false“.
+	// Enable :ref:`stats for event dispatcher <operations_performance>`. Defaults to ``false``.
 	//
 	// .. note::
 	//
-	//	This records a value for each iteration of the event loop on every thread. This
-	//	should normally be minimal overhead, but when using
-	//	:ref:`statsd <envoy_v3_api_msg_config.metrics.v3.StatsdSink>`, it will send each observed value
-	//	over the wire individually because the statsd protocol doesn't have any way to represent a
-	//	histogram summary. Be aware that this can be a very large volume of data.
+	//   This records a value for each iteration of the event loop on every thread. This
+	//   should normally be minimal overhead, but when using
+	//   :ref:`statsd <envoy_v3_api_msg_config.metrics.v3.StatsdSink>`, it will send each observed value
+	//   over the wire individually because the statsd protocol doesn't have any way to represent a
+	//   histogram summary. Be aware that this can be a very large volume of data.
 	enable_dispatcher_stats?: bool
-	// Optional string which will be used in lieu of “x-envoy“ in prefixing headers.
+	// Optional string which will be used in lieu of ``x-envoy`` in prefixing headers.
 	//
-	// For example, if this string is present and set to “X-Foo“, then “x-envoy-retry-on“ will be
-	// transformed into “x-foo-retry-on“ etc.
+	// For example, if this string is present and set to ``X-Foo``, then ``x-envoy-retry-on`` will be
+	// transformed into ``x-foo-retry-on`` etc.
 	//
 	// .. note::
 	//
-	//	This applies to the headers Envoy will generate, the headers Envoy will sanitize, and the
-	//	headers Envoy will trust for core code and core extensions only. Be VERY careful making
-	//	changes to this string, especially in multi-layer Envoy deployments or deployments using
-	//	extensions which are not upstream.
+	//   This applies to the headers Envoy will generate, the headers Envoy will sanitize, and the
+	//   headers Envoy will trust for core code and core extensions only. Be VERY careful making
+	//   changes to this string, especially in multi-layer Envoy deployments or deployments using
+	//   extensions which are not upstream.
 	header_prefix?: string
 	// Optional proxy version which will be used to set the value of :ref:`server.version statistic
 	// <server_statistics>` if specified. Envoy will not process this value, it will be sent as is to
 	// :ref:`stats sinks <envoy_v3_api_msg_config.metrics.v3.StatsSink>`.
 	stats_server_version_override?: uint64
-	// Always use “TCP“ queries instead of “UDP“ queries for DNS lookups.
-	// This may be overridden on a per-cluster basis in “cds_config“,
+	// Always use ``TCP`` queries instead of ``UDP`` queries for DNS lookups.
+	// This may be overridden on a per-cluster basis in ``cds_config``,
 	// when :ref:`dns_resolvers <envoy_v3_api_field_config.cluster.v3.Cluster.dns_resolvers>` and
 	// :ref:`use_tcp_for_dns_lookups <envoy_v3_api_field_config.cluster.v3.Cluster.use_tcp_for_dns_lookups>` are
 	// specified.
-	// This field is deprecated in favor of “dns_resolution_config“
+	// This field is deprecated in favor of ``dns_resolution_config``
 	// which aggregates all of the DNS resolver configuration in a single message.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/bootstrap/v3/bootstrap.proto.
 	use_tcp_for_dns_lookups?: bool
 	// DNS resolution configuration which includes the underlying DNS resolver addresses and options.
-	// This may be overridden on a per-cluster basis in “cds_config“, when
+	// This may be overridden on a per-cluster basis in ``cds_config``, when
 	// :ref:`dns_resolution_config <envoy_v3_api_field_config.cluster.v3.Cluster.dns_resolution_config>`
 	// is specified.
 	// This field is deprecated in favor of
@@ -185,17 +184,17 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	//
 	// Deprecated: Marked as deprecated in envoy/config/bootstrap/v3/bootstrap.proto.
 	dns_resolution_config?: v3.#DnsResolutionConfig
-	// DNS resolver type configuration extension. This extension can be used to configure “c-ares“, “apple“,
+	// DNS resolver type configuration extension. This extension can be used to configure ``c-ares``, ``apple``,
 	// or any other DNS resolver types and the related parameters.
 	// For example, an object of
 	// :ref:`CaresDnsResolverConfig <envoy_v3_api_msg_extensions.network.dns_resolver.cares.v3.CaresDnsResolverConfig>`
-	// can be packed into this “typed_dns_resolver_config“. This configuration replaces the
+	// can be packed into this ``typed_dns_resolver_config``. This configuration replaces the
 	// :ref:`dns_resolution_config <envoy_v3_api_field_config.bootstrap.v3.Bootstrap.dns_resolution_config>`
 	// configuration.
 	//
-	// During the transition period when both “dns_resolution_config“ and “typed_dns_resolver_config“ exist,
-	// when “typed_dns_resolver_config“ is in place, Envoy will use it and ignore “dns_resolution_config“.
-	// When “typed_dns_resolver_config“ is missing, the default behavior is in place.
+	// During the transition period when both ``dns_resolution_config`` and ``typed_dns_resolver_config`` exist,
+	// when ``typed_dns_resolver_config`` is in place, Envoy will use it and ignore ``dns_resolution_config``.
+	// When ``typed_dns_resolver_config`` is missing, the default behavior is in place.
 	// [#extension-category: envoy.network.dns_resolver]
 	typed_dns_resolver_config?: v3.#TypedExtensionConfig
 	// Specifies optional bootstrap extensions to be instantiated at startup time.
@@ -206,26 +205,25 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	// invoked during crash time on the request that caused the crash.
 	fatal_actions?: [...#FatalAction]
 	// Configuration sources that will participate in
-	// “xdstp://“ URL authority resolution. The algorithm is as
+	// ``xdstp://`` URL authority resolution. The algorithm is as
 	// follows:
 	//
-	//  1. The authority field is taken from the “xdstp://“ URL, call
-	//     this “resource_authority“.
-	//  2. “resource_authority“ is compared against the authorities in any peer
-	//     “ConfigSource“. The peer “ConfigSource“ is the configuration source
-	//     message which would have been used unconditionally for resolution
-	//     with opaque resource names. If there is a match with an authority, the
-	//     peer “ConfigSource“ message is used.
-	//  3. “resource_authority“ is compared sequentially with the authorities in
-	//     each configuration source in “config_sources“. The first “ConfigSource“
-	//     to match wins.
-	//  4. As a fallback, if no configuration source matches, then
-	//     “default_config_source“ is used.
-	//  5. If “default_config_source“ is not specified, resolution fails.
-	//
+	// 1. The authority field is taken from the ``xdstp://`` URL, call
+	//    this ``resource_authority``.
+	// 2. ``resource_authority`` is compared against the authorities in any peer
+	//    ``ConfigSource``. The peer ``ConfigSource`` is the configuration source
+	//    message which would have been used unconditionally for resolution
+	//    with opaque resource names. If there is a match with an authority, the
+	//    peer ``ConfigSource`` message is used.
+	// 3. ``resource_authority`` is compared sequentially with the authorities in
+	//    each configuration source in ``config_sources``. The first ``ConfigSource``
+	//    to match wins.
+	// 4. As a fallback, if no configuration source matches, then
+	//    ``default_config_source`` is used.
+	// 5. If ``default_config_source`` is not specified, resolution fails.
 	// [#not-implemented-hide:]
 	config_sources?: [...v3.#ConfigSource]
-	// Default configuration source for “xdstp://“ URLs if all
+	// Default configuration source for ``xdstp://`` URLs if all
 	// other resolution fails.
 	// [#not-implemented-hide:]
 	default_config_source?: v3.#ConfigSource
@@ -244,53 +242,54 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	//
 	// .. note::
 	//
-	//	The ``set-cookie`` header cannot be registered as inline header.
+	//   The ``set-cookie`` header cannot be registered as inline header.
 	inline_headers?: [...#CustomInlineHeader]
-	// Optional path to a file with performance tracing data created by “Perfetto“ SDK in binary
-	// ProtoBuf format. The default value is “envoy.pftrace“.
+	// Optional path to a file with performance tracing data created by ``Perfetto`` SDK in binary
+	// ProtoBuf format. The default value is ``envoy.pftrace``.
 	perf_tracing_file_path?: string
 	// Optional overriding of default regex engine.
-	// If the value is not specified, “Google RE2“ will be used by default.
+	// If the value is not specified, ``Google RE2`` will be used by default.
 	// [#extension-category: envoy.regex_engines]
 	default_regex_engine?: v3.#TypedExtensionConfig
 	// Optional XdsResourcesDelegate configuration, which allows plugging custom logic into both
 	// fetch and load events during xDS processing.
-	// If a value is not specified, no “XdsResourcesDelegate“ will be used.
+	// If a value is not specified, no ``XdsResourcesDelegate`` will be used.
 	// TODO(abeyad): Add public-facing documentation.
 	// [#not-implemented-hide:]
 	xds_delegate_extension?: v3.#TypedExtensionConfig
 	// Optional XdsConfigTracker configuration, which allows tracking xDS responses in external components,
 	// e.g., external tracer or monitor. It provides the process point when receive, ingest, or fail to
-	// process xDS resources and messages. If a value is not specified, no “XdsConfigTracker“ will be used.
+	// process xDS resources and messages. If a value is not specified, no ``XdsConfigTracker`` will be used.
 	//
 	// .. note::
 	//
-	//	There are no in-repo extensions currently, and the :repo:`XdsConfigTracker <envoy/config/xds_config_tracker.h>`
-	//	interface should be implemented before using.
-	//	See :repo:`xds_config_tracker_integration_test <test/integration/xds_config_tracker_integration_test.cc>`
-	//	for an example usage of the interface.
+	//    There are no in-repo extensions currently, and the :repo:`XdsConfigTracker <envoy/config/xds_config_tracker.h>`
+	//    interface should be implemented before using.
+	//    See :repo:`xds_config_tracker_integration_test <test/integration/xds_config_tracker_integration_test.cc>`
+	//    for an example usage of the interface.
 	xds_config_tracker_extension?: v3.#TypedExtensionConfig
 	// [#not-implemented-hide:]
 	// This controls the type of listener manager configured for Envoy. Currently
-	// Envoy only supports “ListenerManager“ for this field and Envoy Mobile
-	// supports “ApiListenerManager“.
+	// Envoy only supports ``ListenerManager`` for this field and Envoy Mobile
+	// supports ``ApiListenerManager``.
 	listener_manager?: v3.#TypedExtensionConfig
 	// Optional application log configuration.
 	application_log_config?: #Bootstrap_ApplicationLogConfig
 	// Optional gRPC async client manager config.
 	grpc_async_client_manager_config?: #Bootstrap_GrpcAsyncClientManagerConfig
 	// Optional configuration for memory allocation manager.
-	// Memory releasing is only supported for `tcmalloc allocator <https://github.com/google/tcmalloc>`_.
+	// Memory releasing is supported with `tcmalloc <https://github.com/google/tcmalloc>`_ and
+	// `gperftools <https://github.com/gperftools/gperftools>`_.
 	memory_allocator_manager?: #MemoryAllocatorManager
 	// When enabled, Envoy pins each worker thread to a distinct CPU from the process affinity mask,
-	// worker “i“ to the “i-th“ CPU in ascending order. This improves CPU cache and “NUMA“
+	// worker ``i`` to the ``i-th`` CPU in ascending order. This improves CPU cache and ``NUMA``
 	// locality for high concurrency deployments on bare metal. It is available on Linux only and is
 	// ignored on other platforms. Pinning requires a worker count no greater than the number of CPUs
 	// in the process affinity mask. When the worker count exceeds the available CPUs no worker is
 	// pinned. Pinning is applied once when the workers start, so a later change to the process
 	// affinity mask does not re-pin.
 	//
-	// Defaults to “false“.
+	// Defaults to ``false``.
 	enable_worker_cpu_affinity?: bool
 }
 
@@ -303,14 +302,14 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	// emitted by the administration server.
 	access_log?: [...v34.#AccessLog]
 	// The path to write the access log for the administration server. If no
-	// access log is desired specify “/dev/null“. This is only required if
+	// access log is desired specify ``/dev/null``. This is only required if
 	// :ref:`address <envoy_v3_api_field_config.bootstrap.v3.Admin.address>` is set.
-	// Deprecated in favor of “access_log“ which offers more options.
+	// Deprecated in favor of ``access_log`` which offers more options.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/bootstrap/v3/bootstrap.proto.
 	access_log_path?: string
 	// The CPU profiler output path for the administration server. If no profile
-	// path is specified, the default is “/var/log/envoy/envoy.prof“.
+	// path is specified, the default is ``/var/log/envoy/envoy.prof``.
 	profile_path?: string
 	// The TCP address that the administration server will listen on.
 	// If not specified, Envoy will not start an administration server.
@@ -323,19 +322,20 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	ignore_global_conn_limit?: bool
 	// List of admin paths that are accessible. If not specified, all admin endpoints are accessible.
 	// Matchers are evaluated against the request path. For endpoints commonly queried with
-	// parameters (for example “/stats?format=...“), prefer “prefix“ matchers.
+	// parameters (for example ``/stats?format=...``), prefer ``prefix`` matchers.
 	//
-	// When specified, only paths in this list will be accessible, all others will return “HTTP 403 Forbidden“.
+	// When specified, only paths in this list will be accessible, all others will return ``HTTP 403 Forbidden``.
 	//
 	// Example:
 	//
 	// .. code-block:: yaml
 	//
-	//	allow_paths:
-	//	- prefix: /stats
-	//	- prefix: /config_dump
-	//	- exact: /ready
-	//	- prefix: /healthcheck
+	//   allow_paths:
+	//   - prefix: /stats
+	//   - prefix: /config_dump
+	//   - exact: /ready
+	//   - prefix: /healthcheck
+	//
 	allow_paths?: [...v35.#StringMatcher]
 }
 
@@ -346,7 +346,7 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	// Name of the local cluster (i.e., the cluster that owns the Envoy running
 	// this configuration). In order to enable :ref:`zone aware routing
 	// <arch_overview_load_balancing_zone_aware_routing>` this option must be set.
-	// If “local_cluster_name“ is defined then :ref:`clusters
+	// If ``local_cluster_name`` is defined then :ref:`clusters
 	// <envoy_v3_api_msg_config.cluster.v3.Cluster>` must be defined in the :ref:`Bootstrap
 	// static cluster resources
 	// <envoy_v3_api_field_config.bootstrap.v3.Bootstrap.StaticResources.clusters>`. This is unrelated to
@@ -356,16 +356,16 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	// Optional global configuration for outlier detection.
 	outlier_detection?: #ClusterManager_OutlierDetection
 	// Optional configuration used to bind newly established upstream connections.
-	// This may be overridden on a per-cluster basis by “upstream_bind_config“ in the “cds_config“.
+	// This may be overridden on a per-cluster basis by ``upstream_bind_config`` in the ``cds_config``.
 	upstream_bind_config?: v3.#BindConfig
 	// A management server endpoint to stream load stats to via
-	// “StreamLoadStats“. This must have :ref:`api_type
+	// ``StreamLoadStats``. This must have :ref:`api_type
 	// <envoy_v3_api_field_config.core.v3.ApiConfigSource.api_type>` :ref:`GRPC
 	// <envoy_v3_api_enum_value_config.core.v3.ApiConfigSource.ApiType.GRPC>`.
 	load_stats_config?: v3.#ApiConfigSource
 	// Whether the ClusterManager will create clusters on the worker threads
 	// inline during requests. This will save memory and CPU cycles in cases where
-	// there are lots of inactive clusters and “> 1“ worker thread.
+	// there are lots of inactive clusters and ``> 1`` worker thread.
 	enable_deferred_cluster_creation?: bool
 }
 
@@ -387,31 +387,31 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 #Watchdog: {
 	"@type": "type.googleapis.com/envoy.config.bootstrap.v3.Watchdog"
 	// Register actions that will fire on given Watchdog events.
-	// See “WatchdogAction“ for priority of events.
+	// See ``WatchdogAction`` for priority of events.
 	actions?: [...#Watchdog_WatchdogAction]
 	// The duration after which Envoy counts a nonresponsive thread in the
-	// “watchdog_miss“ statistic. If not specified the default is “200ms“.
+	// ``watchdog_miss`` statistic. If not specified the default is ``200ms``.
 	miss_timeout?: string
 	// The duration after which Envoy counts a nonresponsive thread in the
-	// “watchdog_mega_miss“ statistic. If not specified the default is “1000ms“.
+	// ``watchdog_mega_miss`` statistic. If not specified the default is ``1000ms``.
 	megamiss_timeout?: string
 	// If a watched thread has been nonresponsive for this duration, assume a
-	// programming error and kill the entire Envoy process. Set to “0“ to disable
-	// kill behavior. If not specified the default is “0“ (disabled).
+	// programming error and kill the entire Envoy process. Set to ``0`` to disable
+	// kill behavior. If not specified the default is ``0`` (disabled).
 	kill_timeout?: string
-	// Defines the maximum jitter used to adjust the “kill_timeout“ if “kill_timeout“ is
+	// Defines the maximum jitter used to adjust the ``kill_timeout`` if ``kill_timeout`` is
 	// enabled. Enabling this feature would help to reduce risk of synchronized
-	// watchdog kill events across proxies due to external triggers. Set to “0“ to
-	// disable. If not specified the default is “0“ (disabled).
+	// watchdog kill events across proxies due to external triggers. Set to ``0`` to
+	// disable. If not specified the default is ``0`` (disabled).
 	max_kill_timeout_jitter?: string
-	// If “max(2, ceil(registered_threads * Fraction(multikill_threshold)))“
+	// If ``max(2, ceil(registered_threads * Fraction(multikill_threshold)))``
 	// threads have been nonresponsive for at least this duration kill the entire
-	// Envoy process. Set to “0“ to disable this behavior. If not specified the
-	// default is “0“ (disabled).
+	// Envoy process. Set to ``0`` to disable this behavior. If not specified the
+	// default is ``0`` (disabled).
 	multikill_timeout?: string
-	// Sets the threshold for “multikill_timeout“ in terms of the percentage of
-	// nonresponsive threads required for the “multikill_timeout“.
-	// If not specified the default is “0“.
+	// Sets the threshold for ``multikill_timeout`` in terms of the percentage of
+	// nonresponsive threads required for the ``multikill_timeout``.
+	// If not specified the default is ``0``.
 	multikill_threshold?: v36.#Percent
 }
 
@@ -429,7 +429,7 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 #FatalAction: {
 	"@type": "type.googleapis.com/envoy.config.bootstrap.v3.FatalAction"
 	// Extension specific configuration for the action. It's expected to conform
-	// to the “Envoy::Server::Configuration::FatalAction“ interface.
+	// to the ``Envoy::Server::Configuration::FatalAction`` interface.
 	config?: v3.#TypedExtensionConfig
 }
 
@@ -520,34 +520,35 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 // [#next-free-field: 6]
 #MemoryAllocatorManager: {
 	"@type": "type.googleapis.com/envoy.config.bootstrap.v3.MemoryAllocatorManager"
-	// Configures tcmalloc to perform background release of free memory in amount of bytes per “memory_release_interval“ interval.
-	// If equals to “0“, no memory release will occur. Defaults to “0“.
+	// Configures tcmalloc to perform background release of free memory in amount of bytes per
+	// ``memory_release_interval`` interval. If equals to ``0``, no memory release will occur.
+	// Defaults to ``0``.
 	bytes_to_release?: uint64
-	// Interval in milliseconds for memory releasing. If specified, during every
-	// interval Envoy will try to release “bytes_to_release“ of free memory back to operating system for reuse.
-	// Defaults to “1000“ milliseconds.
+	// Interval in milliseconds for memory releasing. If specified, during every interval Envoy will
+	// try to release ``bytes_to_release`` of free memory back to operating system for reuse. If set
+	// to ``0``, no memory release will occur. Defaults to ``1000`` milliseconds.
 	memory_release_interval?: string
 	// Sets the soft memory limit for tcmalloc. When the total memory used by tcmalloc exceeds this
 	// limit, background release will be performed more aggressively to bring memory usage below the
 	// limit. If not set, no soft memory limit is applied.
 	//
 	// .. note::
+	//     This is currently only supported with tcmalloc and not with ``gperftools``.
 	//
-	//	This is currently only supported with tcmalloc and not with ``gperftools``.
 	soft_memory_limit_bytes?: uint64
 	// Sets the maximum per-CPU cache size in bytes for tcmalloc. Smaller values reduce per-CPU
 	// memory overhead at the cost of increased contention on the central free list. If not set,
 	// tcmalloc's default is used.
 	//
 	// .. note::
+	//     This is currently only supported with tcmalloc and not with ``gperftools``.
 	//
-	//	This is currently only supported with tcmalloc and not with ``gperftools``.
 	max_per_cpu_cache_size_bytes?: uint32
 	// The threshold of unfreed memory in bytes that triggers the heap shrinker to release memory
 	// back to the OS. When the difference between physical memory used and application-allocated
 	// memory exceeds this threshold, free memory is released.
 	//
-	// Defaults to “104857600“ (100 MB).
+	// Defaults to ``104857600`` (100 MB).
 	max_unfreed_memory_bytes?: uint64
 }
 
@@ -595,14 +596,14 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	// All :ref:`Listeners <envoy_v3_api_msg_config.listener.v3.Listener>` are provided by a single
 	// :ref:`LDS <arch_overview_dynamic_config_lds>` configuration source.
 	lds_config?: v3.#ConfigSource
-	// “xdstp://“ resource locator for listener collection.
+	// ``xdstp://`` resource locator for listener collection.
 	// [#not-implemented-hide:]
 	lds_resources_locator?: string
 	// All post-bootstrap :ref:`Cluster <envoy_v3_api_msg_config.cluster.v3.Cluster>` definitions are
 	// provided by a single :ref:`CDS <arch_overview_dynamic_config_cds>`
 	// configuration source.
 	cds_config?: v3.#ConfigSource
-	// “xdstp://“ resource locator for cluster collection.
+	// ``xdstp://`` resource locator for cluster collection.
 	// [#not-implemented-hide:]
 	cds_resources_locator?: string
 	// A single :ref:`ADS <config_overview_ads>` source may be optionally
@@ -633,15 +634,15 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	//
 	// Groups of stats that will be lazily initialized:
 	//
-	//   - Cluster traffic stats: a subgroup of the :ref:`cluster statistics <config_cluster_manager_cluster_stats>`
-	//     that are used when requests are routed to the cluster.
+	// - Cluster traffic stats: a subgroup of the :ref:`cluster statistics <config_cluster_manager_cluster_stats>`
+	//   that are used when requests are routed to the cluster.
 	enable_deferred_creation_stats?: bool
 }
 
 #Bootstrap_GrpcAsyncClientManagerConfig: {
 	"@type": "type.googleapis.com/envoy.config.bootstrap.v3.Bootstrap_GrpcAsyncClientManagerConfig"
 	// Optional field to set the expiration time for the cached gRPC client object.
-	// The minimal value is “5s“ and the default is “50s“.
+	// The minimal value is ``5s`` and the default is ``50s``.
 	max_cached_entry_idle_duration?: string
 }
 
@@ -649,7 +650,7 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 	"@type": "type.googleapis.com/envoy.config.bootstrap.v3.Bootstrap_ApplicationLogConfig_LogFormat"
 	// Flush application logs in JSON format. The configured JSON struct can
 	// support all the format flags specified in the :option:`--log-format`
-	// command line options section, except for the “%v“ and “%_“ flags.
+	// command line options section, except for the ``%v`` and ``%_`` flags.
 	json_format?: structpb.#Struct
 	// Flush application log in a format defined by a string. The text format
 	// can support all the format flags specified in the :option:`--log-format`
@@ -702,7 +703,7 @@ ApiListenerManager_ThreadingModel_STANDALONE_WORKER_THREAD: "STANDALONE_WORKER_T
 // :ref:`Runtime Discovery Service (RTDS) <config_runtime_rtds>` layer.
 #RuntimeLayer_RtdsLayer: {
 	"@type": "type.googleapis.com/envoy.config.bootstrap.v3.RuntimeLayer_RtdsLayer"
-	// Resource to subscribe to at the “rtds_config“ for the RTDS layer.
+	// Resource to subscribe to at the ``rtds_config`` for the RTDS layer.
 	name?: string
 	// RTDS configuration source.
 	rtds_config?: v3.#ConfigSource

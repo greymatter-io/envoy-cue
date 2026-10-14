@@ -1,5 +1,9 @@
 package v3
 
+import (
+	v3 "envoyproxy.io/envoy-cue/spec/type/matcher/v3"
+)
+
 // Configuration for the MCP multi cluster. See the :ref:`architecture overview
 // <arch_overview_mcp_multicluster>` for more information. This cluster type allows aggregation of
 // multiple clusters into one, providing metadata with the list of aggregated clusters.
@@ -56,6 +60,39 @@ package v3
 	host_rewrite_literal?: string
 }
 
+// Specifies which downstream request headers are allowed to be forwarded to an MCP
+// backend. Modeled after
+// :ref:`ext_proc's HeaderForwardingRules <envoy_v3_api_msg_extensions.filters.http.ext_proc.v3.ExternalProcessor>`,
+// but MCP-local and secure-by-default: unlike ext_proc, an unset/empty policy
+// forwards nothing rather than everything, because MCP requires audience-bound
+// tokens and prohibits implicit token passthrough between a client and a backend it
+// did not authenticate to.
+//
+// Evaluation order per header:
+//
+//  1. If the header matches “disallowed_headers“, it is never forwarded — this
+//     takes precedence over everything below, including “forward_all“.
+//  2. Otherwise, if “forward_all“ is true, the header is forwarded.
+//  3. Otherwise, if the header matches “allowed_headers“, it is forwarded.
+//  4. Otherwise, the header is not forwarded.
+//
+// This does not cover header *mutation* or credential injection, which remain a
+// separate concern from this policy.
+#ClusterConfig_HeaderForwarding: {
+	"@type": "type.googleapis.com/envoy.extensions.clusters.mcp_multicluster.v3.ClusterConfig_HeaderForwarding"
+	// If true, forward all downstream request headers to this backend (subject to
+	// ``disallowed_headers`` above), matching the legacy forward-everything behavior.
+	// Defaults to false. Users relying on the legacy behavior must set this explicitly.
+	forward_all?: bool
+	// If set, specifically allow any header in this list to be forwarded. Ignored for a
+	// header that also matches ``disallowed_headers``, and redundant (but harmless) for
+	// any header covered by ``forward_all``.
+	allowed_headers?: v3.#ListStringMatcher
+	// If set, specifically disallow any header in this list from being forwarded. This
+	// takes precedence over both ``forward_all`` and ``allowed_headers``.
+	disallowed_headers?: v3.#ListStringMatcher
+}
+
 // Specification of the MCP server.
 #ClusterConfig_McpBackend: {
 	"@type": "type.googleapis.com/envoy.extensions.clusters.mcp_multicluster.v3.ClusterConfig_McpBackend"
@@ -67,4 +104,12 @@ package v3
 	name?: string
 	// Backend target specification.
 	mcp_cluster?: #ClusterConfig_McpCluster
+	// Controls which downstream request headers are forwarded to this backend.
+	// If not set, no downstream-controlled headers are forwarded beyond those the
+	// router itself must synthesize (e.g. ``content-type``, ``accept``, the session
+	// header) — in particular, a client's ``authorization`` header is NOT forwarded
+	// by default. Router-owned, framing, session, and hop-by-hop headers are never
+	// affected by this policy; they are handled separately and can never be forwarded
+	// via this mechanism.
+	header_forwarding?: #ClusterConfig_HeaderForwarding
 }

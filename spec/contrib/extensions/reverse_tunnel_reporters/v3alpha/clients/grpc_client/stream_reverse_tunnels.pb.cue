@@ -55,7 +55,7 @@ import (
 	// This is also used for the reporting the disconnection with the associated tunnel initiator.
 	name?: string
 	// Identity information of the tunnel initiator (downstream Envoy).
-	// Contains “node_id“, “cluster_id“, and “tenant_id“ for proper identification.
+	// Contains ``node_id``, ``cluster_id``, and ``tenant_id`` for proper identification.
 	identity?: #TunnelInitiatorIdentity
 	// Timestamp when this tunnel connection was created.
 	// Used for ordering events and debugging connection timing issues.

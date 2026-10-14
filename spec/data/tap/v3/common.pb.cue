@@ -9,7 +9,7 @@ import (
 #Body: {
 	"@type": "type.googleapis.com/envoy.data.tap.v3.Body"
 	// Body data as bytes. By default, tap body data will be present in this field, as the proto
-	// “bytes“ type can contain any valid byte.
+	// ``bytes`` type can contain any valid byte.
 	as_bytes?: bytes
 	// Body data as string. This field is only used when the :ref:`JSON_BODY_AS_STRING
 	// <envoy_v3_api_enum_value_config.tap.v3.OutputSink.Format.JSON_BODY_AS_STRING>` sink

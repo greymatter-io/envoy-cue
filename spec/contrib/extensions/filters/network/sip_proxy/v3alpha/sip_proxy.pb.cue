@@ -13,7 +13,7 @@ import (
 	// A list of individual Sip filters that make up the filter chain for requests made to the
 	// Sip proxy. Order matters as the filters are processed sequentially. For backwards
 	// compatibility, if no sip_filters are specified, a default Sip router filter
-	// (“envoy.filters.sip.router“) is used.
+	// (``envoy.filters.sip.router``) is used.
 	// [#extension-category: envoy.sip_proxy.filters]
 	sip_filters?: [...#SipFilter]
 	settings?: #SipProxy_SipSettings
@@ -24,6 +24,7 @@ import (
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.sip_proxy.v3alpha.SipFilter"
 	// The name of the filter to instantiate. The name must match a supported
 	// filter. The built-in filters are:
+	//
 	name?:         string
 	typed_config?: _
 }
@@ -86,7 +87,7 @@ import (
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.sip_proxy.v3alpha.SipProxy_SipSettings"
 	// transaction timeout timer [Timer B] unit is milliseconds, default value 64*T1.
 	//
-	// # Session Initiation Protocol (SIP) timer summary
+	// Session Initiation Protocol (SIP) timer summary
 	//
 	// +---------+-------------------------+----------+------------------------------------------------------------------------------+
 	// | Timer   | Default value           | Section  | Meaning                                                                      |

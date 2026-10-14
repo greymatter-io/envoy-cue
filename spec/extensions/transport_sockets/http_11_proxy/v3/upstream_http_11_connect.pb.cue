@@ -28,6 +28,6 @@ import (
 	// The underlying transport socket being wrapped. Defaults to plaintext (raw_buffer) if unset.
 	transport_socket?: v3.#TransportSocket
 	// Specifies the default proxy address to use if the proxy address is not present in the
-	// “typed_filter_metadata“ of the endpoint.
+	// ``typed_filter_metadata`` of the endpoint.
 	default_proxy_address?: v3.#Address
 }

@@ -49,7 +49,7 @@ RBAC_EnforcementType_CONTINUOUS:             "CONTINUOUS"
 	// CONTINUOUS to enforce RBAC policies on every message boundary.
 	enforcement_type?: #RBAC_EnforcementType
 	// Delay the specified duration before closing the connection when the policy evaluation
-	// result is “DENY“. If this is not present, the connection will be closed immediately.
+	// result is ``DENY``. If this is not present, the connection will be closed immediately.
 	// This is useful to provide a better protection for Envoy against clients that retries
 	// aggressively when the connection is rejected by the RBAC filter.
 	delay_deny?: string
