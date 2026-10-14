@@ -4,8 +4,20 @@ import (
 	v3 "envoyproxy.io/envoy-cue/spec/type/metadata/v3"
 )
 
+// Specifies how the resolved tag value should be typed on tracers that support
+// typed span attributes (e.g. OpenTelemetry). The integer and floating-point
+// cases are declared explicitly so the emitted attribute type is deterministic
+// rather than inferred from the value.
+#CustomTag_ValueType: "UNSPECIFIED" | "STRING" | "INT" | "DOUBLE" | "BOOL"
+
+CustomTag_ValueType_UNSPECIFIED: "UNSPECIFIED"
+CustomTag_ValueType_STRING:      "STRING"
+CustomTag_ValueType_INT:         "INT"
+CustomTag_ValueType_DOUBLE:      "DOUBLE"
+CustomTag_ValueType_BOOL:        "BOOL"
+
 // Describes custom tags for the active span.
-// [#next-free-field: 7]
+// [#next-free-field: 8]
 #CustomTag: {
 	"@type": "type.googleapis.com/envoy.type.tracing.v3.CustomTag"
 	// Used to populate the tag name.
@@ -22,8 +34,14 @@ import (
 	//
 	// The same :ref:`format specifier <config_access_log_format>` as used for
 	// :ref:`HTTP access logging <config_access_log>` applies here, however
-	// unknown specifier values are replaced with the empty string instead of “-“.
+	// unknown specifier values are replaced with the empty string instead of ``-``.
 	value?: string
+	// The value's type. When unset (``UNSPECIFIED``) or ``STRING`` the tag keeps the
+	// preexisting string behavior. When set to ``INT``, ``DOUBLE`` or ``BOOL``, tracers
+	// that support typed span attributes (e.g. OpenTelemetry) emit the tag as an
+	// integer, floating-point or boolean attribute instead of a string. Applies to
+	// every custom tag type.
+	value_type?: #CustomTag_ValueType
 }
 
 // Literal type custom tag with static value for the tag value.

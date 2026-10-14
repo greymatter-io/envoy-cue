@@ -11,7 +11,7 @@ HealthCheckFailureType_PASSIVE:         "PASSIVE"
 HealthCheckFailureType_NETWORK:         "NETWORK"
 HealthCheckFailureType_NETWORK_TIMEOUT: "NETWORK_TIMEOUT"
 
-#HealthCheckerType: "HTTP" | "TCP" | "GRPC" | "REDIS" | "THRIFT" | "DYNAMIC_MODULE"
+#HealthCheckerType: "HTTP" | "TCP" | "GRPC" | "REDIS" | "THRIFT" | "DYNAMIC_MODULE" | "UDP"
 
 HealthCheckerType_HTTP:           "HTTP"
 HealthCheckerType_TCP:            "TCP"
@@ -19,6 +19,7 @@ HealthCheckerType_GRPC:           "GRPC"
 HealthCheckerType_REDIS:          "REDIS"
 HealthCheckerType_THRIFT:         "THRIFT"
 HealthCheckerType_DYNAMIC_MODULE: "DYNAMIC_MODULE"
+HealthCheckerType_UDP:            "UDP"
 
 // [#next-free-field: 13]
 #HealthCheckEvent: {
@@ -54,8 +55,8 @@ HealthCheckerType_DYNAMIC_MODULE: "DYNAMIC_MODULE"
 	// The type of failure that caused this ejection.
 	failure_type?: #HealthCheckFailureType
 	// HTTP status code observed on the response associated with the failure.
-	// Only set when the health checker type is HTTP and the failure type is “ACTIVE“.
-	// A value of “0“ indicates that no HTTP status code was recorded (e.g., network-level failures
+	// Only set when the health checker type is HTTP and the failure type is ``ACTIVE``.
+	// A value of ``0`` indicates that no HTTP status code was recorded (e.g., network-level failures
 	// or non-HTTP health checkers).
 	http_status_code?: uint32
 }
@@ -79,8 +80,8 @@ HealthCheckerType_DYNAMIC_MODULE: "DYNAMIC_MODULE"
 	// Whether this event is the result of the first ever health check on a host.
 	first_check?: bool
 	// HTTP status code observed on the response associated with the failure.
-	// Only set when the health checker type is HTTP and the failure type is “ACTIVE“.
-	// A value of “0“ indicates that no HTTP status code was recorded (e.g., network-level failures
+	// Only set when the health checker type is HTTP and the failure type is ``ACTIVE``.
+	// A value of ``0`` indicates that no HTTP status code was recorded (e.g., network-level failures
 	// or non-HTTP health checkers).
 	http_status_code?: uint32
 }

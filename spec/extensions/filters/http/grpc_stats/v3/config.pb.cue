@@ -13,24 +13,22 @@ import (
 	emit_filter_state?: bool
 	// If set, specifies an allowlist of service/methods that will have individual stats
 	// emitted for them. Any call that does not match the allowlist will be counted
-	// in a stat with no method specifier: “cluster.<name>.grpc.*“.
+	// in a stat with no method specifier: ``cluster.<name>.grpc.*``.
 	individual_method_stats_allowlist?: v3.#GrpcMethodList
 	// If set to true, emit stats for all service/method names.
 	//
 	// If set to false, emit stats for all service/message types to the same stats without including
-	// the service/method in the name, with prefix “cluster.<name>.grpc“. This can be useful if
+	// the service/method in the name, with prefix ``cluster.<name>.grpc``. This can be useful if
 	// service/method granularity is not needed, or if each cluster only receives a single method.
 	//
 	// .. attention::
-	//
-	//	This option is only safe if all clients are trusted. If this option is enabled
-	//	with untrusted clients, the clients could cause unbounded growth in the number of stats in
-	//	Envoy, using unbounded memory and potentially slowing down stats pipelines.
+	//   This option is only safe if all clients are trusted. If this option is enabled
+	//   with untrusted clients, the clients could cause unbounded growth in the number of stats in
+	//   Envoy, using unbounded memory and potentially slowing down stats pipelines.
 	//
 	// .. attention::
-	//
-	//	If neither ``individual_method_stats_allowlist`` nor ``stats_for_all_methods`` is set, the
-	//	behavior will default to ``stats_for_all_methods=false``.
+	//   If neither ``individual_method_stats_allowlist`` nor ``stats_for_all_methods`` is set, the
+	//   behavior will default to ``stats_for_all_methods=false``.
 	stats_for_all_methods?: bool
 	// If true, the filter will gather a histogram for the request time of the upstream.
 	// It works with :ref:`stats_for_all_methods

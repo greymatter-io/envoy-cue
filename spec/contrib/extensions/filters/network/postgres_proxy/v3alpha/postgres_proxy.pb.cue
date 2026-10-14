@@ -38,11 +38,11 @@ PostgresProxy_SSLMode_ALLOW:   "ALLOW"
 	// SSL connection to Envoy and Postgres filter is configured to terminate SSL.
 	// In order for upstream encryption to work, the corresponding cluster must be configured to use
 	// :ref:`starttls transport socket <envoy_v3_api_msg_extensions.transport_sockets.starttls.v3.UpstreamStartTlsConfig>`.
-	// Defaults to “DISABLE“.
+	// Defaults to ``DISABLE``.
 	upstream_ssl?: #PostgresProxy_SSLMode
 	// Controls whether to close downstream connections that refuse to upgrade to SSL.
 	// If enabled, the filter chain must use
 	// :ref:`starttls transport socket <envoy_v3_api_msg_extensions.transport_sockets.starttls.v3.UpstreamStartTlsConfig>`.
-	// Defaults to “DISABLE“.
+	// Defaults to ``DISABLE``.
 	downstream_ssl?: #PostgresProxy_SSLMode
 }

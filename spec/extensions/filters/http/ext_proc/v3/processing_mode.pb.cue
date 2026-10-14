@@ -44,31 +44,31 @@ ProcessingMode_BodySendMode_GRPC:                 "GRPC"
 	//
 	// .. note::
 	//
-	//	This field is ignored in
-	//	:ref:`mode_override <envoy_v3_api_field_service.ext_proc.v3.ProcessingResponse.mode_override>`,
-	//	since mode overrides can only affect messages exchanged after the request header is
-	//	processed.
+	//    This field is ignored in
+	//    :ref:`mode_override <envoy_v3_api_field_service.ext_proc.v3.ProcessingResponse.mode_override>`,
+	//    since mode overrides can only affect messages exchanged after the request header is
+	//    processed.
 	//
-	// Defaults to “SEND“.
+	// Defaults to ``SEND``.
 	request_header_mode?: #ProcessingMode_HeaderSendMode
 	// How to handle the response header.
 	//
-	// Defaults to “SEND“.
+	// Defaults to ``SEND``.
 	response_header_mode?: #ProcessingMode_HeaderSendMode
 	// How to handle the request body.
 	//
-	// Defaults to “NONE“.
+	// Defaults to ``NONE``.
 	request_body_mode?: #ProcessingMode_BodySendMode
 	// How to handle the response body.
 	//
-	// Defaults to “NONE“.
+	// Defaults to ``NONE``.
 	response_body_mode?: #ProcessingMode_BodySendMode
 	// How to handle the request trailers.
 	//
-	// Defaults to “SKIP“.
+	// Defaults to ``SKIP``.
 	request_trailer_mode?: #ProcessingMode_HeaderSendMode
 	// How to handle the response trailers.
 	//
-	// Defaults to “SKIP“.
+	// Defaults to ``SKIP``.
 	response_trailer_mode?: #ProcessingMode_HeaderSendMode
 }

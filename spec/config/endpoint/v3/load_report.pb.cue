@@ -31,22 +31,22 @@ import (
 	// The total number of connections in an established state at the time of the
 	// report. This field is aggregated over all the upstream endpoints in the
 	// locality.
-	// In Envoy, this information may be based on “upstream_cx_active metric“.
+	// In Envoy, this information may be based on ``upstream_cx_active metric``.
 	// [#not-implemented-hide:]
 	total_active_connections?: uint64
 	// The total number of connections opened since the last report.
 	// This field is aggregated over all the upstream endpoints in the locality.
-	// In Envoy, this information may be based on “upstream_cx_total“ metric
+	// In Envoy, this information may be based on ``upstream_cx_total`` metric
 	// compared to itself between start and end of an interval, i.e.
-	// “upstream_cx_total“(now) - “upstream_cx_total“(now -
+	// ``upstream_cx_total``(now) - ``upstream_cx_total``(now -
 	// load_report_interval).
 	// [#not-implemented-hide:]
 	total_new_connections?: uint64
 	// The total number of connection failures since the last report.
 	// This field is aggregated over all the upstream endpoints in the locality.
-	// In Envoy, this information may be based on “upstream_cx_connect_fail“
+	// In Envoy, this information may be based on ``upstream_cx_connect_fail``
 	// metric compared to itself between start and end of an interval, i.e.
-	// “upstream_cx_connect_fail“(now) - “upstream_cx_connect_fail“(now -
+	// ``upstream_cx_connect_fail``(now) - ``upstream_cx_connect_fail``(now -
 	// load_report_interval).
 	// [#not-implemented-hide:]
 	total_fail_connections?: uint64
@@ -151,9 +151,9 @@ import (
 	// in the DropOverload policy.
 	dropped_requests?: [...#ClusterStats_DroppedRequests]
 	// Period over which the actual load report occurred. This will be guaranteed to include every
-	// request reported. Due to system load and delays between the “LoadStatsRequest“ sent from Envoy
-	// and the “LoadStatsResponse“ message sent from the management server, this may be longer than
-	// the requested load reporting interval in the “LoadStatsResponse“.
+	// request reported. Due to system load and delays between the ``LoadStatsRequest`` sent from Envoy
+	// and the ``LoadStatsResponse`` message sent from the management server, this may be longer than
+	// the requested load reporting interval in the ``LoadStatsResponse``.
 	load_report_interval?: string
 }
 

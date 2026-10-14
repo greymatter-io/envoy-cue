@@ -41,57 +41,56 @@ import (
 	// performance for Envoys running especially large configs.
 	//
 	// .. warning::
-	//
-	//	Excluding stats may affect Envoy's behavior in undocumented ways. See
-	//	`issue #8771 <https://github.com/envoyproxy/envoy/issues/8771>`_ for more information.
-	//	If any unexpected behavior changes are observed, please open a new issue immediately.
+	//   Excluding stats may affect Envoy's behavior in undocumented ways. See
+	//   `issue #8771 <https://github.com/envoyproxy/envoy/issues/8771>`_ for more information.
+	//   If any unexpected behavior changes are observed, please open a new issue immediately.
 	stats_matcher?: #StatsMatcher
 	// Defines rules for setting the histogram buckets. Rules are evaluated in order, and the first
 	// match is applied. If no match is found (or if no rules are set), the following default buckets
 	// are used:
 	//
-	//	.. code-block:: json
+	//   .. code-block:: json
 	//
-	//	  [
-	//	    0.5,
-	//	    1,
-	//	    5,
-	//	    10,
-	//	    25,
-	//	    50,
-	//	    100,
-	//	    250,
-	//	    500,
-	//	    1000,
-	//	    2500,
-	//	    5000,
-	//	    10000,
-	//	    30000,
-	//	    60000,
-	//	    300000,
-	//	    600000,
-	//	    1800000,
-	//	    3600000
-	//	  ]
+	//     [
+	//       0.5,
+	//       1,
+	//       5,
+	//       10,
+	//       25,
+	//       50,
+	//       100,
+	//       250,
+	//       500,
+	//       1000,
+	//       2500,
+	//       5000,
+	//       10000,
+	//       30000,
+	//       60000,
+	//       300000,
+	//       600000,
+	//       1800000,
+	//       3600000
+	//     ]
 	histogram_bucket_settings?: [...#HistogramBucketSettings]
-	// When set to “true“, tag extractors specified in :ref:`stats_tags
+	// When set to ``true``, tag extractors specified in :ref:`stats_tags
 	// <envoy_v3_api_field_config.metrics.v3.StatsConfig.stats_tags>` take precedence over the built-in
-	// default tag extractors that share the same “tag_name“, instead of the default taking
+	// default tag extractors that share the same ``tag_name``, instead of the default taking
 	// precedence. This allows overriding individual default Envoy tags (for example
-	// “envoy.cluster_name“) while keeping :ref:`use_all_default_tags
+	// ``envoy.cluster_name``) while keeping :ref:`use_all_default_tags
 	// <envoy_v3_api_field_config.metrics.v3.StatsConfig.use_all_default_tags>` enabled, so it is not
 	// necessary to disable all defaults and re-declare every extractor.
 	//
-	// Has no effect when “use_all_default_tags“ is “false“ (no default extractors are added in
+	// Has no effect when ``use_all_default_tags`` is ``false`` (no default extractors are added in
 	// that case). If not provided, the value is assumed to be false, preserving existing behavior
-	// where the default extractor takes precedence over custom extractors with the same “tag_name“.
+	// where the default extractor takes precedence over custom extractors with the same ``tag_name``.
 	allow_default_tag_overrides?: bool
 }
 
 // Configuration for disabling stat instantiation.
 #StatsMatcher: {
 	"@type": "type.googleapis.com/envoy.config.metrics.v3.StatsMatcher"
-	// If “reject_all“ is true, then all stats are disabled. If “reject_all“ is false, then all
+	// If ``reject_all`` is true, then all stats are disabled. If ``reject_all`` is false, then all
 	// stats are enabled.
 	reject_all?: bool
 	// Exclusive match. All stats are enabled except for those matching one of the supplied
@@ -119,11 +118,11 @@ import (
 	//
 	// .. note::
 	//
-	//	A stat name may be spelled in such a way that it matches two different
-	//	tag extractors for the same tag name. In that case, all but one of the
-	//	tag values will be dropped. It is not specified which tag value will be
-	//	retained. The extraction will only occur for one of the extractors, and
-	//	only the matched extraction will be removed from the tag name.
+	//   A stat name may be spelled in such a way that it matches two different
+	//   tag extractors for the same tag name. In that case, all but one of the
+	//   tag values will be dropped. It is not specified which tag value will be
+	//   retained. The extraction will only occur for one of the extractors, and
+	//   only the matched extraction will be removed from the tag name.
 	tag_name?: string
 	// Designates a tag to strip from the tag extracted name and provide as a named
 	// tag value for all statistics. This will only occur if any part of the name
@@ -135,52 +134,52 @@ import (
 	// group is provided, the first will also be used to set the value of the tag.
 	// All other capture groups will be ignored.
 	//
-	// Example 1. a stat name “cluster.foo_cluster.upstream_rq_timeout“ and
+	// Example 1. a stat name ``cluster.foo_cluster.upstream_rq_timeout`` and
 	// one tag specifier:
 	//
 	// .. code-block:: json
 	//
-	//	{
-	//	  "tag_name": "envoy.cluster_name",
-	//	  "regex": "^cluster\\.((.+?)\\.)"
-	//	}
+	//   {
+	//     "tag_name": "envoy.cluster_name",
+	//     "regex": "^cluster\\.((.+?)\\.)"
+	//   }
 	//
-	// Note that the regex will remove “foo_cluster.“ making the tag extracted
-	// name “cluster.upstream_rq_timeout“ and the tag value for
-	// “envoy.cluster_name“ will be “foo_cluster“ (note: there will be no
-	// “.“ character because of the second capture group).
+	// Note that the regex will remove ``foo_cluster.`` making the tag extracted
+	// name ``cluster.upstream_rq_timeout`` and the tag value for
+	// ``envoy.cluster_name`` will be ``foo_cluster`` (note: there will be no
+	// ``.`` character because of the second capture group).
 	//
 	// Example 2. a stat name
-	// “http.connection_manager_1.user_agent.ios.downstream_cx_total“ and two
+	// ``http.connection_manager_1.user_agent.ios.downstream_cx_total`` and two
 	// tag specifiers:
 	//
 	// .. code-block:: json
 	//
-	//	[
-	//	  {
-	//	    "tag_name": "envoy.http_user_agent",
-	//	    "regex": "^http(?=\\.).*?\\.user_agent\\.((.+?)\\.)\\w+?$"
-	//	  },
-	//	  {
-	//	    "tag_name": "envoy.http_conn_manager_prefix",
-	//	    "regex": "^http\\.((.*?)\\.)"
-	//	  }
-	//	]
+	//   [
+	//     {
+	//       "tag_name": "envoy.http_user_agent",
+	//       "regex": "^http(?=\\.).*?\\.user_agent\\.((.+?)\\.)\\w+?$"
+	//     },
+	//     {
+	//       "tag_name": "envoy.http_conn_manager_prefix",
+	//       "regex": "^http\\.((.*?)\\.)"
+	//     }
+	//   ]
 	//
 	// The two regexes of the specifiers will be processed from the elaborated
 	// stat name.
 	//
-	// The first regex will save “ios.“ as the tag value for “envoy.http_user_agent“. It will
+	// The first regex will save ``ios.`` as the tag value for ``envoy.http_user_agent``. It will
 	// leave it in the name for potential matching with additional tag specifiers. After all tag
 	// specifiers are processed the tags will be removed from the name.
 	//
-	// The second regex will populate tag “envoy.http_conn_manager_prefix“ with value
-	// “connection_manager_1.“, based on the original stat name.
+	// The second regex will populate tag ``envoy.http_conn_manager_prefix`` with value
+	// ``connection_manager_1.``, based on the original stat name.
 	//
 	// As a final step, the matched tags are removed, leaving
-	// “http.user_agent.downstream_cx_total“ as the tag extracted name.
+	// ``http.user_agent.downstream_cx_total`` as the tag extracted name.
 	regex?: string
-	// Specifies a fixed tag value for the “tag_name“.
+	// Specifies a fixed tag value for the ``tag_name``.
 	fixed_value?: string
 }
 
@@ -188,12 +187,12 @@ import (
 #HistogramBucketSettings: {
 	"@type": "type.googleapis.com/envoy.config.metrics.v3.HistogramBucketSettings"
 	// The stats that this rule applies to. The match is applied to the original stat name
-	// before tag-extraction, for example “cluster.exampleclustername.upstream_cx_length_ms“.
+	// before tag-extraction, for example ``cluster.exampleclustername.upstream_cx_length_ms``.
 	match?: v3.#StringMatcher
 	// Each value is the upper bound of a bucket. Each bucket must be greater than 0 and unique.
 	// The order of the buckets does not matter.
 	buckets?: [...float64]
-	// Initial number of bins for the “circllhist“ thread local histogram per time series. Default value is 100.
+	// Initial number of bins for the ``circllhist`` thread local histogram per time series. Default value is 100.
 	bins?: uint32
 }
 
@@ -216,16 +215,16 @@ import (
 	//
 	// .. code-block:: json
 	//
-	//	{
-	//	  "prefix" : "envoy-prod"
-	//	}
+	//   {
+	//     "prefix" : "envoy-prod"
+	//   }
 	//
 	// will change emitted stats to
 	//
 	// .. code-block:: cpp
 	//
-	//	envoy-prod.test_counter:1|c
-	//	envoy-prod.test_timer:5|ms
+	//   envoy-prod.test_counter:1|c
+	//   envoy-prod.test_timer:5|ms
 	//
 	// Note that the default prefix, "envoy", will be used if a prefix is not
 	// specified.
@@ -234,9 +233,16 @@ import (
 	//
 	// .. code-block:: cpp
 	//
-	//	envoy.test_counter:1|c
-	//	envoy.test_timer:5|ms
+	//   envoy.test_counter:1|c
+	//   envoy.test_timer:5|ms
 	prefix?: string
+	// If true, histogram samples are scaled to milliseconds according to the histogram's unit
+	// before being reported as timers: samples of histograms recording microseconds are divided by
+	// 1000 and reported as a fractional millisecond value, while histograms recording milliseconds
+	// or without a declared unit are reported unchanged. By default every sample is reported
+	// unchanged with an ``ms`` suffix regardless of the histogram's unit, so histograms recording
+	// microseconds are reported a factor of 1000 off.
+	scale_histogram_units_to_milliseconds?: bool
 }
 
 // Stats configuration proto schema for built-in “envoy.stat_sinks.dog_statsd“ sink.
@@ -244,6 +250,7 @@ import (
 // compatible tags. Tags are configurable via :ref:`StatsConfig
 // <envoy_v3_api_msg_config.metrics.v3.StatsConfig>`.
 // [#extension: envoy.stat_sinks.dog_statsd]
+// [#next-free-field: 6]
 #DogStatsdSink: {
 	"@type": "type.googleapis.com/envoy.config.metrics.v3.DogStatsdSink"
 	// The UDP address of a running DogStatsD compliant listener. If specified,
@@ -259,6 +266,11 @@ import (
 	//
 	// Note that this value may not be respected if smaller than a single metric.
 	max_bytes_per_datagram?: uint64
+	// If true, histogram samples are scaled to milliseconds according to the histogram's unit
+	// before being reported as timers. See :ref:`StatsdSink's scale_histogram_units_to_milliseconds
+	// field <envoy_v3_api_field_config.metrics.v3.StatsdSink.scale_histogram_units_to_milliseconds>`
+	// for more details.
+	scale_histogram_units_to_milliseconds?: bool
 }
 
 // Stats configuration proto schema for built-in “envoy.stat_sinks.hystrix“ sink.
@@ -280,7 +292,7 @@ import (
 	// in the process). The sink then outputs the aggregate statistics across the
 	// current rolling window to the event stream(s).
 	//
-	// “rolling_window(ms)“ = “stats_flush_interval(ms)“ * “num_of_buckets“
+	// ``rolling_window(ms)`` = ``stats_flush_interval(ms)`` * ``num_of_buckets``
 	//
 	// More detailed explanation can be found in `Hystrix wiki
 	// <https://github.com/Netflix/Hystrix/wiki/Metrics-and-Monitoring#hystrixrollingnumber>`_.

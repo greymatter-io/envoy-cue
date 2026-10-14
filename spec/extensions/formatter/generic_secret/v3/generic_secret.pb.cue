@@ -34,6 +34,6 @@ import (
 #GenericSecret: {
 	"@type": "type.googleapis.com/envoy.extensions.formatter.generic_secret.v3.GenericSecret"
 	// Map from formatter lookup name to SDS secret configuration. The map key is the name used
-	// in the “%SECRET(name)%“ command operator.
+	// in the ``%SECRET(name)%`` command operator.
 	secret_configs?: [string]: v3.#SdsSecretConfig
 }

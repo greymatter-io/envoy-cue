@@ -8,8 +8,9 @@ import (
 // External Authorization filter calls out to an external service over the
 // gRPC Authorization API defined by
 // :ref:`CheckRequest <envoy_v3_api_msg_service.auth.v3.CheckRequest>`.
-// A failed check will cause this filter to close the TCP connection.
-// [#next-free-field: 12]
+// A failed check will cause this filter to close the TCP connection, unless “shadow_mode“ is
+// enabled.
+// [#next-free-field: 13]
 #ExtAuthz: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.ext_authz.v3.ExtAuthz"
 	// The prefix to use when emitting statistics.
@@ -42,31 +43,41 @@ import (
 	// When this field is true, Envoy will include the SNI name used for TLSClientHello, if available, in the
 	// :ref:`tls_session<envoy_v3_api_field_service.auth.v3.AttributeContext.tls_session>`.
 	include_tls_session?: bool
-	// When set to “true“, the filter will send a TLS “access_denied(49)“ alert before closing
+	// When set to ``true``, the filter will send a TLS ``access_denied(49)`` alert before closing
 	// the connection when authorization is denied. This provides better visibility to TLS clients
 	// about the reason for connection closure. This alert is only sent for TLS connections. The
 	// non-TLS connections will be closed without sending an alert.
 	//
-	// Defaults to “false“.
+	// Defaults to ``false``.
 	send_tls_alert_on_denial?: bool
 	// Specifies a list of metadata namespaces whose values, if present, will be passed to the
 	// ext_authz service. The :ref:`filter_metadata <envoy_v3_api_field_config.core.v3.Metadata.filter_metadata>`
-	// is passed as an opaque “protobuf::Struct“.
+	// is passed as an opaque ``protobuf::Struct``.
 	//
-	// For example, if the “proxy_protocol“ listener filter is used and populates TLV metadata,
+	// For example, if the ``proxy_protocol`` listener filter is used and populates TLV metadata,
 	// then the following will pass that metadata to the authorization server for making decisions
 	// based on proxy protocol information.
 	//
 	// .. code-block:: yaml
 	//
-	//	metadata_context_namespaces:
-	//	- envoy.filters.listener.proxy_protocol
+	//    metadata_context_namespaces:
+	//    - envoy.filters.listener.proxy_protocol
+	//
 	metadata_context_namespaces?: [...string]
 	// Specifies a list of metadata namespaces whose values, if present, will be passed to the
 	// ext_authz service. :ref:`typed_filter_metadata <envoy_v3_api_field_config.core.v3.Metadata.typed_filter_metadata>`
-	// is passed as a “protobuf::Any“.
+	// is passed as a ``protobuf::Any``.
 	//
-	// This works similarly to “metadata_context_namespaces“ but allows Envoy and the ext_authz server to share
+	// This works similarly to ``metadata_context_namespaces`` but allows Envoy and the ext_authz server to share
 	// the protobuf message definition in order to perform safe parsing.
+	//
 	typed_metadata_context_namespaces?: [...string]
+	// When set to ``true``, the filter operates in shadow mode. The filter still calls the external
+	// authorization service but never closes the connection. The authorization decision is instead
+	// recorded in the connection's :ref:`FilterState <arch_overview_data_sharing_between_filters>`
+	// under the key ``envoy.filters.network.ext_authz`` so that a subsequent filter can read and
+	// optionally enforce it.
+	//
+	// Defaults to ``false``.
+	shadow_mode?: bool
 }

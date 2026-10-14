@@ -49,7 +49,7 @@ LatencyThresholdOverride_Opcode_AddWatch:             "AddWatch"
 	// if that is set. If it isn't, ZooKeeper's default is also 1Mb.
 	max_packet_bytes?: uint32
 	// Whether to emit latency threshold metrics. If not set, it defaults to false.
-	// If false, setting “default_latency_threshold“ and “latency_threshold_overrides“ will not have effect.
+	// If false, setting ``default_latency_threshold`` and ``latency_threshold_overrides`` will not have effect.
 	enable_latency_threshold_metrics?: bool
 	// The default latency threshold to decide the fast/slow responses and emit metrics (used for error budget calculation).
 	//
@@ -75,6 +75,7 @@ LatencyThresholdOverride_Opcode_AddWatch:             "AddWatch"
 	// The ZooKeeper opcodes. Can be found as part of the ZooKeeper source code:
 	//
 	// https://github.com/apache/zookeeper/blob/master/zookeeper-server/src/main/java/org/apache/zookeeper/ZooDefs.java
+	//
 	opcode?: #LatencyThresholdOverride_Opcode
 	// The latency threshold override of certain opcode.
 	threshold?: string

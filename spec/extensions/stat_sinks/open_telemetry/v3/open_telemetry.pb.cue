@@ -16,19 +16,19 @@ import (
 	//
 	// .. note::
 	//
-	//	The ``request_headers_to_add`` property in the OTLP HTTP exporter service
-	//	does not support the :ref:`format specifier <config_access_log_format>`.
-	//	The values configured are added as HTTP headers on the OTLP export request
-	//	without any formatting applied.
+	//   The ``request_headers_to_add`` property in the OTLP HTTP exporter service
+	//   does not support the :ref:`format specifier <config_access_log_format>`.
+	//   The values configured are added as HTTP headers on the OTLP export request
+	//   without any formatting applied.
 	http_service?: v3.#HttpService
 	// Attributes to be associated with the resource in the OTLP message.
 	// [#extension-category: envoy.tracers.opentelemetry.resource_detectors]
 	resource_detectors?: [...v3.#TypedExtensionConfig]
 	// If set to true, counters will be emitted as deltas, and the OTLP message will have
-	// “AGGREGATION_TEMPORALITY_DELTA“ set as AggregationTemporality.
+	// ``AGGREGATION_TEMPORALITY_DELTA`` set as AggregationTemporality.
 	report_counters_as_deltas?: bool
 	// If set to true, histograms will be emitted as deltas, and the OTLP message will have
-	// “AGGREGATION_TEMPORALITY_DELTA“ set as AggregationTemporality.
+	// ``AGGREGATION_TEMPORALITY_DELTA`` set as AggregationTemporality.
 	report_histograms_as_deltas?: bool
 	// If set to true, metrics will have their tags emitted as OTLP attributes, which may
 	// contain values used by the tag extractor or additional tags added during stats creation.
@@ -43,10 +43,10 @@ import (
 	// prefix added. According to the example, the full stat name will remain "foo.bar".
 	prefix?: string
 	// The custom conversion from a stat to a metric. Currently, the only supported input is
-	// “envoy.extensions.matching.common_inputs.stats.v3.StatFullNameMatchInput“.
+	// ``envoy.extensions.matching.common_inputs.stats.v3.StatFullNameMatchInput``.
 	// The supported actions are
-	// - “envoy.extensions.stat_sinks.open_telemetry.v3.SinkConfig.DropAction“.
-	// - “envoy.extensions.stat_sinks.open_telemetry.v3.SinkConfig.ConversionAction“.
+	// - ``envoy.extensions.stat_sinks.open_telemetry.v3.SinkConfig.DropAction``.
+	// - ``envoy.extensions.stat_sinks.open_telemetry.v3.SinkConfig.ConversionAction``.
 	// If stats are not matched, they will be directly converted to OTLP metrics as usual.
 	custom_metric_conversions?: v31.#Matcher
 	// Maximum number of data points per request. If explicitly set to 0, there is no limit. If unset, it currently defaults to no limit.

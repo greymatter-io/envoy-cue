@@ -38,12 +38,11 @@ Capability_Protocol_REDIS: "REDIS"
 	//
 	// Well-known keys:
 	//
-	// “http_status_code“ (number)
-	//
-	//	Set by the HTTP health checker. Contains the HTTP response status code
-	//	returned by the upstream endpoint during the most recent health check,
-	//	e.g. ``200``, ``503``. Only present when the health check received a
-	//	complete HTTP response; absent on connection failures or timeouts.
+	// ``http_status_code`` (number)
+	//   Set by the HTTP health checker. Contains the HTTP response status code
+	//   returned by the upstream endpoint during the most recent health check,
+	//   e.g. ``200``, ``503``. Only present when the health check received a
+	//   complete HTTP response; absent on connection failures or timeouts.
 	health_metadata?: structpb.#Struct
 }
 

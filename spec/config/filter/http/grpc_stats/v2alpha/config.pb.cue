@@ -21,15 +21,13 @@ import (
 	// service/method granularity is not needed, or if each cluster only receives a single method.
 	//
 	// .. attention::
-	//
-	//	This option is only safe if all clients are trusted. If this option is enabled
-	//	with untrusted clients, the clients could cause unbounded growth in the number of stats in
-	//	Envoy, using unbounded memory and potentially slowing down stats pipelines.
+	//   This option is only safe if all clients are trusted. If this option is enabled
+	//   with untrusted clients, the clients could cause unbounded growth in the number of stats in
+	//   Envoy, using unbounded memory and potentially slowing down stats pipelines.
 	//
 	// .. attention::
-	//
-	//	If neither `individual_method_stats_allowlist` nor `stats_for_all_methods` is set, the
-	//	behavior will default to `stats_for_all_methods=false`.
+	//   If neither `individual_method_stats_allowlist` nor `stats_for_all_methods` is set, the
+	//   behavior will default to `stats_for_all_methods=false`.
 	stats_for_all_methods?: bool
 }
 

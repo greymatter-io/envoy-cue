@@ -54,7 +54,7 @@ import (
 #AssumeRoleWithWebIdentityCredentialProvider: {
 	"@type": "type.googleapis.com/envoy.extensions.common.aws.v3.AssumeRoleWithWebIdentityCredentialProvider"
 	// Data source for a web identity token that is provided by the identity provider to assume the role.
-	// If a “watched_directory“ is not provided, one will be automatically inferred from the directory of the token file. This is to ensure
+	// If a ``watched_directory`` is not provided, one will be automatically inferred from the directory of the token file. This is to ensure
 	// that if the token file is rotated, the new token will be picked up. This behaviour differs from the standard envoy data source behavior, which does not
 	// automatically watch the directory of a file data source.
 	// Even when file rotation occurs, current credentials will continue to be used until they expire, at which point new credentials will be retrieved using the new token.
@@ -68,8 +68,8 @@ import (
 #CredentialsFileCredentialProvider: {
 	"@type": "type.googleapis.com/envoy.extensions.common.aws.v3.CredentialsFileCredentialProvider"
 	// Data source from which to retrieve AWS credentials
-	// When using this data source, if a “watched_directory“ is provided, the credential file will be re-read when a file move is detected.
-	// See :ref:`watched_directory <envoy_v3_api_msg_config.core.v3.DataSource>` for more information about the “watched_directory“ field.
+	// When using this data source, if a ``watched_directory`` is provided, the credential file will be re-read when a file move is detected.
+	// See :ref:`watched_directory <envoy_v3_api_msg_config.core.v3.DataSource>` for more information about the ``watched_directory`` field.
 	credentials_data_source?: v3.#DataSource
 	// The profile within the credentials_file data source. If not provided, the default profile will be used.
 	profile?: string

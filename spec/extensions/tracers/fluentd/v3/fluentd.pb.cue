@@ -14,7 +14,7 @@ import (
 	"@type": "type.googleapis.com/envoy.extensions.tracers.fluentd.v3.FluentdConfig"
 	// The upstream cluster to connect to for streaming the Fluentd messages.
 	cluster?: string
-	// A tag is a string separated with “.“ (e.g. “log.type“) to categorize events.
+	// A tag is a string separated with ``.`` (e.g. ``log.type``) to categorize events.
 	// See: https://github.com/fluent/fluentd/wiki/Forward-Protocol-Specification-v1#message-modes
 	tag?: string
 	// The prefix to use when emitting tracer stats.

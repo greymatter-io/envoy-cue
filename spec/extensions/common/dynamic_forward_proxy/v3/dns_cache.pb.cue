@@ -40,32 +40,32 @@ import (
 	// The refresh rate is rounded to the closest millisecond, and must be at least 1ms.
 	//
 	// Once a host has been resolved, the refresh rate will be the DNS TTL, capped
-	// at a minimum of “dns_min_refresh_rate“.
+	// at a minimum of ``dns_min_refresh_rate``.
 	dns_refresh_rate?: string
-	// The minimum rate that DNS resolution will occur. Per “dns_refresh_rate“, once a host is
-	// resolved, the DNS TTL will be used, with a minimum set by “dns_min_refresh_rate“.
-	// “dns_min_refresh_rate“ defaults to 5s and must also be >= 1s.
+	// The minimum rate that DNS resolution will occur. Per ``dns_refresh_rate``, once a host is
+	// resolved, the DNS TTL will be used, with a minimum set by ``dns_min_refresh_rate``.
+	// ``dns_min_refresh_rate`` defaults to 5s and must also be >= 1s.
 	dns_min_refresh_rate?: string
 	// The TTL for hosts that are unused. Hosts that have not been used in the configured time
 	// interval will be purged. If not specified defaults to 5m.
 	//
 	// .. note:
 	//
-	//	 The TTL is only checked at the time of DNS refresh, as specified by ``dns_refresh_rate``. This
-	//	 means that if the configured TTL is shorter than the refresh rate the host may not be removed
-	//	 immediately.
+	//   The TTL is only checked at the time of DNS refresh, as specified by ``dns_refresh_rate``. This
+	//   means that if the configured TTL is shorter than the refresh rate the host may not be removed
+	//   immediately.
 	//
-	//	.. note:
+	//  .. note:
 	//
-	//	 The TTL has no relation to DNS TTL and is only used to control Envoy's resource usage.
+	//   The TTL has no relation to DNS TTL and is only used to control Envoy's resource usage.
 	host_ttl?: string
 	// The maximum number of hosts that the cache will hold. If not specified defaults to 1024.
 	//
 	// .. note:
 	//
-	//	The implementation is approximate and enforced independently on each worker thread, thus
-	//	it is possible for the maximum hosts in the cache to go slightly above the configured
-	//	value depending on timing. This is similar to how other circuit breakers work.
+	//   The implementation is approximate and enforced independently on each worker thread, thus
+	//   it is possible for the maximum hosts in the cache to go slightly above the configured
+	//   value depending on timing. This is similar to how other circuit breakers work.
 	max_hosts?: uint32
 	// Disable the DNS refresh on failure. If this field is set to true, it will ignore the
 	// :ref:`typed_dns_resolver_config <envoy_v3_api_field_extensions.common.dynamic_forward_proxy.v3.DnsCacheConfig.dns_failure_refresh_rate>`.
@@ -80,7 +80,7 @@ import (
 	// Envoy will use dns cache circuit breakers with default settings even if this value is not set.
 	dns_cache_circuit_breaker?: #DnsCacheCircuitBreakers
 	// Always use TCP queries instead of UDP queries for DNS lookups.
-	// This field is deprecated in favor of “dns_resolution_config“
+	// This field is deprecated in favor of ``dns_resolution_config``
 	// which aggregates all of the DNS resolver configuration in a single message.
 	//
 	// Deprecated: Marked as deprecated in envoy/extensions/common/dynamic_forward_proxy/v3/dns_cache.proto.
@@ -95,12 +95,12 @@ import (
 	// or any other DNS resolver types and the related parameters.
 	// For example, an object of
 	// :ref:`CaresDnsResolverConfig <envoy_v3_api_msg_extensions.network.dns_resolver.cares.v3.CaresDnsResolverConfig>`
-	// can be packed into this “typed_dns_resolver_config“. This configuration replaces the
+	// can be packed into this ``typed_dns_resolver_config``. This configuration replaces the
 	// :ref:`dns_resolution_config <envoy_v3_api_field_extensions.common.dynamic_forward_proxy.v3.DnsCacheConfig.dns_resolution_config>`
 	// configuration.
-	// During the transition period when both “dns_resolution_config“ and “typed_dns_resolver_config“ exists,
-	// when “typed_dns_resolver_config“ is in place, Envoy will use it and ignore “dns_resolution_config“.
-	// When “typed_dns_resolver_config“ is missing, the default behavior is in place.
+	// During the transition period when both ``dns_resolution_config`` and ``typed_dns_resolver_config`` exists,
+	// when ``typed_dns_resolver_config`` is in place, Envoy will use it and ignore ``dns_resolution_config``.
+	// When ``typed_dns_resolver_config`` is missing, the default behavior is in place.
 	// [#extension-category: envoy.network.dns_resolver]
 	typed_dns_resolver_config?: v31.#TypedExtensionConfig
 	// Hostnames that should be preresolved into the cache upon creation. This might provide a

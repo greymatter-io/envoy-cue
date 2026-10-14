@@ -3,13 +3,13 @@ package v3
 #CommonGeoipProviderConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.geoip_providers.common.v3.CommonGeoipProviderConfig"
 	// Configuration for geolocation headers to add to HTTP requests.
-	// This field is deprecated in favor of “geo_field_keys“. If both are set, “geo_field_keys“
+	// This field is deprecated in favor of ``geo_field_keys``. If both are set, ``geo_field_keys``
 	// takes precedence.
 	//
 	// Deprecated: Marked as deprecated in envoy/extensions/geoip_providers/common/v3/common.proto.
 	geo_headers_to_add?: #CommonGeoipProviderConfig_GeolocationHeadersToAdd
 	// Configuration for geolocation field keys.
-	// At least one of “geo_headers_to_add“ or “geo_field_keys“ must be set.
+	// At least one of ``geo_headers_to_add`` or ``geo_field_keys`` must be set.
 	geo_field_keys?: #CommonGeoipProviderConfig_GeolocationFieldKeys
 }
 
@@ -36,29 +36,29 @@ package v3
 	// If set, the header will be used to populate the autonomous system organization associated with the IP address.
 	// Note: If both ISP and ASN databases are configured, only the ASN database is used for lookup.
 	asn_org?: string
-	// This field is deprecated; use “anon“ instead.
+	// This field is deprecated; use ``anon`` instead.
 	//
 	// Deprecated: Marked as deprecated in envoy/extensions/geoip_providers/common/v3/common.proto.
 	is_anon?: string
 	// If set, the IP address will be checked if it belongs to any type of anonymization network (e.g., VPN, public proxy).
-	// The header will be populated with the check result. Header value will be set to either “true“ or “false“ depending on the check result.
+	// The header will be populated with the check result. Header value will be set to either ``true`` or ``false`` depending on the check result.
 	anon?: string
 	// If set, the IP address will be checked if it belongs to a VPN and the header will be populated with the check result.
-	// Header value will be set to either “true“ or “false“ depending on the check result.
+	// Header value will be set to either ``true`` or ``false`` depending on the check result.
 	anon_vpn?: string
 	// If set, the IP address will be checked if it belongs to a hosting provider and the header will be populated with the check result.
-	// Header value will be set to either “true“ or “false“ depending on the check result.
+	// Header value will be set to either ``true`` or ``false`` depending on the check result.
 	anon_hosting?: string
 	// If set, the IP address will be checked if it belongs to a TOR exit node and the header will be populated with the check result.
-	// Header value will be set to either “true“ or “false“ depending on the check result.
+	// Header value will be set to either ``true`` or ``false`` depending on the check result.
 	anon_tor?: string
 	// If set, the IP address will be checked if it belongs to a public proxy and the header will be populated with the check result.
-	// Header value will be set to either “true“ or “false“ depending on the check result.
+	// Header value will be set to either ``true`` or ``false`` depending on the check result.
 	anon_proxy?: string
 	// If set, the header will be used to populate the ISP associated with the IP address.
 	isp?: string
 	// If set, the IP address will be checked if it belongs to the ISP named iCloud Private Relay and the header will be populated with the check result.
-	// Header value will be set to either “true“ or “false“ depending on the check result.
+	// Header value will be set to either ``true`` or ``false`` depending on the check result.
 	apple_private_relay?: string
 }
 
@@ -86,27 +86,27 @@ package v3
 	asn_org?: string
 	// If set, the IP address will be checked if it belongs to any type of anonymization network
 	// (e.g., VPN, public proxy). The result will be stored with this key. Value will be set to
-	// either “true“ or “false“ depending on the check result.
+	// either ``true`` or ``false`` depending on the check result.
 	anon?: string
 	// If set, the IP address will be checked if it belongs to a VPN and the result will be stored
-	// with this key. Value will be set to either “true“ or “false“ depending on the check result.
+	// with this key. Value will be set to either ``true`` or ``false`` depending on the check result.
 	anon_vpn?: string
 	// If set, the IP address will be checked if it belongs to a hosting provider and the result
-	// will be stored with this key. Value will be set to either “true“ or “false“ depending on
+	// will be stored with this key. Value will be set to either ``true`` or ``false`` depending on
 	// the check result.
 	anon_hosting?: string
 	// If set, the IP address will be checked if it belongs to a TOR exit node and the result will
-	// be stored with this key. Value will be set to either “true“ or “false“ depending on the
+	// be stored with this key. Value will be set to either ``true`` or ``false`` depending on the
 	// check result.
 	anon_tor?: string
 	// If set, the IP address will be checked if it belongs to a public proxy and the result will
-	// be stored with this key. Value will be set to either “true“ or “false“ depending on the
+	// be stored with this key. Value will be set to either ``true`` or ``false`` depending on the
 	// check result.
 	anon_proxy?: string
 	// If set, the key will be used to populate the ISP associated with the IP address.
 	isp?: string
 	// If set, the IP address will be checked if it belongs to the ISP named iCloud Private Relay
-	// and the result will be stored with this key. Value will be set to either “true“ or “false“
+	// and the result will be stored with this key. Value will be set to either ``true`` or ``false``
 	// depending on the check result.
 	apple_private_relay?: string
 }

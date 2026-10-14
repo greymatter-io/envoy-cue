@@ -213,6 +213,18 @@ Type_WellKnownType_DURATION:                    "DURATION"
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.Decl_FunctionDecl"
 	// Required. List of function overloads, must contain at least one overload.
 	overloads?: [...#Decl_FunctionDecl_Overload]
+	// Documentation string for the function that indicates the general purpose
+	// of the function and its behavior.
+	//
+	// Documentation strings for the function should be general purpose with
+	// specific examples provided in the overload doc string.
+	//
+	// Examples:
+	//
+	//	The 'in' operator tests whether an item exists in a collection.
+	//
+	//	The 'substring' function returns a substring of a target string.
+	doc?: string
 }
 
 // An overload indicates a function's parameter types and return type, and
@@ -260,6 +272,22 @@ Type_WellKnownType_DURATION:                    "DURATION"
 	// For methods, the first parameter declaration, `params[0]` is the
 	// expected type of the target receiver.
 	is_instance_function?: bool
-	// Documentation string for the overload.
+	// Examples for the overload and its expected return value, separated by
+	// newlines.
+	//
+	// Prefer using CEL literals in examples as they are easily consumed by
+	// humans and simple to validate with machines. The example should contain
+	// an expression with a literal return value in comments inline. If the
+	// expression example is too complex or would need an example for a
+	// variable that cannot be expressed in CEL, document the input and return
+	// in a comment preceding the example.
+	//
+	// Examples:
+	//
+	//	1 in [1, 2, 3] // true
+	//	'key' in {'key1: 1, 'key2': 2} // false
+	//	// Test whether one or more keys exist within a map.
+	//	// returns true if list_of_keys contains 'key2' or 'key3'
+	//	list_of_keys.exists(key, key in {'key3': 1, 'key2': 2})
 	doc?: string
 }

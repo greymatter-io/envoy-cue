@@ -118,29 +118,30 @@ GrpcStatusFilter_Status_UNAUTHENTICATED:     "UNAUTHENTICATED"
 #RuntimeFilter: {
 	"@type": "type.googleapis.com/envoy.config.accesslog.v3.RuntimeFilter"
 	// Specifies a key used to look up a custom sampling rate from the runtime configuration. If a value is found for this
-	// key, it will override the default sampling rate specified in “percent_sampled“.
+	// key, it will override the default sampling rate specified in ``percent_sampled``.
 	runtime_key?: string
 	// Defines the default sampling percentage when no runtime override is present. If not specified, the default is
 	// **0%** (with a denominator of 100).
 	percent_sampled?: v31.#FractionalPercent
 	// Controls how sampling decisions are made.
 	//
-	// - Default behavior (“false“):
+	// - Default behavior (``false``):
 	//
-	//   - Uses the :ref:`x-request-id<config_http_conn_man_headers_x-request-id>` as a consistent sampling pivot.
-	//   - When :ref:`x-request-id<config_http_conn_man_headers_x-request-id>` is present, sampling will be consistent
-	//     across multiple hosts based on both the “runtime_key“ and
+	//   * Uses the :ref:`x-request-id<config_http_conn_man_headers_x-request-id>` as a consistent sampling pivot.
+	//   * When :ref:`x-request-id<config_http_conn_man_headers_x-request-id>` is present, sampling will be consistent
+	//     across multiple hosts based on both the ``runtime_key`` and
 	//     :ref:`x-request-id<config_http_conn_man_headers_x-request-id>`.
-	//   - Useful for tracking related requests across a distributed system.
+	//   * Useful for tracking related requests across a distributed system.
 	//
-	// - When set to “true“ or :ref:`x-request-id<config_http_conn_man_headers_x-request-id>` is missing:
+	// - When set to ``true`` or :ref:`x-request-id<config_http_conn_man_headers_x-request-id>` is missing:
 	//
-	//   - Sampling decisions are made randomly based only on the “runtime_key“.
-	//   - Useful in complex filter configurations (like nested
+	//   * Sampling decisions are made randomly based only on the ``runtime_key``.
+	//   * Useful in complex filter configurations (like nested
 	//     :ref:`AndFilter<envoy_v3_api_msg_config.accesslog.v3.AndFilter>`/
 	//     :ref:`OrFilter<envoy_v3_api_msg_config.accesslog.v3.OrFilter>` blocks) where independent probability
 	//     calculations are desired.
-	//   - Can be used to implement logging kill switches with predictable probability distributions.
+	//   * Can be used to implement logging kill switches with predictable probability distributions.
+	//
 	use_independent_randomness?: bool
 }
 

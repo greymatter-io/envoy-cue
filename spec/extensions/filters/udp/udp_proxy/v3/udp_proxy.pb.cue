@@ -25,7 +25,7 @@ import (
 	// the session. The default if not specified is 1 minute.
 	idle_timeout?: string
 	// Use the remote downstream IP address as the sender IP address when sending packets to upstream hosts.
-	// This option requires Envoy to be run with the “CAP_NET_ADMIN“ capability on Linux.
+	// This option requires Envoy to be run with the ``CAP_NET_ADMIN`` capability on Linux.
 	// And the IPv6 stack must be enabled on Linux kernel.
 	// This option does not preserve the remote downstream port.
 	// If this option is enabled, the IP address of sent datagrams will be changed to the remote downstream IP address.
@@ -97,7 +97,7 @@ import (
 
 // Configuration for tunneling UDP over other transports or application layers.
 // Tunneling is currently supported over HTTP/2.
-// [#next-free-field: 12]
+// [#next-free-field: 13]
 #UdpProxyConfig_UdpTunnelingConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.udp.udp_proxy.v3.UdpProxyConfig_UdpTunnelingConfig"
 	// The hostname to send in the synthesized CONNECT headers to the upstream proxy.
@@ -107,12 +107,13 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//	tunneling_config:
-	//	  proxy_host: "%FILTER_STATE(proxy.host.key:PLAIN)%"
+	//    tunneling_config:
+	//      proxy_host: "%FILTER_STATE(proxy.host.key:PLAIN)%"
+	//
 	proxy_host?: string
 	// Optional port value to add to the HTTP request URI.
 	// This value can be overridden per-session by setting the required port value for
-	// the filter state key “udp.connect.proxy_port“.
+	// the filter state key ``udp.connect.proxy_port``.
 	proxy_port?: uint32
 	// The target host to send in the synthesized CONNECT headers to the upstream proxy.
 	// This field evaluates command operators if set, otherwise returns hostname as is.
@@ -121,28 +122,29 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//	tunneling_config:
-	//	  target_host: "%FILTER_STATE(target.host.key:PLAIN)%"
+	//    tunneling_config:
+	//      target_host: "%FILTER_STATE(target.host.key:PLAIN)%"
+	//
 	target_host?: string
 	// The default target port to send in the CONNECT headers to the upstream proxy.
 	// This value can be overridden per-session by setting the required port value for
-	// the filter state key “udp.connect.target_port“.
+	// the filter state key ``udp.connect.target_port``.
 	default_target_port?: uint32
 	// Use POST method instead of CONNECT method to tunnel the UDP stream.
 	//
 	// .. note::
+	//   If use_post is set, the upstream stream does not comply with the connect-udp RFC, and
+	//   instead it will be a POST request. the path used in the headers will be set from the
+	//   post_path field, and the headers will not contain the target host and target port, as
+	//   required by the connect-udp protocol. This flag should be used carefully.
 	//
-	//	If use_post is set, the upstream stream does not comply with the connect-udp RFC, and
-	//	instead it will be a POST request. the path used in the headers will be set from the
-	//	post_path field, and the headers will not contain the target host and target port, as
-	//	required by the connect-udp protocol. This flag should be used carefully.
 	use_post?: bool
-	// The path used with POST method. Default path is “/“. If post path is specified and
+	// The path used with POST method. Default path is ``/``. If post path is specified and
 	// use_post field isn't true, it will be rejected.
 	post_path?: string
 	// Optional retry options, in case connecting to the upstream failed.
 	retry_options?: #UdpProxyConfig_UdpTunnelingConfig_RetryOptions
-	// Additional request headers to upstream proxy. Neither “:-prefixed“ pseudo-headers
+	// Additional request headers to upstream proxy. Neither ``:-prefixed`` pseudo-headers
 	// nor the Host: header can be overridden. Values of the added headers evaluates command
 	// operators if they are set in the value template.
 	//
@@ -150,23 +152,29 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//	headers_to_add:
-	//	- header:
-	//	    key: original_dst_port
-	//	    value: "%DOWNSTREAM_LOCAL_PORT%"
+	//    headers_to_add:
+	//    - header:
+	//        key: original_dst_port
+	//        value: "%DOWNSTREAM_LOCAL_PORT%"
+	//
 	headers_to_add?: [...v3.#HeaderValueOption]
 	// If configured, the filter will buffer datagrams in case that it is waiting for the upstream to be
 	// ready, whether if it is during the connection process or due to upstream buffer watermarks.
 	// If this field is not configured, there will be no buffering and downstream datagrams that arrive
 	// while the upstream is not ready will be dropped. In case this field is set but the options
-	// are not configured, the default values will be applied as described in the “BufferOptions“.
+	// are not configured, the default values will be applied as described in the ``BufferOptions``.
 	buffer_options?: #UdpProxyConfig_UdpTunnelingConfig_BufferOptions
 	// Save the response headers to the downstream info filter state for consumption
-	// by the session filters. The filter state key is “envoy.udp_proxy.propagate_response_headers“.
+	// by the session filters. The filter state key is ``envoy.udp_proxy.propagate_response_headers``.
 	propagate_response_headers?: bool
 	// Save the response trailers to the downstream info filter state for consumption
-	// by the session filters. The filter state key is “envoy.udp_proxy.propagate_response_trailers“.
+	// by the session filters. The filter state key is ``envoy.udp_proxy.propagate_response_trailers``.
 	propagate_response_trailers?: bool
+	// Specifies a collection of Formatter plugins that can be used in substitution formatters
+	// in ``headers_to_add``.
+	// See the formatters extensions documentation for details.
+	// [#extension-category: envoy.formatter]
+	formatters?: [...v3.#TypedExtensionConfig]
 }
 
 #UdpProxyConfig_UdpAccessLogOptions: {

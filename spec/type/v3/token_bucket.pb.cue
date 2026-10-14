@@ -11,7 +11,7 @@ package v3
 	// to a single token.
 	tokens_per_fill?: uint32
 	// The fill interval that tokens are added to the bucket. During each fill interval
-	// “tokens_per_fill“ are added to the bucket. The bucket will never contain more than
-	// “max_tokens“ tokens.
+	// ``tokens_per_fill`` are added to the bucket. The bucket will never contain more than
+	// ``max_tokens`` tokens.
 	fill_interval?: string
 }

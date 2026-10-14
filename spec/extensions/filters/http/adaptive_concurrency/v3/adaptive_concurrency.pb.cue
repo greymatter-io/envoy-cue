@@ -26,8 +26,7 @@ import (
 	// Defaults to 503 (Service Unavailable).
 	//
 	// .. note::
-	//
-	//	If this is set to < 400, 503 will be used instead.
+	//   If this is set to < 400, 503 will be used instead.
 	concurrency_limit_exceeded_status?: v3.#HttpStatus
 }
 
@@ -39,6 +38,12 @@ import (
 	max_concurrency_limit?: uint32
 	// The period of time samples are taken to recalculate the concurrency limit.
 	concurrency_update_interval?: string
+	// The allowed lower-bound on the calculated concurrency limit. If unset, this defaults to
+	// :ref:`min_concurrency
+	// <envoy_v3_api_field_extensions.filters.http.adaptive_concurrency.v3.GradientControllerConfig.MinimumRTTCalculationParams.min_concurrency>`
+	// to preserve the existing behavior where the same value controls both the minimum calculated
+	// limit and the limit used while measuring minRTT.
+	min_concurrency_limit?: uint32
 }
 
 // Parameters controlling the periodic minRTT recalculation.

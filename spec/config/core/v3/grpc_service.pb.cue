@@ -22,7 +22,7 @@ import (
 	// request.
 	timeout?: string
 	// Additional metadata to include in streams initiated to the GrpcService. This can be used for
-	// scenarios in which additional ad hoc authorization headers (e.g. “x-foo-bar: baz-key“) are to
+	// scenarios in which additional ad hoc authorization headers (e.g. ``x-foo-bar: baz-key``) are to
 	// be injected. For more information, including details on header value syntax, see the
 	// documentation on :ref:`custom request headers
 	// <config_http_conn_man_headers_custom_request_headers>`.
@@ -34,8 +34,8 @@ import (
 	//
 	// .. note::
 	//
-	//	This field is only applied by Envoy gRPC (``envoy_grpc``) clients. Google gRPC
-	//	(``google_grpc``) clients currently ignore this field.
+	//   This field is only applied by Envoy gRPC (``envoy_grpc``) clients. Google gRPC
+	//   (``google_grpc``) clients currently ignore this field.
 	//
 	// If not specified, no default retry policy is applied at the client level and retries only occur
 	// when explicitly configured in per‑stream options.
@@ -49,21 +49,21 @@ import (
 	// in the :ref:`Cluster <envoy_v3_api_msg_config.cluster.v3.Cluster>` :ref:`transport_socket
 	// <envoy_v3_api_field_config.cluster.v3.Cluster.transport_socket>`.
 	cluster_name?: string
-	// The “:authority“ header in the grpc request. If this field is not set, the authority header value will be “cluster_name“.
+	// The ``:authority`` header in the grpc request. If this field is not set, the authority header value will be ``cluster_name``.
 	// Note that this authority does not override the SNI. The SNI is provided by the transport socket of the cluster.
 	authority?: string
 	// Specifies the retry backoff policy for re-establishing long‑lived xDS gRPC streams.
 	//
-	// This field is optional. If “retry_back_off.max_interval“ is not provided, it will be set to
-	// ten times the configured “retry_back_off.base_interval“.
+	// This field is optional. If ``retry_back_off.max_interval`` is not provided, it will be set to
+	// ten times the configured ``retry_back_off.base_interval``.
 	//
 	// .. note::
 	//
-	//	This field is only honored for management‑plane xDS gRPC streams created from
-	//	:ref:`ApiConfigSource <envoy_v3_api_msg_config.core.v3.ApiConfigSource>` that use
-	//	``envoy_grpc``. Data‑plane gRPC clients (for example external authorization or external
-	//	processing filters) must use :ref:`GrpcService.retry_policy
-	//	<envoy_v3_api_field_config.core.v3.GrpcService.retry_policy>` instead.
+	//   This field is only honored for management‑plane xDS gRPC streams created from
+	//   :ref:`ApiConfigSource <envoy_v3_api_msg_config.core.v3.ApiConfigSource>` that use
+	//   ``envoy_grpc``. Data‑plane gRPC clients (for example external authorization or external
+	//   processing filters) must use :ref:`GrpcService.retry_policy
+	//   <envoy_v3_api_field_config.core.v3.GrpcService.retry_policy>` instead.
 	//
 	// If not set, xDS gRPC streams default to a base interval of 500ms and a maximum interval of 30s.
 	retry_policy?: #RetryPolicy
@@ -87,7 +87,7 @@ import (
 	target_uri?: string
 	// The channel credentials to use. See `channel credentials
 	// <https://grpc.io/docs/guides/auth.html#credential-types>`_.
-	// Ignored if “channel_credentials_plugin“ is set.
+	// Ignored if ``channel_credentials_plugin`` is set.
 	channel_credentials?: #GrpcService_GoogleGrpc_ChannelCredentials
 	// A list of channel credentials plugins.
 	// The data plane will iterate over the list in order and stop at the first credential type
@@ -97,7 +97,7 @@ import (
 	channel_credentials_plugin?: [...]
 	// The call credentials to use. See `channel credentials
 	// <https://grpc.io/docs/guides/auth.html#credential-types>`_.
-	// Ignored if “call_credentials_plugin“ is set.
+	// Ignored if ``call_credentials_plugin`` is set.
 	call_credentials?: [...#GrpcService_GoogleGrpc_CallCredentials]
 	// A list of call credentials plugins. All supported plugins will be used.
 	// Unsupported plugin types will be ignored.
@@ -107,12 +107,11 @@ import (
 	// service.
 	//
 	// .. csv-table::
+	//    :header: Name, Type, Description
+	//    :widths: 1, 1, 2
 	//
-	//	:header: Name, Type, Description
-	//	:widths: 1, 1, 2
-	//
-	//	streams_total, Counter, Total number of streams opened
-	//	streams_closed_<gRPC status code>, Counter, Total streams closed with <gRPC status code>
+	//    streams_total, Counter, Total number of streams opened
+	//    streams_closed_<gRPC status code>, Counter, Total streams closed with <gRPC status code>
 	stat_prefix?: string
 	// The name of the Google gRPC credentials factory to use. This must have been registered with
 	// Envoy. If this is empty, a default credentials factory will be used that sets up channel

@@ -22,7 +22,7 @@ ProcessingMode_DataSendMode_SKIP:     "SKIP"
 //
 // By using the filter's processing mode, you can selectively choose which data
 // directions to process (read, write or both), allowing for efficient processing.
-// [#next-free-field: 7]
+// [#next-free-field: 8]
 #NetworkExternalProcessor: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.network.ext_proc.v3.NetworkExternalProcessor"
 	// The gRPC service that will process network traffic.
@@ -45,6 +45,13 @@ ProcessingMode_DataSendMode_SKIP:     "SKIP"
 	stat_prefix?:     string
 	// Options related to the sending and receiving of dynamic metadata.
 	metadata_options?: #MetadataOptions
+	// The data plane provides a number of :ref:`attributes <arch_overview_attributes>`
+	// for expressive policies. Each attribute name provided in this field will be
+	// evaluated against the connection and filter state and populated in the
+	// :ref:`ProcessingRequest.attributes <envoy_v3_api_field_service.network_ext_proc.v3.ProcessingRequest.attributes>` field.
+	// See the :ref:`attribute documentation <arch_overview_attributes>`
+	// for the list of supported attributes and their types.
+	connection_attributes?: [...string]
 }
 
 // Options for controlling processing behavior.

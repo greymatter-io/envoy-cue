@@ -63,7 +63,7 @@ import (
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.MapValue"
 	// The set of map entries.
 	//
-	// CEL has fewer restrictions on keys, so a protobuf map represenation
+	// CEL has fewer restrictions on keys, so a protobuf map representation
 	// cannot be used.
 	entries?: [...#MapValue_Entry]
 }

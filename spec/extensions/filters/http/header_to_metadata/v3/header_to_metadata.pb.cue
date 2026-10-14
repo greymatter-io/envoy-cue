@@ -24,12 +24,12 @@ Config_ValueEncode_BASE64: "BASE64"
 	// The list of rules to apply to responses.
 	response_rules?: [...#Config_Rule]
 	// Optional prefix to use when emitting filter statistics. When configured,
-	// statistics are emitted with the prefix “http_filter_name.<stat_prefix>“.
+	// statistics are emitted with the prefix ``http_filter_name.<stat_prefix>``.
 	//
 	// This emits statistics such as:
 	//
-	// - “http_filter_name.my_header_converter.rules_processed“
-	// - “http_filter_name.my_header_converter.metadata_added“
+	// - ``http_filter_name.my_header_converter.rules_processed``
+	// - ``http_filter_name.my_header_converter.metadata_added``
 	//
 	// If not configured, no statistics are emitted.
 	stat_prefix?: string
@@ -58,7 +58,8 @@ Config_ValueEncode_BASE64: "BASE64"
 	//
 	// .. note::
 	//
-	//	If the ``value`` field is non-empty this field should be empty.
+	//   If the ``value`` field is non-empty this field should be empty.
+	//
 	regex_value_rewrite?: v3.#RegexMatchAndSubstitute
 	// The value's type — defaults to string.
 	type?: #Config_ValueType
@@ -77,14 +78,14 @@ Config_ValueEncode_BASE64: "BASE64"
 	header?: string
 	// The cookie to be extracted.
 	cookie?: string
-	// If the header or cookie is present, apply this metadata “KeyValuePair“.
+	// If the header or cookie is present, apply this metadata ``KeyValuePair``.
 	//
-	// If the value in the “KeyValuePair“ is non-empty, it'll be used instead
+	// If the value in the ``KeyValuePair`` is non-empty, it'll be used instead
 	// of the header or cookie value.
 	on_header_present?: #Config_KeyValuePair
-	// If the header or cookie is not present, apply this metadata “KeyValuePair“.
+	// If the header or cookie is not present, apply this metadata ``KeyValuePair``.
 	//
-	// The value in the “KeyValuePair“ must be set, since it'll be used in lieu
+	// The value in the ``KeyValuePair`` must be set, since it'll be used in lieu
 	// of the missing header or cookie value.
 	on_header_missing?: #Config_KeyValuePair
 	// Whether or not to remove the header after a rule is applied.

@@ -38,8 +38,8 @@ ApiConfigSource_ApiType_AGGREGATED_DELTA_GRPC:                 "AGGREGATED_DELTA
 	//
 	// .. note::
 	//
-	//	The cluster with name ``cluster_name`` must be statically defined and its
-	//	type must not be ``EDS``.
+	//  The cluster with name ``cluster_name`` must be statically defined and its
+	//  type must not be ``EDS``.
 	cluster_names?: [...string]
 	// Multiple gRPC services be provided for GRPC. If > 1 cluster is defined,
 	// services will be cycled through if any kind of failure occurs.
@@ -56,7 +56,7 @@ ApiConfigSource_ApiType_AGGREGATED_DELTA_GRPC:                 "AGGREGATED_DELTA
 	// A list of config validators that will be executed when a new update is
 	// received from the ApiConfigSource. Note that each validator handles a
 	// specific xDS service type, and only the validators corresponding to the
-	// type url (in “:ref: DiscoveryResponse“ or “:ref: DeltaDiscoveryResponse“)
+	// type url (in ``:ref: DiscoveryResponse`` or ``:ref: DeltaDiscoveryResponse``)
 	// will be invoked.
 	// If the validator returns false or throws an exception, the config will be rejected by
 	// the client, and a NACK will be sent.
@@ -97,37 +97,56 @@ ApiConfigSource_ApiType_AGGREGATED_DELTA_GRPC:                 "AGGREGATED_DELTA
 // Local filesystem path configuration source.
 #PathConfigSource: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.PathConfigSource"
-	// Path on the filesystem to source and watch for configuration updates.
-	// When sourcing configuration for a :ref:`secret <envoy_v3_api_msg_extensions.transport_sockets.tls.v3.Secret>`,
-	// the certificate and key files are also watched for updates.
+	// Path on the filesystem from which to source configuration updates.
+	// When sourcing configuration for a
+	// :ref:`secret <envoy_v3_api_msg_extensions.transport_sockets.tls.v3.Secret>`, file-based secret
+	// data supported for SDS rotation is also monitored for updates.
 	//
 	// .. note::
 	//
-	//	The path to the source must exist at config load time.
+	//  The path to the source must exist at config load time.
 	//
 	// .. note::
 	//
-	//	If ``watched_directory`` is *not* configured, Envoy will watch the file path for *moves*.
-	//	This is because in general only moves are atomic. The same method of swapping files as is
-	//	demonstrated in the :ref:`runtime documentation <config_runtime_symbolic_link_swap>` can be
-	//	used here also. If ``watched_directory`` is configured, no watch will be placed directly on
-	//	this path. Instead, the configured ``watched_directory`` will be used to trigger reloads of
-	//	this path. This is required in certain deployment scenarios. See below for more information.
+	//   If neither ``poll_interval`` nor ``watched_directory`` is configured, Envoy will watch the
+	//   file path for *moves*. This is because in general only moves are atomic. The same method of
+	//   swapping files as is demonstrated in the
+	//   :ref:`runtime documentation <config_runtime_symbolic_link_swap>` can be used here also.
+	//   One of ``poll_interval`` and ``watched_directory`` can also be configured; the configuration
+	//   is rejected if both are set. With ``poll_interval``, the same path is reloaded periodically.
+	//   With ``watched_directory``, no watch is placed directly on this path; events in the
+	//   configured directory trigger this path to be reloaded.
 	path?: string
 	// If configured, this directory will be watched for *moves*. When an entry in this directory is
-	// moved to, the “path“ will be reloaded. This is required in certain deployment scenarios.
+	// moved to, the ``path`` will be reloaded. This is required in certain deployment scenarios.
 	//
 	// Specifically, if trying to load an xDS resource using a
 	// `Kubernetes ConfigMap <https://kubernetes.io/docs/concepts/configuration/configmap/>`_, the
 	// following configuration might be used:
 	// 1. Store xds.yaml inside a ConfigMap.
-	// 2. Mount the ConfigMap to “/config_map/xds“
-	// 3. Configure path “/config_map/xds/xds.yaml“
-	// 4. Configure watched directory “/config_map/xds“
+	// 2. Mount the ConfigMap to ``/config_map/xds``
+	// 3. Configure path ``/config_map/xds/xds.yaml``
+	// 4. Configure watched directory ``/config_map/xds``
 	//
 	// The above configuration will ensure that Envoy watches the owning directory for moves which is
 	// required due to how Kubernetes manages ConfigMap symbolic links during atomic updates.
+	//
+	// This field cannot be used together with ``poll_interval``.
 	watched_directory?: #WatchedDirectory
+	// If configured, the ``path`` will be polled at this interval instead of watched for filesystem
+	// events on either the file or ``watched_directory``. This is useful when the underlying
+	// filesystem does not reliably provide change notifications, or when a custom deployment model
+	// does not generate the move or modification events handled by watching the path or directory.
+	// The file is read on every poll, but an update is delivered only when its parsed contents
+	// change.
+	//
+	// When this configuration source provides a
+	// :ref:`Secret <envoy_v3_api_msg_extensions.transport_sockets.tls.v3.Secret>`, the same secret
+	// files that are watched in event-based mode are polled at this interval. The last successfully
+	// loaded configuration or secret remains active when a poll fails.
+	//
+	// This field cannot be used together with ``watched_directory`` and must be at least 1ms.
+	poll_interval?: string
 }
 
 // Configuration for :ref:`listeners <config_listeners>`, :ref:`clusters
@@ -140,11 +159,11 @@ ApiConfigSource_ApiType_AGGREGATED_DELTA_GRPC:                 "AGGREGATED_DELTA
 #ConfigSource: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.ConfigSource"
 	// Authorities that this config source may be used for. An authority specified in a xdstp:// URL
-	// is resolved to a “ConfigSource“ prior to configuration fetch. This field provides the
+	// is resolved to a ``ConfigSource`` prior to configuration fetch. This field provides the
 	// association between authority name and configuration source.
 	// [#not-implemented-hide:]
 	authorities?: [...v3.#Authority]
-	// Deprecated in favor of “path_config_source“. Use that field instead.
+	// Deprecated in favor of ``path_config_source``. Use that field instead.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/core/v3/config_source.proto.
 	path?: string
@@ -197,7 +216,7 @@ ApiConfigSource_ApiType_AGGREGATED_DELTA_GRPC:                 "AGGREGATED_DELTA
 	config_source?: #ConfigSource
 	// Optional default configuration to use as the initial configuration if
 	// there is a failure to receive the initial extension configuration or if
-	// “apply_default_config_without_warming“ flag is set.
+	// ``apply_default_config_without_warming`` flag is set.
 	default_config?: _
 	// Use the default config as the initial configuration without warming and
 	// waiting for the first discovery response. Requires the default configuration

@@ -5,10 +5,11 @@ import (
 	v31 "envoyproxy.io/envoy-cue/spec/extensions/transport_sockets/tls/v3"
 )
 
-#OAuth2_AuthType: "BASIC_AUTH" | "URL_ENCODED_BODY"
+#OAuth2_AuthType: "BASIC_AUTH" | "URL_ENCODED_BODY" | "TLS_CLIENT_AUTH"
 
 OAuth2_AuthType_BASIC_AUTH:       "BASIC_AUTH"
 OAuth2_AuthType_URL_ENCODED_BODY: "URL_ENCODED_BODY"
+OAuth2_AuthType_TLS_CLIENT_AUTH:  "TLS_CLIENT_AUTH"
 
 // OAuth2 extension can be used to retrieve an OAuth2 access token from an authorization server and inject it into the
 // proxied requests.
@@ -18,13 +19,13 @@ OAuth2_AuthType_URL_ENCODED_BODY: "URL_ENCODED_BODY"
 #OAuth2: {
 	"@type": "type.googleapis.com/envoy.extensions.http.injected_credentials.oauth2.v3.OAuth2"
 	// Endpoint on the authorization server to retrieve the access token from.
-	// Refer to [RFC 6749: The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749#section-3.2) for details.
+	// Refer to `RFC 6749: The OAuth 2.0 Authorization Framework <https://www.rfc-editor.org/rfc/rfc6749#section-3.2>`__ for details.
 	token_endpoint?: v3.#HttpUri
 	// Optional list of OAuth scopes to be claimed in the authorization request.
-	// Refer to [RFC 6749: The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749#section-4.4.2) for details.
+	// Refer to `RFC 6749: The OAuth 2.0 Authorization Framework <https://www.rfc-editor.org/rfc/rfc6749#section-4.4.2>`__ for details.
 	scopes?: [...string]
 	// Client Credentials Grant.
-	// Refer to [RFC 6749: The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749#section-4.4) for details.
+	// Refer to `RFC 6749: The OAuth 2.0 Authorization Framework <https://www.rfc-editor.org/rfc/rfc6749#section-4.4>`__ for details.
 	client_credentials?: #OAuth2_ClientCredentials
 	// The interval between two successive retries to fetch token from Identity Provider. Default is 2 secs.
 	// The interval must be at least 1 second.
@@ -35,17 +36,20 @@ OAuth2_AuthType_URL_ENCODED_BODY: "URL_ENCODED_BODY"
 }
 
 // Credentials to authenticate client to the authorization server.
-// Refer to [RFC 6749: The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749#section-2.3) for details.
+// Refer to `RFC 6749: The OAuth 2.0 Authorization Framework <https://www.rfc-editor.org/rfc/rfc6749#section-2.3>`__ for details.
 #OAuth2_ClientCredentials: {
 	"@type": "type.googleapis.com/envoy.extensions.http.injected_credentials.oauth2.v3.OAuth2_ClientCredentials"
 	// Client ID.
-	// Refer to [RFC 6749: The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1) for details.
+	// Refer to `RFC 6749: The OAuth 2.0 Authorization Framework <https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1>`__ for details.
 	client_id?: string
 	// Client secret.
-	// Refer to [RFC 6749: The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1) for details.
+	// Refer to `RFC 6749: The OAuth 2.0 Authorization Framework <https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1>`__ for details.
+	// This field is required unless :ref:`auth_type
+	// <envoy_v3_api_field_extensions.http.injected_credentials.oauth2.v3.OAuth2.ClientCredentials.auth_type>`
+	// is set to ``TLS_CLIENT_AUTH``, in which case authentication is done via the client certificate.
 	client_secret?: v31.#SdsSecretConfig
 	// The method to use when sending credentials to the authorization server.
-	// Refer to [RFC 6749: The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1) for details.
+	// Refer to `RFC 6749: The OAuth 2.0 Authorization Framework <https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1>`__ for details.
 	auth_type?: #OAuth2_AuthType
 }
 

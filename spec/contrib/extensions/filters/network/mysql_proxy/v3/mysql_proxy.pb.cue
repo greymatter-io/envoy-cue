@@ -18,6 +18,6 @@ MySQLProxy_SSLMode_ALLOW:   "ALLOW"
 	// Controls whether to terminate SSL sessions initiated by downstream clients.
 	// If enabled, the filter chain must use
 	// :ref:`starttls transport socket <envoy_v3_api_msg_extensions.transport_sockets.starttls.v3.StartTlsConfig>`.
-	// Defaults to “DISABLE“.
+	// Defaults to ``DISABLE``.
 	downstream_ssl?: #MySQLProxy_SSLMode
 }

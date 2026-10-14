@@ -76,13 +76,13 @@ import (
 	// The authenticated identity of this peer.
 	// For example, the identity associated with the workload such as a service account.
 	// If an X.509 certificate is used to assert the identity this field should be sourced from
-	// “URI Subject Alternative Names“, “DNS Subject Alternate Names“ or “Subject“ in that order.
+	// ``URI Subject Alternative Names``, ``DNS Subject Alternate Names`` or ``Subject`` in that order.
 	// The primary identity should be the principal. The principal format is issuer specific.
 	//
 	// Examples:
 	//
-	// - SPIFFE format is “spiffe://trust-domain/path“.
-	// - Google account format is “https://accounts.google.com/{userid}“.
+	// - SPIFFE format is ``spiffe://trust-domain/path``.
+	// - Google account format is ``https://accounts.google.com/{userid}``.
 	principal?: string
 	// The X.509 certificate used to authenticate the identify of this peer.
 	// When present, the certificate contents are encoded in URL and PEM format.
@@ -108,7 +108,7 @@ import (
 	// within a single day for a specific service.
 	// For HTTP requests, it should be X-Request-ID or equivalent.
 	id?: string
-	// The HTTP request method, such as “GET“, “POST“.
+	// The HTTP request method, such as ``GET``, ``POST``.
 	method?: string
 	// The HTTP request headers. If multiple headers share the same key, they
 	// must be merged according to the HTTP spec. All header keys must be
@@ -123,10 +123,10 @@ import (
 	// :ref:`encode_raw_headers <envoy_v3_api_field_extensions.filters.http.ext_authz.v3.ExtAuthz.encode_raw_headers>`
 	// is set to true.
 	//
-	// Note that this is not actually a map type. “header_map“ contains a single repeated field
-	// “headers“.
+	// Note that this is not actually a map type. ``header_map`` contains a single repeated field
+	// ``headers``.
 	//
-	// Here, only the “key“ and “raw_value“ fields will be populated for each HeaderValue, and
+	// Here, only the ``key`` and ``raw_value`` fields will be populated for each HeaderValue, and
 	// that is only when
 	// :ref:`encode_raw_headers <envoy_v3_api_field_extensions.filters.http.ext_authz.v3.ExtAuthz.encode_raw_headers>`
 	// is set to true.
@@ -138,12 +138,12 @@ import (
 	// The request target, as it appears in the first line of the HTTP request. This includes
 	// the URL path and query-string. No decoding is performed.
 	path?: string
-	// The HTTP request “Host“ or “:authority“ header value.
+	// The HTTP request ``Host`` or ``:authority`` header value.
 	host?: string
-	// The HTTP URL scheme, such as “http“ and “https“.
+	// The HTTP URL scheme, such as ``http`` and ``https``.
 	scheme?: string
 	// This field is always empty, and exists for compatibility reasons. The HTTP URL query is
-	// included in “path“ field.
+	// included in ``path`` field.
 	query?: string
 	// This field is always empty, and exists for compatibility reasons. The URL fragment is
 	// not submitted as part of HTTP requests; it is unknowable.

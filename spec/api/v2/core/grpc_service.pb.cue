@@ -23,7 +23,7 @@ import (
 	timeout?: string
 	// Additional metadata to include in streams initiated to the GrpcService.
 	// This can be used for scenarios in which additional ad hoc authorization
-	// headers (e.g. “x-foo-bar: baz-key“) are to be injected.
+	// headers (e.g. ``x-foo-bar: baz-key``) are to be injected.
 	initial_metadata?: [...#HeaderValue]
 }
 
@@ -50,12 +50,11 @@ import (
 	// service.
 	//
 	// .. csv-table::
+	//    :header: Name, Type, Description
+	//    :widths: 1, 1, 2
 	//
-	//	:header: Name, Type, Description
-	//	:widths: 1, 1, 2
-	//
-	//	streams_total, Counter, Total number of streams opened
-	//	streams_closed_<gRPC status code>, Counter, Total streams closed with <gRPC status code>
+	//    streams_total, Counter, Total number of streams opened
+	//    streams_closed_<gRPC status code>, Counter, Total streams closed with <gRPC status code>
 	stat_prefix?: string
 	// The name of the Google gRPC credentials factory to use. This must have been registered with
 	// Envoy. If this is empty, a default credentials factory will be used that sets up channel

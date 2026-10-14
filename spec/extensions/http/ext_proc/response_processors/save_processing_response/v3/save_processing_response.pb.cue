@@ -18,11 +18,11 @@ package v3
 #SaveProcessingResponse: {
 	"@type": "type.googleapis.com/envoy.extensions.http.ext_proc.response_processors.save_processing_response.v3.SaveProcessingResponse"
 	// The default filter state name is
-	// “envoy.http.ext_proc.response_processors.save_processing_response“.
-	// If defined, “filter_state_name_suffix“ is appended to this name.
+	// ``envoy.http.ext_proc.response_processors.save_processing_response``.
+	// If defined, ``filter_state_name_suffix`` is appended to this name.
 	//
-	// For example, setting “filter_state_name_suffix“ to “xyz“ will set the filter state name
-	// to “envoy.http.ext_proc.response_processors.save_processing_response.xyz“.
+	// For example, setting ``filter_state_name_suffix`` to ``xyz`` will set the filter state name
+	// to ``envoy.http.ext_proc.response_processors.save_processing_response.xyz``.
 	filter_state_name_suffix?: string
 	// Save the response to filter state when
 	// :ref:`request_headers <envoy_v3_api_field_service.ext_proc.v3.ProcessingResponse.request_headers>`
@@ -49,13 +49,13 @@ package v3
 // Options for saving the processing response.
 #SaveProcessingResponse_SaveOptions: {
 	"@type": "type.googleapis.com/envoy.extensions.http.ext_proc.response_processors.save_processing_response.v3.SaveProcessingResponse_SaveOptions"
-	// When set to “true“, saves the response for the corresponding response type.
+	// When set to ``true``, saves the response for the corresponding response type.
 	//
-	// Defaults to “false“.
+	// Defaults to ``false``.
 	save_response?: bool
-	// When set to “true“, saves the response if there was an error when processing the response
+	// When set to ``true``, saves the response if there was an error when processing the response
 	// from the external processor.
 	//
-	// Defaults to “false“.
+	// Defaults to ``false``.
 	save_on_error?: bool
 }

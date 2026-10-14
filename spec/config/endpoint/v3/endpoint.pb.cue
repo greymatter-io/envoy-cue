@@ -44,24 +44,23 @@ import (
 	//
 	// .. code-block:: json
 	//
-	//	{ "drop_overloads": [
-	//	    { "category": "throttle", "drop_percentage": 60 }
-	//	    { "category": "lb", "drop_percentage": 50 }
-	//	]}
+	//  { "drop_overloads": [
+	//      { "category": "throttle", "drop_percentage": 60 }
+	//      { "category": "lb", "drop_percentage": 50 }
+	//  ]}
 	//
 	// The actual drop percentages applied to the traffic at the clients will be
-	//
-	//	"throttle"_drop = 60%
-	//	"lb"_drop = 20%  // 50% of the remaining 'actual' load, which is 40%.
-	//	actual_outgoing_load = 20% // remaining after applying all categories.
+	//    "throttle"_drop = 60%
+	//    "lb"_drop = 20%  // 50% of the remaining 'actual' load, which is 40%.
+	//    actual_outgoing_load = 20% // remaining after applying all categories.
 	//
 	// Envoy supports only one element and will NACK if more than one element is present.
 	// Other xDS-capable data planes will not necessarily have this limitation.
 	//
-	// In Envoy, this “drop_overloads“ config can be overridden by a runtime key
+	// In Envoy, this ``drop_overloads`` config can be overridden by a runtime key
 	// "load_balancing_policy.drop_overload_limit" setting. This runtime key can be set to
 	// any integer number between 0 and 100. 0 means drop 0%. 100 means drop 100%.
-	// When both “drop_overloads“ config and "load_balancing_policy.drop_overload_limit"
+	// When both ``drop_overloads`` config and "load_balancing_policy.drop_overload_limit"
 	// setting are in place, the min of these two wins.
 	drop_overloads?: [...#ClusterLoadAssignment_Policy_DropOverload]
 	// Priority levels and localities are considered overprovisioned with this
@@ -74,7 +73,7 @@ import (
 	//
 	// .. code-block:: json
 	//
-	//	{ "overprovisioning_factor": 100 }
+	//  { "overprovisioning_factor": 100 }
 	//
 	// Read more at :ref:`priority levels <arch_overview_load_balancing_priority_levels>` and
 	// :ref:`localities <arch_overview_load_balancing_locality_weighted_lb>`.
@@ -91,9 +90,8 @@ import (
 	// this calculation.
 	//
 	// .. note::
-	//
-	//	This is not currently implemented for
-	//	:ref:`locality weighted load balancing <arch_overview_load_balancing_locality_weighted_lb>`.
+	//   This is not currently implemented for
+	//   :ref:`locality weighted load balancing <arch_overview_load_balancing_locality_weighted_lb>`.
 	weighted_priority_health?: bool
 }
 

@@ -17,10 +17,9 @@ import (
 	// parent. Defaults to false.
 	//
 	// .. attention::
-	//
-	//	This field is deprecated by the
-	//	:ref:`spawn_upstream_span <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.Tracing.spawn_upstream_span>`.
-	//	Please use that ``spawn_upstream_span`` field to control the span creation.
+	//   This field is deprecated by the
+	//   :ref:`spawn_upstream_span <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.Tracing.spawn_upstream_span>`.
+	//   Please use that ``spawn_upstream_span`` field to control the span creation.
 	//
 	// Deprecated: Marked as deprecated in envoy/extensions/filters/http/router/v3/router.proto.
 	start_child_span?: bool
@@ -31,10 +30,10 @@ import (
 	upstream_log?: [...v3.#AccessLog]
 	// Additional upstream access log options.
 	upstream_log_options?: #Router_UpstreamAccessLogOptions
-	// Do not add any additional “x-envoy-“ headers to requests or responses. This
+	// Do not add any additional ``x-envoy-`` headers to requests or responses. This
 	// only affects the :ref:`router filter generated x-envoy- headers
 	// <config_http_filters_router_headers_set>`, other Envoy filters and the HTTP
-	// connection manager may continue to set “x-envoy-“ headers.
+	// connection manager may continue to set ``x-envoy-`` headers.
 	suppress_envoy_headers?: bool
 	// Specifies a list of HTTP headers to strictly validate. Envoy will reject a
 	// request and respond with HTTP status 400 if the request contains an invalid
@@ -69,8 +68,7 @@ import (
 	// Optional HTTP filters for the upstream HTTP filter chain.
 	//
 	// .. note::
-	//
-	//	Upstream HTTP filters are currently in alpha.
+	//   Upstream HTTP filters are currently in alpha.
 	//
 	// These filters will be applied for all requests that pass through the router.
 	// They will also be applied to shadowed requests.
@@ -82,8 +80,8 @@ import (
 	// upstream HTTP filters will count as a final response if hedging is configured.
 	// [#extension-category: envoy.filters.http.upstream]
 	upstream_http_filters?: [...v31.#HttpFilter]
-	// If set to true, Envoy will reject “CONNECT“ requests that send data before
-	// receiving a “200“ response from the upstream. This early data behavior
+	// If set to true, Envoy will reject ``CONNECT`` requests that send data before
+	// receiving a ``200`` response from the upstream. This early data behavior
 	// is common for latency reduction but can cause issues with some upstreams.
 	// Defaults to false to allow early data and be compatible with common behavior.
 	reject_connect_request_early_data?: bool

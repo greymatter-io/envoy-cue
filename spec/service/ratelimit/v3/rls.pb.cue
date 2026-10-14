@@ -43,7 +43,7 @@ RateLimitResponse_RateLimit_Unit_YEAR:    "YEAR"
 	descriptors?: [...v3.#RateLimitDescriptor]
 	// Rate limit requests can optionally specify the number of hits a request adds to the matched
 	// limit. If the value is not set in the message, a request increases the matched limit by 1.
-	// This value can be overridden by setting filter state value “envoy.ratelimit.hits_addend“
+	// This value can be overridden by setting filter state value ``envoy.ratelimit.hits_addend``
 	// to the desired number. Invalid number (< 0) or number will be ignored.
 	hits_addend?: uint32
 }
@@ -69,11 +69,11 @@ RateLimitResponse_RateLimit_Unit_YEAR:    "YEAR"
 	// filter. This metadata lives in a namespace specified by the canonical name of extension filter
 	// that requires it:
 	//
-	//   - :ref:`envoy.filters.http.ratelimit <config_http_filters_ratelimit_dynamic_metadata>` for HTTP filter. The default namespace can
-	//     be modified by setting the :ref:`metadata_namespace <envoy_v3_api_field_extensions.filters.http.ratelimit.v3.RateLimit.metadata_namespace>`
-	//     in the filter configuration.
-	//   - :ref:`envoy.filters.network.ratelimit <config_network_filters_ratelimit_dynamic_metadata>` for network filter.
-	//   - :ref:`envoy.filters.thrift.rate_limit <config_thrift_filters_rate_limit_dynamic_metadata>` for Thrift filter.
+	// - :ref:`envoy.filters.http.ratelimit <config_http_filters_ratelimit_dynamic_metadata>` for HTTP filter. The default namespace can
+	//   be modified by setting the :ref:`metadata_namespace <envoy_v3_api_field_extensions.filters.http.ratelimit.v3.RateLimit.metadata_namespace>`
+	//   in the filter configuration.
+	// - :ref:`envoy.filters.network.ratelimit <config_network_filters_ratelimit_dynamic_metadata>` for network filter.
+	// - :ref:`envoy.filters.thrift.rate_limit <config_thrift_filters_rate_limit_dynamic_metadata>` for Thrift filter.
 	dynamic_metadata?: structpb.#Struct
 	// Quota is available for a request if its entire descriptor set has cached quota available.
 	// This is a union of all descriptors in the descriptor set. Clients can use the quota for future matches if and only if the descriptor set matches what was sent in the request that originated this response.
@@ -98,6 +98,9 @@ RateLimitResponse_RateLimit_Unit_YEAR:    "YEAR"
 	requests_per_unit?: uint32
 	// The unit of time.
 	unit?: #RateLimitResponse_RateLimit_Unit
+	// The number of units in the rate limit period. For example, a value of ``10`` with a unit
+	// of ``MINUTE`` specifies a 10-minute rate limit period. If not specified, defaults to ``1``.
+	unit_multiplier?: uint32
 }
 
 // Cacheable quota for responses.
@@ -145,22 +148,21 @@ RateLimitResponse_RateLimit_Unit_YEAR:    "YEAR"
 	// all matching descriptors.
 	//
 	// If there is not sufficient quota, there are three cases:
-	//  1. A cached entry exists for a RLS descriptor that is out-of-quota, but not expired.
-	//     In this case, the request will be treated as OVER_LIMIT.
-	//  2. Some RLS descriptors have a cached entry that has valid quota but some RLS descriptors
-	//     have no cached entry. This will trigger a new RLS request.
-	//     When the result is returned, a single unit will be consumed from the quota for all
-	//     matching descriptors.
-	//     If the server did not provide a quota, such as the quota message is empty for some of
-	//     the descriptors, then the request admission is determined by the
-	//     :ref:`overall_code <envoy_v3_api_field_service.ratelimit.v3.RateLimitResponse.overall_code>`.
-	//  3. All RLS descriptors lack a cached entry, this will trigger a new RLS request,
-	//     When the result is returned, a single unit will be consumed from the quota for all
-	//     matching descriptors.
-	//     If the server did not provide a quota, such as the quota message is empty for some of
-	//     the descriptors, then the request admission is determined by the
-	//     :ref:`overall_code <envoy_v3_api_field_service.ratelimit.v3.RateLimitResponse.overall_code>`.
-	//
+	// 1. A cached entry exists for a RLS descriptor that is out-of-quota, but not expired.
+	//    In this case, the request will be treated as OVER_LIMIT.
+	// 2. Some RLS descriptors have a cached entry that has valid quota but some RLS descriptors
+	//    have no cached entry. This will trigger a new RLS request.
+	//    When the result is returned, a single unit will be consumed from the quota for all
+	//    matching descriptors.
+	//    If the server did not provide a quota, such as the quota message is empty for some of
+	//    the descriptors, then the request admission is determined by the
+	//    :ref:`overall_code <envoy_v3_api_field_service.ratelimit.v3.RateLimitResponse.overall_code>`.
+	// 3. All RLS descriptors lack a cached entry, this will trigger a new RLS request,
+	//    When the result is returned, a single unit will be consumed from the quota for all
+	//    matching descriptors.
+	//    If the server did not provide a quota, such as the quota message is empty for some of
+	//    the descriptors, then the request admission is determined by the
+	//    :ref:`overall_code <envoy_v3_api_field_service.ratelimit.v3.RateLimitResponse.overall_code>`.
 	// [#not-implemented-hide:]
 	quota?: #RateLimitResponse_Quota
 }

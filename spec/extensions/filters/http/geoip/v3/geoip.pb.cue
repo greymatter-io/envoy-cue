@@ -7,12 +7,12 @@ import (
 #Geoip: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.geoip.v3.Geoip"
 	// Configuration for extracting the client IP address from the
-	// “x-forwarded-for“ header. If set, the
+	// ``x-forwarded-for`` header. If set, the
 	// :ref:`xff_num_trusted_hops <envoy_v3_api_field_extensions.filters.http.geoip.v3.Geoip.XffConfig.xff_num_trusted_hops>`
-	// field will be used to determine the trusted client address from the “x-forwarded-for“ header.
+	// field will be used to determine the trusted client address from the ``x-forwarded-for`` header.
 	// If not set, the immediate downstream connection source address will be used.
 	//
-	// Only one of “xff_config“ or
+	// Only one of ``xff_config`` or
 	// :ref:`custom_header_config <envoy_v3_api_field_extensions.filters.http.geoip.v3.Geoip.custom_header_config>`
 	// can be set.
 	xff_config?: #Geoip_XffConfig
@@ -22,7 +22,7 @@ import (
 	// :ref:`header_name <envoy_v3_api_field_extensions.filters.http.geoip.v3.Geoip.CustomHeaderConfig.header_name>`
 	// field will be used to extract the client IP address from the specified request header.
 	//
-	// Only one of “custom_header_config“ or
+	// Only one of ``custom_header_config`` or
 	// :ref:`xff_config <envoy_v3_api_field_extensions.filters.http.geoip.v3.Geoip.xff_config>`
 	// can be set.
 	custom_header_config?: #Geoip_CustomHeaderConfig
@@ -41,7 +41,7 @@ import (
 	// determining the origin client's IP address. See the documentation for
 	// :ref:`config_http_conn_man_headers_x-forwarded-for` for more information.
 	//
-	// Defaults to “0“.
+	// Defaults to ``0``.
 	xff_num_trusted_hops?: uint32
 }
 

@@ -131,8 +131,8 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	//
 	// .. attention::
 	//
-	//	This field has been deprecated in favor of `service_name_matcher` for better flexibility
-	//	over matching with service-cluster name.
+	//   This field has been deprecated in favor of `service_name_matcher` for better flexibility
+	//   over matching with service-cluster name.
 	//
 	// Deprecated: Marked as deprecated in envoy/api/v2/core/health_check.proto.
 	service_name?: string
@@ -176,7 +176,7 @@ HealthStatus_DEGRADED:  "DEGRADED"
 
 #HealthCheck_RedisHealthCheck: {
 	"@type": "type.googleapis.com/envoy.api.v2.core.HealthCheck_RedisHealthCheck"
-	// If set, optionally perform “EXISTS <key>“ instead of “PING“. A return value
+	// If set, optionally perform ``EXISTS <key>`` instead of ``PING``. A return value
 	// from Redis of 0 (does not exist) is considered a passing healthcheck. A return value other
 	// than 0 is considered a failure. This allows the user to mark a Redis instance for maintenance
 	// by setting the specified key to any value and waiting for traffic to drain.

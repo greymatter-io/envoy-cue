@@ -61,7 +61,7 @@ import (
 //	the RLQS client is subscribing for the future assignments for this ``BucketId``.
 #RateLimitQuotaUsageReports_BucketQuotaUsage: {
 	"@type": "type.googleapis.com/envoy.service.rate_limit_quota.v3.RateLimitQuotaUsageReports_BucketQuotaUsage"
-	// “BucketId“ for which request quota usage is reported.
+	// ``BucketId`` for which request quota usage is reported.
 	bucket_id?: #BucketId
 	// Time elapsed since the last report.
 	time_elapsed?: string
@@ -75,7 +75,7 @@ import (
 // :ref:`bucket_id <envoy_v3_api_field_service.rate_limit_quota.v3.RateLimitQuotaResponse.BucketAction.bucket_id>`.
 #RateLimitQuotaResponse_BucketAction: {
 	"@type": "type.googleapis.com/envoy.service.rate_limit_quota.v3.RateLimitQuotaResponse_BucketAction"
-	// “BucketId“ for which request the action is applied.
+	// ``BucketId`` for which request the action is applied.
 	bucket_id?: #BucketId
 	// Apply the quota assignment to the bucket.
 	//
@@ -129,28 +129,27 @@ import (
 //     field. The “active“ assignment is considered unchanged.
 #RateLimitQuotaResponse_BucketAction_QuotaAssignmentAction: {
 	"@type": "type.googleapis.com/envoy.service.rate_limit_quota.v3.RateLimitQuotaResponse_BucketAction_QuotaAssignmentAction"
-	// A duration after which the assignment is be considered “expired“. The process of the
+	// A duration after which the assignment is be considered ``expired``. The process of the
 	// expiration is described :ref:`above
 	// <envoy_v3_api_msg_service.rate_limit_quota.v3.RateLimitQuotaResponse.BucketAction.QuotaAssignmentAction>`.
 	//
-	//   - If unset, the assignment has no expiration date.
-	//   - If set to “0“, the assignment expires immediately, forcing the client into the
-	//     :ref:`"expired assignment"
-	//     <envoy_v3_api_field_extensions.filters.http.rate_limit_quota.v3.RateLimitQuotaBucketSettings.ExpiredAssignmentBehavior.expired_assignment_behavior_timeout>`
-	//     state. This may be used by the RLQS server in cases when it needs clients to proactively
-	//     fall back to the pre-configured :ref:`ExpiredAssignmentBehavior
-	//     <envoy_v3_api_msg_extensions.filters.http.rate_limit_quota.v3.RateLimitQuotaBucketSettings.ExpiredAssignmentBehavior>`,
-	//     f.e. before the server going into restart.
+	// * If unset, the assignment has no expiration date.
+	// * If set to ``0``, the assignment expires immediately, forcing the client into the
+	//   :ref:`"expired assignment"
+	//   <envoy_v3_api_field_extensions.filters.http.rate_limit_quota.v3.RateLimitQuotaBucketSettings.ExpiredAssignmentBehavior.expired_assignment_behavior_timeout>`
+	//   state. This may be used by the RLQS server in cases when it needs clients to proactively
+	//   fall back to the pre-configured :ref:`ExpiredAssignmentBehavior
+	//   <envoy_v3_api_msg_extensions.filters.http.rate_limit_quota.v3.RateLimitQuotaBucketSettings.ExpiredAssignmentBehavior>`,
+	//   f.e. before the server going into restart.
 	//
 	// .. attention::
-	//
-	//	Note that :ref:`expiring
-	//	<envoy_v3_api_msg_service.rate_limit_quota.v3.RateLimitQuotaResponse.BucketAction.QuotaAssignmentAction>`
-	//	the assignment is not the same as :ref:`abandoning
-	//	<envoy_v3_api_msg_service.rate_limit_quota.v3.RateLimitQuotaResponse.BucketAction.AbandonAction>`
-	//	the assignment. While expiring the assignment just transitions the bucket to
-	//	the "expired assignment" state; abandoning the assignment completely erases
-	//	the bucket from the data plane memory, and stops the usage reports.
+	//   Note that :ref:`expiring
+	//   <envoy_v3_api_msg_service.rate_limit_quota.v3.RateLimitQuotaResponse.BucketAction.QuotaAssignmentAction>`
+	//   the assignment is not the same as :ref:`abandoning
+	//   <envoy_v3_api_msg_service.rate_limit_quota.v3.RateLimitQuotaResponse.BucketAction.AbandonAction>`
+	//   the assignment. While expiring the assignment just transitions the bucket to
+	//   the "expired assignment" state; abandoning the assignment completely erases
+	//   the bucket from the data plane memory, and stops the usage reports.
 	assignment_time_to_live?: string
 	// Configures the local rate limiter for the request matched to the bucket.
 	// If not set, allow all requests.

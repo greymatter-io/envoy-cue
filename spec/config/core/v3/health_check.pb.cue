@@ -22,9 +22,14 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	statuses?: [...#HealthStatus]
 }
 
-// [#next-free-field: 27]
+// [#next-free-field: 28]
 #HealthCheck: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.HealthCheck"
+	// Optional name for this health checker. When set, per-checker stats are emitted under
+	// ``health_check.name.<name>.<stat>`` instead of ``health_check.<stat>``.
+	//
+	// This is required if multiple health checks are configured on a cluster.
+	name?: string
 	// The time to wait for a health check response. If the timeout is reached the
 	// health check attempt will be considered a failure.
 	timeout?: string
@@ -38,14 +43,14 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// interval Envoy will add interval_jitter to the wait time.
 	interval_jitter?: string
 	// An optional jitter amount as a percentage of interval_ms. If specified,
-	// during every interval Envoy will add “interval_ms“ *
-	// “interval_jitter_percent“ / 100 to the wait time.
+	// during every interval Envoy will add ``interval_ms`` *
+	// ``interval_jitter_percent`` / 100 to the wait time.
 	//
 	// If interval_jitter_ms and interval_jitter_percent are both set, both of
 	// them will be used to increase the wait time.
 	interval_jitter_percent?: uint32
 	// The number of unhealthy health checks required before a host is marked
-	// unhealthy. Note that for “http“ health checking if a host responds with a code not in
+	// unhealthy. Note that for ``http`` health checking if a host responds with a code not in
 	// :ref:`expected_statuses <envoy_v3_api_field_config.core.v3.HealthCheck.HttpHealthCheck.expected_statuses>`
 	// or :ref:`retriable_statuses <envoy_v3_api_field_config.core.v3.HealthCheck.HttpHealthCheck.retriable_statuses>`,
 	// this threshold is ignored and the host is considered immediately unhealthy.
@@ -80,7 +85,7 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// (including new hosts) when the cluster has received no traffic.
 	//
 	// This is useful for when we want to send frequent health checks with
-	// “no_traffic_interval“ but then revert to lower frequency “no_traffic_healthy_interval“ once
+	// ``no_traffic_interval`` but then revert to lower frequency ``no_traffic_healthy_interval`` once
 	// a host in the cluster is marked as healthy.
 	//
 	// Once a cluster has been used for traffic routing, Envoy will shift back to using the
@@ -111,11 +116,10 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// Specifies the path to the :ref:`health check event log <arch_overview_health_check_logging>`.
 	//
 	// .. attention::
-	//
-	//	This field is deprecated in favor of the extension
-	//	:ref:`event_logger <envoy_v3_api_field_config.core.v3.HealthCheck.event_logger>` and
-	//	:ref:`event_log_path <envoy_v3_api_field_extensions.health_check.event_sinks.file.v3.HealthCheckEventFileSink.event_log_path>`
-	//	in the file sink extension.
+	//   This field is deprecated in favor of the extension
+	//   :ref:`event_logger <envoy_v3_api_field_config.core.v3.HealthCheck.event_logger>` and
+	//   :ref:`event_log_path <envoy_v3_api_field_extensions.health_check.event_sinks.file.v3.HealthCheckEventFileSink.event_log_path>`
+	//   in the file sink extension.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/core/v3/health_check.proto.
 	event_log_path?: string
@@ -142,22 +146,22 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	//
 	// .. code-block:: yaml
 	//
-	//	transport_socket_match_criteria:
-	//	  useMTLS: true
+	//  transport_socket_match_criteria:
+	//    useMTLS: true
 	//
 	// Will match the following :ref:`cluster socket match <envoy_v3_api_msg_config.cluster.v3.Cluster.TransportSocketMatch>`
 	//
 	// .. code-block:: yaml
 	//
-	//	transport_socket_matches:
-	//	- name: "useMTLS"
-	//	  match:
-	//	    useMTLS: true
-	//	  transport_socket:
-	//	    name: envoy.transport_sockets.tls
-	//	    config: { ... } # tls socket configuration
+	//  transport_socket_matches:
+	//  - name: "useMTLS"
+	//    match:
+	//      useMTLS: true
+	//    transport_socket:
+	//      name: envoy.transport_sockets.tls
+	//      config: { ... } # tls socket configuration
 	//
-	// If this field is set, then for health checks it will supersede an entry of “envoy.transport_socket“ in the
+	// If this field is set, then for health checks it will supersede an entry of ``envoy.transport_socket`` in the
 	// :ref:`LbEndpoint.Metadata <envoy_v3_api_field_config.endpoint.v3.LbEndpoint.metadata>`.
 	// This allows using different transport socket capabilities for health checking versus proxying to the
 	// endpoint.
@@ -178,7 +182,7 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	binary?: bytes
 }
 
-// [#next-free-field: 15]
+// [#next-free-field: 16]
 #HealthCheck_HttpHealthCheck: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.HealthCheck_HttpHealthCheck"
 	// The value of the host header in the HTTP health check request. If
@@ -187,20 +191,20 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// :ref:`hostname <envoy_v3_api_field_config.endpoint.v3.Endpoint.HealthCheckConfig.hostname>` field.
 	host?: string
 	// Specifies the HTTP path that will be requested during health checking. For example
-	// “/healthcheck“.
+	// ``/healthcheck``.
 	path?: string
 	// HTTP specific payload to be sent as the request body during health checking.
 	// If specified, the method should support a request body (POST, PUT, PATCH, etc.).
 	send?: #HealthCheck_Payload
-	// Specifies a list of HTTP expected responses to match in the first “response_buffer_size“ bytes of the response body.
+	// Specifies a list of HTTP expected responses to match in the first ``response_buffer_size`` bytes of the response body.
 	// If it is set, both the expected response check and status code determine the health check.
 	// When checking the response, “fuzzy” matching is performed such that each payload block must be found,
 	// and in the order specified, but not necessarily contiguous.
 	//
 	// .. note::
 	//
-	//	It is recommended to set ``response_buffer_size`` based on the total Payload size for efficiency.
-	//	The default buffer size is 1024 bytes when it is not set.
+	//   It is recommended to set ``response_buffer_size`` based on the total Payload size for efficiency.
+	//   The default buffer size is 1024 bytes when it is not set.
 	receive?: [...#HealthCheck_Payload]
 	// Specifies the size of response buffer in bytes that is used to Payload match.
 	// The default value is 1024. Setting to 0 implies that the Payload will be matched against the entire response.
@@ -229,8 +233,22 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// the host being considered immediately unhealthy i.e. if status code 200 is expected and there are no configured retriable statuses, any
 	// non-200 response will result in the host being marked unhealthy.
 	retriable_statuses?: [...v3.#Int64Range]
-	// Use specified application protocol for health checks.
+	// Use specified application protocol for health checks. With :ref:`use_alpn_protocol
+	// <envoy_v3_api_field_config.core.v3.HealthCheck.HttpHealthCheck.use_alpn_protocol>` this is
+	// the codec used when ALPN settles on neither ``h2`` nor ``http/1.1``.
 	codec_client_type?: v3.#CodecClientType
+	// Select the codec from the protocol negotiated by ALPN on the health check connection: HTTP/2
+	// when ``h2`` is negotiated, HTTP/1.1 when ``http/1.1`` is negotiated, and otherwise
+	// ``codec_client_type``, including when nothing is negotiated. With ``codec_client_type`` at
+	// its default this is the same mapping as the cluster's :ref:`auto_config
+	// <envoy_v3_api_field_extensions.upstreams.http.v3.HttpProtocolOptions.auto_config>`. Like
+	// ``auto_config``, it requires a transport socket that supports ALPN such as TLS and is
+	// rejected on a cluster whose transport sockets do not, unless the
+	// ``config.do_not_validate_alpn_support`` runtime key is set, as for ``auto_config``. It
+	// cannot be combined with ``codec_client_type`` ``HTTP3``. See :ref:`tls_options
+	// <envoy_v3_api_field_config.core.v3.HealthCheck.tls_options>` for what the connection
+	// advertises.
+	use_alpn_protocol?: bool
 	// An optional service name parameter which is used to validate the identity of
 	// the health checked cluster using a :ref:`StringMatcher
 	// <envoy_v3_api_msg_type.matcher.v3.StringMatcher>`. See the :ref:`architecture overview
@@ -253,8 +271,8 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// necessarily contiguous.
 	receive?: [...#HealthCheck_Payload]
 	// When setting this value, it tries to attempt health check request with ProxyProtocol.
-	// When “send“ is presented, they are sent after preceding ProxyProtocol header.
-	// Only ProxyProtocol header is sent when “send“ is not presented.
+	// When ``send`` is presented, they are sent after preceding ProxyProtocol header.
+	// Only ProxyProtocol header is sent when ``send`` is not presented.
 	// It allows to use both ProxyProtocol V1 and V2. In V1, it presents L3/L4. In V2, it includes
 	// LOCAL command and doesn't include L3/L4.
 	proxy_protocol_config?: #ProxyProtocolConfig
@@ -262,7 +280,7 @@ HealthStatus_DEGRADED:  "DEGRADED"
 
 #HealthCheck_RedisHealthCheck: {
 	"@type": "type.googleapis.com/envoy.config.core.v3.HealthCheck_RedisHealthCheck"
-	// If set, optionally perform “EXISTS <key>“ instead of “PING“. A return value
+	// If set, optionally perform ``EXISTS <key>`` instead of ``PING``. A return value
 	// from Redis of 0 (does not exist) is considered a passing healthcheck. A return value other
 	// than 0 is considered a failure. This allows the user to mark a Redis instance for maintenance
 	// by setting the specified key to any value and waiting for traffic to drain.
@@ -310,6 +328,9 @@ HealthStatus_DEGRADED:  "DEGRADED"
 	// Specifies the ALPN protocols for health check connections. This is useful if the
 	// corresponding upstream is using ALPN-based :ref:`FilterChainMatch
 	// <envoy_v3_api_msg_config.listener.v3.FilterChainMatch>` along with different protocols for health checks
-	// versus data connections. If empty, no ALPN protocols will be set on health check connections.
+	// versus data connections. If empty, health check connections advertise the ALPN protocols of
+	// the cluster's TLS context, if any. With :ref:`use_alpn_protocol
+	// <envoy_v3_api_field_config.core.v3.HealthCheck.HttpHealthCheck.use_alpn_protocol>`,
+	// the negotiated protocol selects the health check codec.
 	alpn_protocols?: [...string]
 }

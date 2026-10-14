@@ -125,4 +125,7 @@ VhRateLimitsOptions_IGNORE:   "IGNORE"
 	requests_per_unit?: uint32
 	// The unit of time.
 	unit?: v3.#RateLimitUnit
+	// The number of units in the rate limit period. For example, a value of ``30`` with a unit
+	// of ``SECOND`` specifies a 30-second rate limit period. If not specified, defaults to ``1``.
+	unit_multiplier?: uint32
 }

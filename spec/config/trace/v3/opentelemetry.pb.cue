@@ -8,24 +8,30 @@ import (
 //
 //	[#extension: envoy.tracers.opentelemetry]
 //
-// [#next-free-field: 9]
+// [#next-free-field: 11]
 #OpenTelemetryConfig: {
 	"@type": "type.googleapis.com/envoy.config.trace.v3.OpenTelemetryConfig"
 	// The upstream gRPC cluster that will receive OTLP traces.
 	// Note that the tracer drops traces if the server does not read data fast enough.
 	// This field can be left empty to disable reporting traces to the gRPC service.
-	// Only one of “grpc_service“, “http_service“ may be used.
+	// Only one of ``grpc_service``, ``http_service``, ``exporter`` may be used.
 	grpc_service?: v3.#GrpcService
 	// The upstream HTTP cluster that will receive OTLP traces.
 	// This field can be left empty to disable reporting traces to the HTTP service.
-	// Only one of “grpc_service“, “http_service“ may be used.
+	// Only one of ``grpc_service``, ``http_service``, ``exporter`` may be used.
 	//
 	// .. note::
 	//
-	//	The ``request_headers_to_add`` property in the OTLP HTTP exporter service supports
-	//	substitution formatters. The formatters cannot access any HTTP or connection properties, but
-	//	can load content such as environment variables or files or secrets.
+	//   The ``request_headers_to_add`` property in the OTLP HTTP exporter service supports
+	//   substitution formatters. The formatters cannot access any HTTP or connection properties, but
+	//   can load content such as environment variables or files or secrets.
 	http_service?: v3.#HttpService
+	// Specifies the custom exporter to be used by the OpenTelemetry tracer.
+	// Only one of ``grpc_service``, ``http_service``, ``exporter`` may be used.
+	//
+	// [#extension-category: envoy.tracers.opentelemetry.exporters]
+	// [#not-implemented-hide:]
+	exporter?: v3.#TypedExtensionConfig
 	// The name for the service. This will be populated in the ResourceSpan Resource attributes.
 	// If it is not provided, it will default to "unknown_service:envoy".
 	service_name?: string
@@ -52,7 +58,10 @@ import (
 	//
 	// If not specified, the default is to set these attributes.
 	set_telemetry_sdk_resource_attributes?: bool
-	// Specifies whether to set the “service.name“ resource attribute.
+	// Specifies whether to set the ``service.name`` resource attribute.
 	// If not specified, the default is to set this attribute.
 	set_service_name_resource_attribute?: bool
+	// Specifies whether to set the instrumentation scope name ("envoy") and version on emitted traces.
+	// If not specified, the default is to set the instrumentation scope name and version.
+	set_instrumentation_scope?: bool
 }

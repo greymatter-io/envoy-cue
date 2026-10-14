@@ -78,15 +78,15 @@ JsonToMetadata_ValueType_NUMBER:         "NUMBER"
 	// The list of rules to apply.
 	rules?: [...#JsonToMetadata_Rule]
 	// Allowed content-type for json to metadata transformation.
-	// Default to “{"application/json"}“.
+	// Default to ``{"application/json"}``.
 	//
-	// Set “allow_empty_content_type“ if empty/missing content-type header
+	// Set ``allow_empty_content_type`` if empty/missing content-type header
 	// is allowed.
 	allow_content_types?: [...string]
 	// Allowed empty content-type for json to metadata transformation.
 	// Default to false.
 	allow_empty_content_type?: bool
 	// Allowed content-type by regex match for json to metadata transformation.
-	// This can be used in parallel with “allow_content_types“.
+	// This can be used in parallel with ``allow_content_types``.
 	allow_content_types_regex?: v3.#RegexMatcher
 }

@@ -7,7 +7,7 @@ import (
 	v33 "envoyproxy.io/envoy-cue/spec/config/route/v3"
 )
 
-// [#next-free-field: 19]
+// [#next-free-field: 20]
 #LocalRateLimit: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit"
 	// The human readable prefix to use when emitting stats.
@@ -17,8 +17,7 @@ import (
 	// Defaults to 429 (TooManyRequests).
 	//
 	// .. note::
-	//
-	//	If this is set to < 400, 429 will be used instead.
+	//   If this is set to < 400, 429 will be used instead.
 	status?: v3.#HttpStatus
 	// The token bucket configuration to use for rate limiting requests that are processed by this
 	// filter. Each request processed by the filter consumes a single token. If the token is available,
@@ -26,20 +25,17 @@ import (
 	// rate limit status.
 	//
 	// .. note::
-	//
-	//	It's fine for the token bucket to be unset for the global configuration since the rate limit
-	//	can be applied at a the virtual host or route level. Thus, the token bucket must be set
-	//	for the per route configuration otherwise the config will be rejected.
-	//
-	// .. note::
-	//
-	//	When using per route configuration, the bucket becomes unique to that route.
+	//   It's fine for the token bucket to be unset for the global configuration since the rate limit
+	//   can be applied at a the virtual host or route level. Thus, the token bucket must be set
+	//   for the per route configuration otherwise the config will be rejected.
 	//
 	// .. note::
+	//   When using per route configuration, the bucket becomes unique to that route.
 	//
-	//	In the current implementation the token bucket's :ref:`fill_interval
-	//	<envoy_v3_api_field_type.v3.TokenBucket.fill_interval>` must be >= 50ms to avoid too aggressive
-	//	refills.
+	// .. note::
+	//   In the current implementation the token bucket's :ref:`fill_interval
+	//   <envoy_v3_api_field_type.v3.TokenBucket.fill_interval>` must be >= 50ms to avoid too aggressive
+	//   refills.
 	token_bucket?: v3.#TokenBucket
 	// If set, this will enable -- but not necessarily enforce -- the rate limit for the given
 	// fraction of requests.
@@ -66,19 +62,19 @@ import (
 	//
 	// .. note::
 	//
-	//	In the current implementation the descriptor's token bucket :ref:`fill_interval
-	//	<envoy_v3_api_field_type.v3.TokenBucket.fill_interval>` must be a multiple
-	//	global :ref:`token bucket's<envoy_v3_api_field_extensions.filters.http.local_ratelimit.v3.LocalRateLimit.token_bucket>` fill interval.
+	//   In the current implementation the descriptor's token bucket :ref:`fill_interval
+	//   <envoy_v3_api_field_type.v3.TokenBucket.fill_interval>` must be a multiple
+	//   global :ref:`token bucket's<envoy_v3_api_field_extensions.filters.http.local_ratelimit.v3.LocalRateLimit.token_bucket>` fill interval.
 	//
-	//	The descriptors must match verbatim for rate limiting to apply. There is no partial
-	//	match by a subset of descriptor entries in the current implementation.
+	//   The descriptors must match verbatim for rate limiting to apply. There is no partial
+	//   match by a subset of descriptor entries in the current implementation.
 	descriptors?: [...v32.#LocalRateLimitDescriptor]
 	// Specifies the rate limit configurations to be applied with the same
 	// stage number. If not set, the default stage number is 0.
 	//
 	// .. note::
 	//
-	//	The filter supports a range of 0 - 10 inclusively for stage numbers.
+	//  The filter supports a range of 0 - 10 inclusively for stage numbers.
 	stage?: uint32
 	// Specifies the scope of the rate limiter's token bucket.
 	// If set to false, the token bucket is shared across all worker threads,
@@ -95,26 +91,24 @@ import (
 	// gateway will be N * X tokens per second.
 	//
 	// .. note::
-	//
-	//	This should never be set if the ``local_rate_limit_per_downstream_connection`` is set to
-	//	true. Because if per connection rate limiting is enabled, we assume that the token buckets
-	//	should never be shared across Envoy instances.
+	//   This should never be set if the ``local_rate_limit_per_downstream_connection`` is set to
+	//   true. Because if per connection rate limiting is enabled, we assume that the token buckets
+	//   should never be shared across Envoy instances.
 	//
 	// .. note::
-	//
-	//	This only works when the :ref:`local cluster name
-	//	<envoy_v3_api_field_config.bootstrap.v3.ClusterManager.local_cluster_name>` is set and
-	//	the related cluster is defined in the bootstrap configuration.
+	//   This only works when the :ref:`local cluster name
+	//   <envoy_v3_api_field_config.bootstrap.v3.ClusterManager.local_cluster_name>` is set and
+	//   the related cluster is defined in the bootstrap configuration.
 	local_cluster_rate_limit?: v32.#LocalClusterRateLimit
 	// Defines the standard version to use for X-RateLimit headers emitted by the filter.
 	//
-	//   - “X-RateLimit-Limit“ - indicates the request-quota associated to the
-	//     client in the current time-window followed by the description of the
-	//     quota policy.
-	//   - “X-RateLimit-Remaining“ - indicates the remaining requests in the
-	//     current time-window.
-	//   - “X-RateLimit-Reset“ - indicates the number of seconds until reset of
-	//     the current time-window.
+	// * ``X-RateLimit-Limit`` - indicates the request-quota associated to the
+	//   client in the current time-window followed by the description of the
+	//   quota policy.
+	// * ``X-RateLimit-Remaining`` - indicates the remaining requests in the
+	//   current time-window.
+	// * ``X-RateLimit-Reset`` - indicates the number of seconds until reset of
+	//   the current time-window.
 	//
 	// In case rate limiting policy specifies more then one time window, the values
 	// above represent the window that is closest to reaching its limit.
@@ -131,28 +125,27 @@ import (
 	// no matching descriptor. If set to true, default token bucket will always
 	// be consumed. Default is true.
 	always_consume_default_token_bucket?: bool
-	// Specifies whether a “RESOURCE_EXHAUSTED“ gRPC code must be returned instead
-	// of the default “UNAVAILABLE“ gRPC code for a rate limited gRPC call. The
+	// Specifies whether a ``RESOURCE_EXHAUSTED`` gRPC code must be returned instead
+	// of the default ``UNAVAILABLE`` gRPC code for a rate limited gRPC call. The
 	// HTTP code will be 200 for a gRPC response.
 	rate_limited_as_resource_exhausted?: bool
 	// Rate limit configuration that is used to generate a list of descriptor entries based on
 	// the request context. The generated entries will be used to find one or multiple matched rate
-	// limit rule from the “descriptors“.
+	// limit rule from the ``descriptors``.
 	// If this is set, then
 	// :ref:`VirtualHost.rate_limits<envoy_v3_api_field_config.route.v3.VirtualHost.rate_limits>` or
 	// :ref:`RouteAction.rate_limits<envoy_v3_api_field_config.route.v3.RouteAction.rate_limits>` fields
 	// will be ignored.
 	//
 	// .. note::
+	//   Not all configuration fields of
+	//   :ref:`rate limit config <envoy_v3_api_msg_config.route.v3.RateLimit>` is supported at here.
+	//   Following fields are not supported:
 	//
-	//	Not all configuration fields of
-	//	:ref:`rate limit config <envoy_v3_api_msg_config.route.v3.RateLimit>` is supported at here.
-	//	Following fields are not supported:
-	//
-	//	1. :ref:`rate limit stage <envoy_v3_api_field_config.route.v3.RateLimit.stage>`.
-	//	2. :ref:`dynamic metadata <envoy_v3_api_field_config.route.v3.RateLimit.Action.dynamic_metadata>`.
-	//	3. :ref:`disable_key <envoy_v3_api_field_config.route.v3.RateLimit.disable_key>`.
-	//	4. :ref:`override limit <envoy_v3_api_field_config.route.v3.RateLimit.limit>`.
+	//   1. :ref:`rate limit stage <envoy_v3_api_field_config.route.v3.RateLimit.stage>`.
+	//   2. :ref:`dynamic metadata <envoy_v3_api_field_config.route.v3.RateLimit.Action.dynamic_metadata>`.
+	//   3. :ref:`disable_key <envoy_v3_api_field_config.route.v3.RateLimit.disable_key>`.
+	//   4. :ref:`override limit <envoy_v3_api_field_config.route.v3.RateLimit.limit>`.
 	rate_limits?: [...v33.#RateLimit]
 	// Specifies the max dynamic descriptors kept in the cache for a particular wildcard descriptor
 	// configured in the global :ref:`descriptors<envoy_v3_api_field_extensions.filters.http.local_ratelimit.v3.LocalRateLimit.descriptors>`.
@@ -162,4 +155,12 @@ import (
 	// values.
 	// Minimum is 1. Default is 20.
 	max_dynamic_descriptors?: uint32
+	// Specifies whether the filter emits a ``Retry-After`` header when it enforces an HTTP 429
+	// response. This option has no effect on responses with any other status code. The value is the
+	// number of seconds until the next token is available in the bucket that rejected the request,
+	// clamped to at least 1.
+	// If ``response_headers_to_add`` sets a ``Retry-After`` header, the filter does not overwrite it.
+	//
+	// Disabled by default.
+	enable_retry_after_header?: bool
 }

@@ -3,7 +3,7 @@ package v1alpha1
 // Values of intermediate expressions produced when evaluating expression.
 // Deprecated, use `EvalState` instead.
 //
-// Deprecated: Do not use.
+// Deprecated: Marked as deprecated in google/api/expr/v1alpha1/explain.proto.
 #Explain: {
 	"@type": "type.googleapis.com/google.golang.org.genproto.googleapis.api.expr.v1alpha1.Explain"
 	// All of the observed values.

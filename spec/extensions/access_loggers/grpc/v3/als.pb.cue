@@ -55,7 +55,7 @@ import (
 	buffer_size_bytes?: uint32
 	// Additional filter state objects to log in :ref:`filter_state_objects
 	// <envoy_v3_api_field_data.accesslog.v3.AccessLogCommon.filter_state_objects>`.
-	// Logger will call “FilterState::Object::serializeAsProto“ to serialize the filter state object.
+	// Logger will call ``FilterState::Object::serializeAsProto`` to serialize the filter state object.
 	filter_state_objects_to_log?: [...string]
 	// Sets the retry policy when the establishment of a gRPC stream fails.
 	// If the stream succeeds at least once in establishing itself,

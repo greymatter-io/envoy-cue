@@ -43,21 +43,21 @@ Subset_LbSubsetSelector_LbSubsetSelectorFallbackPolicy_KEYS_SUBSET:    "KEYS_SUB
 	// fallback_policy is
 	// :ref:`DEFAULT_SUBSET<envoy_v3_api_enum_value_extensions.load_balancing_policies.subset.v3.Subset.LbSubsetFallbackPolicy.DEFAULT_SUBSET>`.
 	// Each field in default_subset is
-	// compared to the matching LbEndpoint.Metadata under the “envoy.lb“
+	// compared to the matching LbEndpoint.Metadata under the ``envoy.lb``
 	// namespace. It is valid for no hosts to match, in which case the behavior
 	// is the same as a fallback_policy of
 	// :ref:`NO_FALLBACK<envoy_v3_api_enum_value_extensions.load_balancing_policies.subset.v3.Subset.LbSubsetFallbackPolicy.NO_FALLBACK>`.
 	default_subset?: structpb.#Struct
 	// For each entry, LbEndpoint.Metadata's
-	// “envoy.lb“ namespace is traversed and a subset is created for each unique
+	// ``envoy.lb`` namespace is traversed and a subset is created for each unique
 	// combination of key and value. For example:
 	//
 	// .. code-block:: json
 	//
-	//	{ "subset_selectors": [
-	//	    { "keys": [ "version" ] },
-	//	    { "keys": [ "stage", "hardware_type" ] }
-	//	]}
+	//   { "subset_selectors": [
+	//       { "keys": [ "version" ] },
+	//       { "keys": [ "stage", "hardware_type" ] }
+	//   ]}
 	//
 	// A subset is matched when the metadata from the selected route and
 	// weighted cluster contains the same keys and values as the subset's
@@ -69,14 +69,14 @@ Subset_LbSubsetSelector_LbSubsetSelectorFallbackPolicy_KEYS_SUBSET:    "KEYS_SUB
 	//
 	// .. code-block:: json
 	//
-	//	{ "subset_selectors": [
-	//	    { "keys": [ "version" ] },
-	//	    { "keys": [ "stage", "version" ] }
-	//	]}
+	//   { "subset_selectors": [
+	//       { "keys": [ "version" ] },
+	//       { "keys": [ "stage", "version" ] }
+	//   ]}
 	//
-	// A request with metadata “{"redundant-key": "redundant-value", "stage": "prod", "version": "v1"}“ or
-	// “{"redundant-key": "redundant-value", "version": "v1"}“ will not have a valid subset even if the values
-	// of keys “stage“ and “version“ are matched because of the redundant key/value pair in the request
+	// A request with metadata ``{"redundant-key": "redundant-value", "stage": "prod", "version": "v1"}`` or
+	// ``{"redundant-key": "redundant-value", "version": "v1"}`` will not have a valid subset even if the values
+	// of keys ``stage`` and ``version`` are matched because of the redundant key/value pair in the request
 	// metadata.
 	//
 	// By setting this field to true, the most appropriate keys will be filtered out from the request metadata
@@ -87,21 +87,21 @@ Subset_LbSubsetSelector_LbSubsetSelectorFallbackPolicy_KEYS_SUBSET:    "KEYS_SUB
 	//
 	// More specifically, if the keys of a request metadata is a superset of one of the subset selectors, then only
 	// the values of the keys that in the selector keys will be matched. Take the above example, if the request
-	// metadata is “{"redundant-key": "redundant-value", "stage": "prod", "version": "v1"}“, the load balancer
-	// will only match the values of “stage“ and “version“ to find an appropriate subset because “stage“
-	// “version“ are contained by the second subset selector and the redundant “redundant-key“ will be
+	// metadata is ``{"redundant-key": "redundant-value", "stage": "prod", "version": "v1"}``, the load balancer
+	// will only match the values of ``stage`` and ``version`` to find an appropriate subset because ``stage``
+	// ``version`` are contained by the second subset selector and the redundant ``redundant-key`` will be
 	// ignored.
 	//
 	// .. note::
+	//   If the keys of request metadata is superset of multiple different subset selectors keys, the subset
+	//   selector with most keys to win. For example, given subset selectors
+	//   ``{"subset_selectors": ["keys": ["A", "B", "C"], ["A", "B"]]}`` and request metadata ``{"A": "-",
+	//   "B": "-", "C": "-", "D": "-"}``, keys ``A``, ``B``, ``C`` will be evaluated.
+	//   If the keys of request metadata is superset of multiple different subset selectors keys and the number
+	//   of selector keys are same, then the one placed in front to win. For example, given subset selectors
+	//   ``{"subset_selectors": ["keys": ["A", "B"], ["C", "D"]]}`` and request metadata ``{"A": "-", "B": "-",
+	//   "C": "-", "D": "-"}``, keys ``A``, ``B`` will be evaluated.
 	//
-	//	If the keys of request metadata is superset of multiple different subset selectors keys, the subset
-	//	selector with most keys to win. For example, given subset selectors
-	//	``{"subset_selectors": ["keys": ["A", "B", "C"], ["A", "B"]]}`` and request metadata ``{"A": "-",
-	//	"B": "-", "C": "-", "D": "-"}``, keys ``A``, ``B``, ``C`` will be evaluated.
-	//	If the keys of request metadata is superset of multiple different subset selectors keys and the number
-	//	of selector keys are same, then the one placed in front to win. For example, given subset selectors
-	//	``{"subset_selectors": ["keys": ["A", "B"], ["C", "D"]]}`` and request metadata ``{"A": "-", "B": "-",
-	//	"C": "-", "D": "-"}``, keys ``A``, ``B`` will be evaluated.
 	allow_redundant_keys?: bool
 	// If true, routing to subsets will take into account the localities and locality weights of the
 	// endpoints when making the routing decision.
@@ -153,7 +153,7 @@ Subset_LbSubsetSelector_LbSubsetSelectorFallbackPolicy_KEYS_SUBSET:    "KEYS_SUB
 	//
 	// If a match is found to a host, that host will be used regardless of priority levels.
 	//
-	// When this mode is enabled, configurations that contain more than one host with the same metadata value for the single key in “keys“
+	// When this mode is enabled, configurations that contain more than one host with the same metadata value for the single key in ``keys``
 	// will use only one of the hosts with the given key; no requests will be routed to the others. The cluster gauge
 	// :ref:`lb_subsets_single_host_per_subset_duplicate<config_cluster_manager_cluster_stats_subset_lb>` indicates how many duplicates are
 	// present in the current configuration.
@@ -169,6 +169,6 @@ Subset_LbSubsetSelector_LbSubsetSelectorFallbackPolicy_KEYS_SUBSET:    "KEYS_SUB
 	// For any other fallback policy the parameter is not used and should not be set.
 	// Only values also present in
 	// :ref:`keys<envoy_v3_api_field_extensions.load_balancing_policies.subset.v3.Subset.LbSubsetSelector.keys>` are allowed, but
-	// “fallback_keys_subset“ cannot be equal to “keys“.
+	// ``fallback_keys_subset`` cannot be equal to ``keys``.
 	fallback_keys_subset?: [...string]
 }

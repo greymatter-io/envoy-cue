@@ -43,15 +43,15 @@ OAuth2Config_AuthType_PRIVATE_KEY_JWT:  "PRIVATE_KEY_JWT"
 	// The CSRF cookie (nonce cookie) can be configured with a different path than session cookies
 	// to support flows where the callback URL is on a different path.
 	//
-	// If not specified, defaults to “/“.
+	// If not specified, defaults to ``/``.
 	path?: string
-	// If true, the “Partitioned“ attribute will be set on the cookie.
+	// If true, the ``Partitioned`` attribute will be set on the cookie.
 	//
 	// Modern browsers (Firefox, Chrome with third-party cookie deprecation) warn or block
-	// "foreign" cookies unless they carry the “Partitioned“ attribute alongside “SameSite=None; Secure“.
+	// "foreign" cookies unless they carry the ``Partitioned`` attribute alongside ``SameSite=None; Secure``.
 	// When Envoy is used in a gateway/IdP flow that sets OAuth/OIDC cookies for a parent domain
-	// (e.g., “Domain=.example.com“) while running on a different host, those cookies are
-	// considered third-party and will be rejected without “Partitioned“.
+	// (e.g., ``Domain=.example.com``) while running on a different host, those cookies are
+	// considered third-party and will be rejected without ``Partitioned``.
 	//
 	// See `CHIPS <https://developers.google.com/privacy-sandbox/3pcd/chips>`_ for more information.
 	//
@@ -85,9 +85,22 @@ OAuth2Config_AuthType_PRIVATE_KEY_JWT:  "PRIVATE_KEY_JWT"
 	client_id?: string
 	// The secret used to retrieve the access token. This value will be URL encoded when sent to the OAuth server.
 	// This field is required unless :ref:`auth_type <envoy_v3_api_field_extensions.filters.http.oauth2.v3.OAuth2Config.auth_type>`
-	// is set to “TLS_CLIENT_AUTH“, in which case authentication is done via the client certificate.
-	// When “auth_type“ is “PRIVATE_KEY_JWT“, this field must contain the PEM-encoded private key
-	// used to sign the JWT client assertion.
+	// is set to ``TLS_CLIENT_AUTH``, in which case authentication is done via the client certificate.
+	// When ``auth_type`` is ``PRIVATE_KEY_JWT``, this field must contain the PEM-encoded private key
+	// used to sign the JWT client assertion. The key may be supplied in either of two forms:
+	//
+	// * As a single-value generic secret holding the PEM-encoded private key. No ``kid`` header
+	//   parameter is included in the client assertion.
+	// * As a multi-entry generic secret with a ``private_key`` entry holding the PEM-encoded private
+	//   key and an optional ``key_id`` entry. When present, the ``key_id`` value is set as the
+	//   ``kid`` header parameter of the client assertion, per
+	//   `RFC 7515 Section 4.1.4 <https://datatracker.ietf.org/doc/html/rfc7515#section-4.1.4>`_.
+	//   Identity providers use it to select the correct verification key when more than one key is
+	//   registered for the client. Distributing both in one secret means the key ID is always
+	//   rotated together with the key it identifies.
+	//
+	// The multi-entry form is only read when ``auth_type`` is ``PRIVATE_KEY_JWT``. The other auth
+	// types read the single-value form only.
 	token_secret?: v3.#SdsSecretConfig
 	// If present, the secret token will be a HMAC using the provided secret.
 	hmac_secret?: v3.#SdsSecretConfig
@@ -102,21 +115,34 @@ OAuth2Config_AuthType_PRIVATE_KEY_JWT:  "PRIVATE_KEY_JWT"
 #PrivateKeyJwtConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.PrivateKeyJwtConfig"
 	// The signing algorithm to use for the JWT assertion.
-	// The private key provided in “token_secret“ must match the algorithm family: an RSA key for
-	// the “RS*“ algorithms, or an EC key for the “ES*“ algorithms.
-	// Default: “RS256“.
+	// The private key provided in ``token_secret`` must match the algorithm family: an RSA key for
+	// the ``RS*`` algorithms, or an EC key for the ``ES*`` algorithms.
+	// Default: ``RS256``.
 	signing_algorithm?: #PrivateKeyJwtConfig_SigningAlgorithm
 	// The lifetime of the JWT assertion. After this duration, the assertion expires.
-	// The value is truncated to whole seconds, so it must be at least “1s“ when set.
-	// Default: “60s“.
+	// The value is truncated to whole seconds, so it must be at least ``1s`` when set.
+	// Default: ``60s``.
 	assertion_lifetime?: string
+	// The value to use as the ``aud`` (audience) claim in the JWT client assertion.
+	//
+	// `RFC 7523 Section 3 <https://datatracker.ietf.org/doc/html/rfc7523#section-3>`_ requires the
+	// ``aud`` claim to identify the authorization server, and allows the token endpoint URL to be
+	// used for this purpose.
+	// `RFC 9126 Section 2.1 <https://datatracker.ietf.org/doc/html/rfc9126#section-2.1>`_ recommends
+	// the authorization server's issuer identifier instead, and
+	// `FAPI 2.0 <https://openid.net/specs/fapi-security-profile-2_0-final.html>`_ requires it, as a
+	// single canonical value identifies the server regardless of which endpoint receives the
+	// assertion.
+	//
+	// If not set, defaults to the configured ``token_endpoint`` URI.
+	assertion_audience?: string
 }
 
 // Defines how an OAuth token is forwarded upstream.
 #OAuth2TokenForwarding: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.OAuth2TokenForwarding"
 	// The upstream request header that will carry the token.
-	// Pseudo-headers (names starting with “:“) and the “Host“ header are not allowed.
+	// Pseudo-headers (names starting with ``:``) and the ``Host`` header are not allowed.
 	header?: string
 }
 
@@ -125,19 +151,42 @@ OAuth2Config_AuthType_PRIVATE_KEY_JWT:  "PRIVATE_KEY_JWT"
 // This configuration is ignored if “end_session_endpoint“ is not set.
 #PostLogoutRedirectUri: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.PostLogoutRedirectUri"
-	// Do not include the “post_logout_redirect_uri“ parameter in requests to the
-	// configured “end_session_endpoint“.
+	// Do not include the ``post_logout_redirect_uri`` parameter in requests to the
+	// configured ``end_session_endpoint``.
 	disabled?: bool
-	// URI to send as the “post_logout_redirect_uri“ parameter. Supports header formatting
+	// URI to send as the ``post_logout_redirect_uri`` parameter. Supports header formatting
 	// tokens, and will be percent-encoded automatically when building the logout URL.
 	//
 	// The URI should be registered with the authorization server.
 	uri?: string
 }
 
+// Splits OAuth token cookies that are too large for a browser to store.
+//
+// A token that fits in one cookie is written as a single cookie, as without chunking. A larger
+// token is written as “<name>_0“ to “<name>_N-1“, plus a “<name>_chunks“ cookie that holds
+// the count “N“. If a token needs more than
+// :ref:`max_chunks <envoy_v3_api_field_extensions.filters.http.oauth2.v3.TokenCookieChunking.max_chunks>`
+// cookies, the filter responds with “503“ instead of setting cookies that the client would drop.
+//
+// Chunked cookies add to the request header size. A session with more than one large token may
+// need a larger :ref:`max_request_headers_kb
+// <envoy_v3_api_field_extensions.filters.network.http_connection_manager.v3.HttpConnectionManager.max_request_headers_kb>`.
+#TokenCookieChunking: {
+	"@type": "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.TokenCookieChunking"
+	// The largest cookie Envoy writes for a token, counting its name, value and attributes. A token
+	// whose cookie would be larger is split. Defaults to ``4096``, the limit browsers enforce.
+	max_cookie_size?: uint32
+	// The most cookies a single token is split into. Defaults to ``8``.
+	//
+	// Envoy rejoins up to 16 chunks on requests regardless of this value, so lowering it does not
+	// invalidate existing sessions.
+	max_chunks?: uint32
+}
+
 // OAuth config
 //
-// [#next-free-field: 34]
+// [#next-free-field: 35]
 #OAuth2Config: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.oauth2.v3.OAuth2Config"
 	// Endpoint on the authorization server to retrieve the access token from.
@@ -153,13 +202,13 @@ OAuth2Config_AuthType_PRIVATE_KEY_JWT:  "PRIVATE_KEY_JWT"
 	//
 	// If configured, the OAuth2 filter will redirect users to this endpoint when they access the signout_path.
 	end_session_endpoint?: string
-	// Optional control for the “post_logout_redirect_uri“ parameter sent to the “end_session_endpoint“ when a user
-	// accesses the “signout_path“.
-	// This field should be set only if “openid“ is in the “auth_scopes“, the “end_session_endpoint“ is configured,
+	// Optional control for the ``post_logout_redirect_uri`` parameter sent to the ``end_session_endpoint`` when a user
+	// accesses the ``signout_path``.
+	// This field should be set only if ``openid`` is in the ``auth_scopes``, the ``end_session_endpoint`` is configured,
 	// and the authorization server supports the OpenID Connect RP-Initiated Logout specification.
 	//
-	// If unset, Envoy preserves the historical behavior and sends “<scheme>://<host>/“, constructed from the inbound
-	// request, as “post_logout_redirect_uri“.
+	// If unset, Envoy preserves the historical behavior and sends ``<scheme>://<host>/``, constructed from the inbound
+	// request, as ``post_logout_redirect_uri``.
 	post_logout_redirect_uri?: #PostLogoutRedirectUri
 	// Credentials used for OAuth.
 	credentials?: #OAuth2Credentials
@@ -177,15 +226,15 @@ OAuth2Config_AuthType_PRIVATE_KEY_JWT:  "PRIVATE_KEY_JWT"
 	forward_bearer_token?: bool
 	// Forward the OIDC ID token to the upstream.
 	//
-	// If the configured header is “Authorization“, Envoy forwards the ID token using the
-	// “Bearer“ prefix. For any other header, Envoy forwards the raw token value.
+	// If the configured header is ``Authorization``, Envoy forwards the ID token using the
+	// ``Bearer`` prefix. For any other header, Envoy forwards the raw token value.
 	// If not specified, the ID token will not be forwarded.
 	//
 	// This can not be configured with :ref:`forward_bearer_token
 	// <envoy_v3_api_field_extensions.filters.http.oauth2.v3.OAuth2Config.forward_bearer_token>`
 	// or :ref:`preserve_authorization_header
 	// <envoy_v3_api_field_extensions.filters.http.oauth2.v3.OAuth2Config.preserve_authorization_header>`
-	// when the header is “Authorization“.
+	// when the header is ``Authorization``.
 	forward_id_token?: #OAuth2TokenForwarding
 	// If set to true, preserve the existing authorization header.
 	// By default the client strips the existing authorization header before forwarding upstream.
@@ -201,7 +250,7 @@ OAuth2Config_AuthType_PRIVATE_KEY_JWT:  "PRIVATE_KEY_JWT"
 	// Optional resource parameter for authorization request
 	// RFC: https://tools.ietf.org/html/rfc8707
 	resources?: [...string]
-	// Defines how “client_id“ and “client_secret“ are sent in OAuth client to OAuth server requests.
+	// Defines how ``client_id`` and ``client_secret`` are sent in OAuth client to OAuth server requests.
 	// RFC https://datatracker.ietf.org/doc/html/rfc6749#section-2.3.1
 	auth_type?: #OAuth2Config_AuthType
 	// If set to true, allows automatic access token refresh using the associated refresh token (see
@@ -210,7 +259,7 @@ OAuth2Config_AuthType_PRIVATE_KEY_JWT:  "PRIVATE_KEY_JWT"
 	use_refresh_token?: bool
 	// The default lifetime in seconds of the access token, if omitted by the authorization server.
 	//
-	// If this value is not set, it will default to “0s“. In this case, the expiry must be set by
+	// If this value is not set, it will default to ``0s``. In this case, the expiry must be set by
 	// the authorization server or the OAuth flow will fail.
 	default_expires_in?: string
 	// Any request that matches any of the provided matchers won't be redirected to OAuth server when tokens are not valid.
@@ -219,9 +268,9 @@ OAuth2Config_AuthType_PRIVATE_KEY_JWT:  "PRIVATE_KEY_JWT"
 	deny_redirect_matcher?: [...v33.#HeaderMatcher]
 	// The default lifetime in seconds of the refresh token, if the exp (expiration time) claim is omitted in the refresh token or the refresh token is not JWT.
 	//
-	// If this value is not set, it will default to “604800s“. In this case, the cookie with the refresh token will be expired
+	// If this value is not set, it will default to ``604800s``. In this case, the cookie with the refresh token will be expired
 	// in a week.
-	// This setting is only considered if “use_refresh_token“ is set to true, otherwise the authorization server expiration or “default_expires_in“ is used.
+	// This setting is only considered if ``use_refresh_token`` is set to true, otherwise the authorization server expiration or ``default_expires_in`` is used.
 	default_refresh_token_expires_in?: string
 	// If set to true, the client will not set a cookie for ID Token even if one is received from the Identity Provider. This may be useful in cases where the ID
 	// Token is too large for HTTP cookies (longer than 4096 characters). Enabling this option will only disable setting the cookie response header, the filter
@@ -244,12 +293,12 @@ OAuth2Config_AuthType_PRIVATE_KEY_JWT:  "PRIVATE_KEY_JWT"
 	stat_prefix?: string
 	// Optional expiration time for the CSRF protection token cookie.
 	// The CSRF token prevents cross-site request forgery attacks during the OAuth2 flow.
-	// If not specified, defaults to “600s“ (10 minutes), which should provide sufficient time
+	// If not specified, defaults to ``600s`` (10 minutes), which should provide sufficient time
 	// for users to complete the OAuth2 authorization flow.
 	csrf_token_expires_in?: string
 	// Optional expiration time for the code verifier cookie.
 	// The code verifier is stored in a secure, HTTP-only cookie during the OAuth2 authorization process.
-	// If not specified, defaults to “600s“ (10 minutes), which should provide sufficient time
+	// If not specified, defaults to ``600s`` (10 minutes), which should provide sufficient time
 	// for users to complete the OAuth2 authorization flow.
 	code_verifier_token_expires_in?: string
 	// Disable token encryption. When set to true, both the access token and the ID token will be stored in plain text.
@@ -262,26 +311,26 @@ OAuth2Config_AuthType_PRIVATE_KEY_JWT:  "PRIVATE_KEY_JWT"
 	// enabling graceful degradation patterns.
 	//
 	// When triggered, all OAuth cookies are stripped from the request and the request proceeds as unauthenticated.
-	// Context headers “x-envoy-oauth-status: failed“ and “x-envoy-oauth-failure-reason“ are added to inform upstream.
+	// Context headers ``x-envoy-oauth-status: failed`` and ``x-envoy-oauth-failure-reason`` are added to inform upstream.
 	//
 	// Note: If a request matches pass_through_matcher, it bypasses OAuth validation and this matcher won't be evaluated.
 	// This matcher takes precedence over deny_redirect_matcher.
 	allow_failed_matcher?: [...v33.#HeaderMatcher]
-	// Optional base URI (scheme + host, e.g. “https://app.example.com“) used to build the
-	// original request URI that is encoded into the OAuth2 “state“ parameter.
+	// Optional base URI (scheme + host, e.g. ``https://app.example.com``) used to build the
+	// original request URI that is encoded into the OAuth2 ``state`` parameter.
 	// This URI will be used later to redirect users on a successful OAuth.
 	//
 	// This is useful when Envoy sits behind a gateway or load balancer that terminates the
-	// user-facing hostname: In that case, the post-authentication redirect derived from “state“ would
+	// user-facing hostname: In that case, the post-authentication redirect derived from ``state`` would
 	// send the user to an internal host they didn't request.
 	//
 	// Supports request header formatting tokens.
 	//
 	// Example:
 	//
-	//	original_request_uri: "%REQ(x-forwarded-proto?:scheme)%://%REQ(x-forwarded-host?:authority)%"
+	//    original_request_uri: "%REQ(x-forwarded-proto?:scheme)%://%REQ(x-forwarded-host?:authority)%"
 	//
-	// If not set, defaults to “<:scheme>://<:authority>“ of the incoming request.
+	// If not set, defaults to ``<:scheme>://<:authority>`` of the incoming request.
 	original_request_uri?: string
 	// Optional list of domains that are allowed as
 	// 1. redirect_uri: which is what the IdP calls after OAuth
@@ -289,30 +338,39 @@ OAuth2Config_AuthType_PRIVATE_KEY_JWT:  "PRIVATE_KEY_JWT"
 	//
 	// This mitigates:
 	// - injecting a malicious x-forwarded-host or any header that is used to template the redirect urls
-	// - open redirect attacks where an attacker crafts a “state“ value pointing to an untrusted host.
+	// - open redirect attacks where an attacker crafts a ``state`` value pointing to an untrusted host.
 	//
 	// Each entry is matched against the host (with any port stripped) extracted from the
-	// formatted “redirect_uri“, the formatted “original_request_uri“, and the URL decoded from
-	// the “state“ parameter on callback. Matching is case-insensitive and supports two forms:
+	// formatted ``redirect_uri``, the formatted ``original_request_uri``, and the URL decoded from
+	// the ``state`` parameter on callback. Matching is case-insensitive and supports two forms:
 	//
-	//   - Exact match, e.g. “example.com“ matches only “example.com“.
-	//   - Wildcard subdomain match using a leading “*.“, e.g. “*.example.com“ matches
-	//     “foo.example.com“ and “bar.baz.example.com“ but not “example.com“ itself.
+	// * Exact match, e.g. ``example.com`` matches only ``example.com``.
+	// * Wildcard subdomain match using a leading ``*.``, e.g. ``*.example.com`` matches
+	//   ``foo.example.com`` and ``bar.baz.example.com`` but not ``example.com`` itself.
 	//
-	// IPv6 literals must be configured without surrounding brackets (e.g. “::1“, not “[::1]“).
+	// IPv6 literals must be configured without surrounding brackets (e.g. ``::1``, not ``[::1]``).
 	//
 	// If this list is empty (the default), all hosts are allowed and no validation is performed.
 	allowed_redirect_domains?: [...string]
 	// If set to true, the expiration time for the ID token cookie will always be derived from the
-	// “expires_in“ field of the access token response rather than from the “exp“ claim in the
+	// ``expires_in`` field of the access token response rather than from the ``exp`` claim in the
 	// ID token JWT. This is useful when the access token response advertises a longer lifetime than
 	// the ID token and you want the ID token cookie to remain valid for that full duration.
-	// Default is false (use the ID token's own “exp“ claim when available).
+	// Default is false (use the ID token's own ``exp`` claim when available).
 	use_access_token_expiry_for_id_token_cookie?: bool
-	// Configuration for “PRIVATE_KEY_JWT“ client authentication.
+	// Configuration for ``PRIVATE_KEY_JWT`` client authentication.
 	// Only used when :ref:`auth_type <envoy_v3_api_field_extensions.filters.http.oauth2.v3.OAuth2Config.auth_type>`
-	// is set to “PRIVATE_KEY_JWT“.
+	// is set to ``PRIVATE_KEY_JWT``.
 	private_key_jwt_config?: #PrivateKeyJwtConfig
+	// If set, an access, ID or refresh token cookie that is larger than
+	// :ref:`max_cookie_size <envoy_v3_api_field_extensions.filters.http.oauth2.v3.TokenCookieChunking.max_cookie_size>`
+	// is split across multiple cookies. If not set, every token is written as a single cookie,
+	// which a browser drops when it is larger than 4096 bytes.
+	//
+	// Envoy always rejoins chunked token cookies on requests, whether or not this is set, so it can
+	// be removed safely. In a rolling upgrade, set it only after every Envoy that may serve the same
+	// client understands chunked cookies.
+	token_cookie_chunking?: #TokenCookieChunking
 }
 
 // Per-route OAuth2 config.
@@ -340,18 +398,18 @@ OAuth2Config_AuthType_PRIVATE_KEY_JWT:  "PRIVATE_KEY_JWT"
 	// client and returns an authorization token back to the OAuth filter, no matter what format
 	// that token is, if :ref:`forward_bearer_token <envoy_v3_api_field_extensions.filters.http.oauth2.v3.OAuth2Config.forward_bearer_token>`
 	// is set to true the filter will send over the bearer token as a cookie with this name to the
-	// upstream. Defaults to “BearerToken“.
+	// upstream. Defaults to ``BearerToken``.
 	bearer_token?: string
-	// Cookie name to hold OAuth HMAC value. Defaults to “OauthHMAC“.
+	// Cookie name to hold OAuth HMAC value. Defaults to ``OauthHMAC``.
 	oauth_hmac?: string
-	// Cookie name to hold OAuth expiry value. Defaults to “OauthExpires“.
+	// Cookie name to hold OAuth expiry value. Defaults to ``OauthExpires``.
 	oauth_expires?: string
-	// Cookie name to hold the id token. Defaults to “IdToken“.
+	// Cookie name to hold the id token. Defaults to ``IdToken``.
 	id_token?: string
-	// Cookie name to hold the refresh token. Defaults to “RefreshToken“.
+	// Cookie name to hold the refresh token. Defaults to ``RefreshToken``.
 	refresh_token?: string
-	// Cookie name to hold the nonce value. Defaults to “OauthNonce“.
+	// Cookie name to hold the nonce value. Defaults to ``OauthNonce``.
 	oauth_nonce?: string
-	// Cookie name to hold the PKCE code verifier. Defaults to “OauthCodeVerifier“.
+	// Cookie name to hold the PKCE code verifier. Defaults to ``OauthCodeVerifier``.
 	code_verifier?: string
 }

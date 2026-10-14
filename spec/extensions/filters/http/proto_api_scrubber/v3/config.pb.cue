@@ -25,8 +25,8 @@ ProtoApiScrubberConfig_FilteringMode_OVERRIDE: "OVERRIDE"
 // Specifies the descriptor set for proto services.
 #DescriptorSet: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.proto_api_scrubber.v3.DescriptorSet"
-	// It could be passed by a local file through “Datasource.filename“ or
-	// embedded in the “Datasource.inline_bytes“.
+	// It could be passed by a local file through ``Datasource.filename`` or
+	// embedded in the ``Datasource.inline_bytes``.
 	data_source?: v3.#DataSource
 }
 
@@ -34,11 +34,11 @@ ProtoApiScrubberConfig_FilteringMode_OVERRIDE: "OVERRIDE"
 #Restrictions: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.proto_api_scrubber.v3.Restrictions"
 	// Specifies the method restrictions.
-	// Key - Fully qualified method name e.g., “endpoints.examples.bookstore.BookStore/GetShelf“.
+	// Key - Fully qualified method name e.g., ``endpoints.examples.bookstore.BookStore/GetShelf``.
 	// Value - Method restrictions.
 	method_restrictions?: [string]: #MethodRestrictions
 	// Specifies the message restrictions.
-	// Key - Fully qualified message name e.g., “endpoints.examples.bookstore.Book“.
+	// Key - Fully qualified message name e.g., ``endpoints.examples.bookstore.Book``.
 	// Value - Message restrictions.
 	message_restrictions?: [string]: #MessageRestrictions
 }
@@ -62,9 +62,9 @@ ProtoApiScrubberConfig_FilteringMode_OVERRIDE: "OVERRIDE"
 	// message-level rules. The 'matcher' within RestrictionConfig will determine
 	// if the method is denied/scrubbed. If the matcher evaluates to true:
 	//
-	//   - The request is **denied**, and further processing is stopped.
-	//   - The implementation should generate an immediate error response
-	//     (e.g., an HTTP 403 Forbidden status) and send it to the client.
+	// - The request is **denied**, and further processing is stopped.
+	// - The implementation should generate an immediate error response
+	//   (e.g., an HTTP 403 Forbidden status) and send it to the client.
 	method_restriction?: #RestrictionConfig
 }
 

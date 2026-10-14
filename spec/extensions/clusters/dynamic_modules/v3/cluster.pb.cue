@@ -17,12 +17,12 @@ import (
 	// The dynamic module configuration for the cluster.
 	dynamic_module_config?: v3.#DynamicModuleConfig
 	// The name to identify the cluster implementation within the module.
-	// This is passed to the module's “envoy_dynamic_module_on_cluster_config_new“ function.
+	// This is passed to the module's ``envoy_dynamic_module_on_cluster_config_new`` function.
 	cluster_name?: string
 	// The configuration for the module's cluster implementation.
-	// This is passed to the module's “envoy_dynamic_module_on_cluster_config_new“ function.
+	// This is passed to the module's ``envoy_dynamic_module_on_cluster_config_new`` function.
 	// The configuration can be any protobuf message. However, it is recommended to use
-	// “google.protobuf.Struct“, “google.protobuf.StringValue“, or “google.protobuf.BytesValue“.
+	// ``google.protobuf.Struct``, ``google.protobuf.StringValue``, or ``google.protobuf.BytesValue``.
 	// These types are passed directly as bytes to the module, so the module does not need to have
 	// knowledge of protobuf encoding. Otherwise, the serialized bytes of the type are passed.
 	// If not specified, an empty configuration is passed.

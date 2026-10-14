@@ -18,7 +18,7 @@ package v3
 	// True to enable sharing with the upstream.
 	shared_with_upstream?: bool
 	// Additional labels to be added to the peer metadata to help your understand the traffic.
-	// e.g. “role“, “location“ etc.
+	// e.g. ``role``, ``location`` etc.
 	additional_labels?: [...string]
 }
 
@@ -41,8 +41,8 @@ package v3
 // This method uses Istio HTTP metadata exchange headers, e.g. “x-envoy-peer-metadata“. Removes these headers if found.
 #Config_IstioHeaders: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.peer_metadata.v3.Config_IstioHeaders"
-	// Strip “x-envoy-peer-metadata“ and “x-envoy-peer-metadata-id“ headers on HTTP requests to services outside the mesh.
-	// Detects upstream clusters with “istio“ and “external“ filter metadata fields
+	// Strip ``x-envoy-peer-metadata`` and ``x-envoy-peer-metadata-id`` headers on HTTP requests to services outside the mesh.
+	// Detects upstream clusters with ``istio`` and ``external`` filter metadata fields
 	skip_external_clusters?: bool
 }
 

@@ -44,9 +44,8 @@ import (
 	// Configuration for an external tracing provider.
 	//
 	// .. attention::
-	//
-	//	This field has been deprecated in favor of :ref:`HttpConnectionManager.Tracing.provider
-	//	<envoy_api_field_config.filter.network.http_connection_manager.v2.HttpConnectionManager.Tracing.provider>`.
+	//  This field has been deprecated in favor of :ref:`HttpConnectionManager.Tracing.provider
+	//  <envoy_api_field_config.filter.network.http_connection_manager.v2.HttpConnectionManager.Tracing.provider>`.
 	tracing?: v21.#Tracing
 	// Configuration for the runtime configuration provider (deprecated). If not
 	// specified, a “null” provider will be used which will result in all defaults
@@ -89,7 +88,7 @@ import (
 	// :ref:`use_tcp_for_dns_lookups <envoy_api_field_Cluster.use_tcp_for_dns_lookups>` are
 	// specified.
 	// Setting this value causes failure if the
-	// “envoy.restart_features.use_apple_api_for_dns_lookups“ runtime value is true during
+	// ``envoy.restart_features.use_apple_api_for_dns_lookups`` runtime value is true during
 	// server startup. Apple' API only uses UDP for DNS resolution.
 	use_tcp_for_dns_lookups?: bool
 }

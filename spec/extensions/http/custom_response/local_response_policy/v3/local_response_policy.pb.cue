@@ -6,13 +6,16 @@ import (
 
 // Custom response policy to serve a locally stored response to the
 // downstream.
+// [#next-free-field: 7]
 #LocalResponsePolicy: {
 	"@type": "type.googleapis.com/envoy.extensions.http.custom_response.local_response_policy.v3.LocalResponsePolicy"
 	// Optional new local reply body text. It will be used
-	// in the “%LOCAL_REPLY_BODY%“ command operator in the “body_format“.
+	// in the ``%LOCAL_REPLY_BODY%`` command operator in the ``body_format``. If unset when
+	// ``body_format`` is configured for an existing local reply, the existing body will be used as
+	// the formatter input instead.
 	body?: v3.#DataSource
-	// Optional body format to be used for this response. If “body_format“ is  not
-	// provided, and “body“ is, the contents of “body“ will be used to populate
+	// Optional body format to be used for this response. If ``body_format`` is  not
+	// provided, and ``body`` is, the contents of ``body`` will be used to populate
 	// the body of the local reply without formatting.
 	body_format?: v3.#SubstitutionFormatString
 	// The new response status code if specified.
@@ -22,4 +25,8 @@ import (
 	// the original response for local body, or the custom response from the
 	// remote body, before it is sent to a downstream client.
 	response_headers_to_add?: [...v3.#HeaderValueOption]
+	// If set, keep the existing ``response_code_details`` already present on StreamInfo.
+	preserve_response_code_details?: bool
+	// Replace ``response_code_details`` with this value.
+	response_code_details?: string
 }

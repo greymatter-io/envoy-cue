@@ -18,11 +18,11 @@ import (
 	sub_cluster_config?: #SubClusterConfig
 	// When this flag is set, the filter will add the resolved upstream address in the filter
 	// state. The state should be saved with key
-	// “envoy.stream.upstream_address“ (See
+	// ``envoy.stream.upstream_address`` (See
 	// :repo:`upstream_address.h<source/common/stream_info/upstream_address.h>`).
 	save_upstream_address?: bool
-	// When this flag is set, the filter will check for the “envoy.upstream.dynamic_host“
-	// and/or “envoy.upstream.dynamic_port“ filter state values before using the HTTP
+	// When this flag is set, the filter will check for the ``envoy.upstream.dynamic_host``
+	// and/or ``envoy.upstream.dynamic_port`` filter state values before using the HTTP
 	// Host header for DNS resolution. This provides consistency with the
 	// :ref:`SNI dynamic forward proxy <envoy_v3_api_msg_extensions.filters.network.sni_dynamic_forward_proxy.v3.FilterConfig>` and
 	// :ref:`UDP dynamic forward proxy <envoy_v3_api_msg_extensions.filters.udp.udp_proxy.session.dynamic_forward_proxy.v3.FilterConfig>`
@@ -42,10 +42,11 @@ import (
 	//
 	// .. note::
 	//
-	//	This rewrite affects both DNS lookup and host header forwarding. However, this option shouldn't be used with
-	//	:ref:`HCM host rewrite header <envoy_v3_api_field_config.route.v3.RouteAction.auto_host_rewrite>` given that
-	//	the value set here would be used for DNS lookups whereas the value set in the HCM would be used for host
-	//	header forwarding which might not be the desired outcome.
+	//   This rewrite affects both DNS lookup and host header forwarding. However, this option shouldn't be used with
+	//   :ref:`HCM host rewrite header <envoy_v3_api_field_config.route.v3.RouteAction.auto_host_rewrite>` given that
+	//   the value set here would be used for DNS lookups whereas the value set in the HCM would be used for host
+	//   header forwarding which might not be the desired outcome.
+	//
 	host_rewrite_literal?: string
 	// Indicates that before DNS lookup, the host header will be swapped with
 	// the value of this header. If not set or empty, the original host header
@@ -53,14 +54,14 @@ import (
 	//
 	// .. note::
 	//
-	//	This rewrite affects both DNS lookup and host header forwarding. However, this option shouldn't be used with
-	//	:ref:`HCM host rewrite header <envoy_v3_api_field_config.route.v3.RouteAction.auto_host_rewrite>` given that
-	//	the value set here would be used for DNS lookups whereas the value set in the HCM would be used for host
-	//	header forwarding which might not be the desired outcome.
+	//   This rewrite affects both DNS lookup and host header forwarding. However, this option shouldn't be used with
+	//   :ref:`HCM host rewrite header <envoy_v3_api_field_config.route.v3.RouteAction.auto_host_rewrite>` given that
+	//   the value set here would be used for DNS lookups whereas the value set in the HCM would be used for host
+	//   header forwarding which might not be the desired outcome.
 	//
 	// .. note::
 	//
-	//	If the header appears multiple times only the first value is used.
+	//   If the header appears multiple times only the first value is used.
 	host_rewrite_header?: string
 }
 

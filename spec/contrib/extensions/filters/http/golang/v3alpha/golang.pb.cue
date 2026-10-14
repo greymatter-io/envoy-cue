@@ -29,19 +29,20 @@ Config_MergePolicy_OVERRIDE:                        "OVERRIDE"
 	library_path?: string
 	// Globally unique name of the Go plugin.
 	//
-	// This name **must** be consistent with the name registered in “http::RegisterHttpFilterConfigFactory“,
+	// This name **must** be consistent with the name registered in ``http::RegisterHttpFilterConfigFactory``,
 	// and can be used to associate :ref:`route and virtualHost plugin configuration
 	// <envoy_v3_api_field_extensions.filters.http.golang.v3alpha.ConfigsPerRoute.plugins_config>`.
+	//
 	plugin_name?: string
 	// Configuration for the Go plugin.
 	//
 	// .. note::
+	//     This configuration is only parsed in the go plugin, and is therefore not validated
+	//     by Envoy.
 	//
-	//	This configuration is only parsed in the go plugin, and is therefore not validated
-	//	by Envoy.
+	//     See the :repo:`StreamFilter API <contrib/golang/common/go/api/filter.go>`
+	//     for more information about how the plugin's configuration data can be accessed.
 	//
-	//	See the :repo:`StreamFilter API <contrib/golang/common/go/api/filter.go>`
-	//	for more information about how the plugin's configuration data can be accessed.
 	plugin_config?: _
 	// Merge policy for plugin configuration.
 	//
@@ -76,5 +77,6 @@ Config_MergePolicy_OVERRIDE:                        "OVERRIDE"
 	// Configuration of the Go plugin at the per-router or per-virtualhost level,
 	// keyed on the :ref:`plugin_name <envoy_v3_api_field_extensions.filters.http.golang.v3alpha.Config.plugin_name>`
 	// of the Go plugin.
+	//
 	plugins_config?: [string]: #RouterPlugin
 }

@@ -58,13 +58,13 @@ package v3
 	// for the re-mapping of attributes, which is not supported by the native attribute building
 	// logic.
 	mapped_request_attributes?: [string]: string
-	// Similar to “mapped_request_attributes“, but for response attributes. The "response"
+	// Similar to ``mapped_request_attributes``, but for response attributes. The "response"
 	// nomenclature here indicates that the attributes, whatever they may be, are sent with a
 	// response headers, body, or trailers ext_proc call.
 	//
-	// If a value contains a request key (e.g., “request.host“), then the attribute would just be
+	// If a value contains a request key (e.g., ``request.host``), then the attribute would just be
 	// sent along in the response. This is useful if a given ext_proc extension is only enabled for
-	// response handling (e.g., “RESPONSE_HEADERS“) but the backend wants to access request
+	// response handling (e.g., ``RESPONSE_HEADERS``) but the backend wants to access request
 	// metadata.
 	mapped_response_attributes?: [string]: string
 }

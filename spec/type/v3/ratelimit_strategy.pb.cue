@@ -39,17 +39,17 @@ RateLimitStrategy_BlanketRule_DENY_ALL:  "DENY_ALL"
 	"@type": "type.googleapis.com/envoy.type.v3.RateLimitStrategy_RequestsPerTimeUnit"
 	// The desired number of requests per :ref:`time_unit
 	// <envoy_v3_api_field_type.v3.RateLimitStrategy.RequestsPerTimeUnit.time_unit>` to allow.
-	// If set to “0“, deny all (equivalent to “BlanketRule.DENY_ALL“).
+	// If set to ``0``, deny all (equivalent to ``BlanketRule.DENY_ALL``).
 	//
 	// .. note::
+	//   Note that the algorithm implementation determines the course of action for the requests
+	//   over the limit. As long as the ``requests_per_time_unit`` converges on the desired value,
+	//   it's allowed to treat this field as a soft-limit: allow bursts, redistribute the allowance
+	//   over time, etc.
 	//
-	//	Note that the algorithm implementation determines the course of action for the requests
-	//	over the limit. As long as the ``requests_per_time_unit`` converges on the desired value,
-	//	it's allowed to treat this field as a soft-limit: allow bursts, redistribute the allowance
-	//	over time, etc.
 	requests_per_time_unit?: uint64
 	// The unit of time. Ignored when :ref:`requests_per_time_unit
 	// <envoy_v3_api_field_type.v3.RateLimitStrategy.RequestsPerTimeUnit.requests_per_time_unit>`
-	// is “0“ (deny all).
+	// is ``0`` (deny all).
 	time_unit?: #RateLimitUnit
 }

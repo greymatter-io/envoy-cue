@@ -27,9 +27,9 @@ RedisProxy_ConnPoolSettings_ReadPolicy_ANY:            "ANY"
 	//
 	// .. attention::
 	//
-	//	This field is deprecated. Use a :ref:`catch_all
-	//	route<envoy_api_field_config.filter.network.redis_proxy.v2.RedisProxy.PrefixRoutes.catch_all_route>`
-	//	instead.
+	//   This field is deprecated. Use a :ref:`catch_all
+	//   route<envoy_api_field_config.filter.network.redis_proxy.v2.RedisProxy.PrefixRoutes.catch_all_route>`
+	//   instead.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/filter/network/redis_proxy/v2/redis_proxy.proto.
 	cluster?: string
@@ -47,20 +47,20 @@ RedisProxy_ConnPoolSettings_ReadPolicy_ANY:            "ANY"
 	//
 	// .. code-block:: yaml
 	//
-	//	prefix_routes:
-	//	  routes:
-	//	    - prefix: "ab"
-	//	      cluster: "cluster_a"
-	//	    - prefix: "abc"
-	//	      cluster: "cluster_b"
+	//    prefix_routes:
+	//      routes:
+	//        - prefix: "ab"
+	//          cluster: "cluster_a"
+	//        - prefix: "abc"
+	//          cluster: "cluster_b"
 	//
 	// When using the above routes, the following prefixes would be sent to:
 	//
-	//   - “get abc:users“ would retrieve the key 'abc:users' from cluster_b.
-	//   - “get ab:users“ would retrieve the key 'ab:users' from cluster_a.
-	//   - “get z:users“ would return a NoUpstreamHost error. A :ref:`catch-all
-	//     route<envoy_api_field_config.filter.network.redis_proxy.v2.RedisProxy.PrefixRoutes.catch_all_route>`
-	//     would have retrieved the key from that cluster instead.
+	// * ``get abc:users`` would retrieve the key 'abc:users' from cluster_b.
+	// * ``get ab:users`` would retrieve the key 'ab:users' from cluster_a.
+	// * ``get z:users`` would return a NoUpstreamHost error. A :ref:`catch-all
+	//   route<envoy_api_field_config.filter.network.redis_proxy.v2.RedisProxy.PrefixRoutes.catch_all_route>`
+	//   would have retrieved the key from that cluster instead.
 	//
 	// See the :ref:`configuration section
 	// <arch_overview_redis_configuration>` of the architecture overview for recommendations on
@@ -157,9 +157,9 @@ RedisProxy_ConnPoolSettings_ReadPolicy_ANY:            "ANY"
 	// catch-all route becomes required when no routes are specified.
 	// .. attention::
 	//
-	//	This field is deprecated. Use a :ref:`catch_all
-	//	route<envoy_api_field_config.filter.network.redis_proxy.v2.RedisProxy.PrefixRoutes.catch_all_route>`
-	//	instead.
+	//   This field is deprecated. Use a :ref:`catch_all
+	//   route<envoy_api_field_config.filter.network.redis_proxy.v2.RedisProxy.PrefixRoutes.catch_all_route>`
+	//   instead.
 	//
 	// Deprecated: Marked as deprecated in envoy/config/filter/network/redis_proxy/v2/redis_proxy.proto.
 	catch_all_cluster?: string

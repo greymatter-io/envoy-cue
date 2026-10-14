@@ -33,7 +33,7 @@ package v3
 	// defined by the chosen regular expression engine. Google's `RE2
 	// <https://github.com/google/re2>`_ regular expression engine uses a
 	// backslash followed by the capture group number to denote a numbered
-	// capture group. E.g., “\1“ refers to capture group 1, and “\2“ refers
+	// capture group. E.g., ``\1`` refers to capture group 1, and ``\2`` refers
 	// to capture group 2.
 	substitution?: string
 }
@@ -63,8 +63,9 @@ package v3
 	//
 	// .. note::
 	//
-	//	Although this field is deprecated, the program size will still be checked against the
-	//	global ``re2.max_program_size.error_level`` runtime value.
+	//  Although this field is deprecated, the program size will still be checked against the
+	//  global ``re2.max_program_size.error_level`` runtime value.
+	//
 	//
 	// Deprecated: Marked as deprecated in envoy/type/matcher/v3/regex.proto.
 	max_program_size?: uint32

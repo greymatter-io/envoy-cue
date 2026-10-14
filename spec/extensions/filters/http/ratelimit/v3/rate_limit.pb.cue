@@ -31,7 +31,7 @@ RateLimitPerRoute_OverrideOptions_OVERRIDE_POLICY: "OVERRIDE_POLICY"
 RateLimitPerRoute_OverrideOptions_INCLUDE_POLICY:  "INCLUDE_POLICY"
 RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 
-// [#next-free-field: 19]
+// [#next-free-field: 20]
 #RateLimit: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.ratelimit.v3.RateLimit"
 	// The rate limit domain to use when calling the rate limit service.
@@ -41,13 +41,13 @@ RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 	//
 	// .. note::
 	//
-	//	The filter supports a range of 0 - 10 inclusively for stage numbers.
+	//  The filter supports a range of 0 - 10 inclusively for stage numbers.
 	stage?: uint32
 	// The type of requests the filter should apply to. The supported
-	// types are “internal“, “external“ or “both“. A request is considered internal if
+	// types are ``internal``, ``external`` or ``both``. A request is considered internal if
 	// :ref:`x-envoy-internal<config_http_conn_man_headers_x-envoy-internal>` is set to true. If
 	// :ref:`x-envoy-internal<config_http_conn_man_headers_x-envoy-internal>` is not set or false, a
-	// request is considered external. The filter defaults to “both“, and it will apply to all request
+	// request is considered external. The filter defaults to ``both``, and it will apply to all request
 	// types.
 	request_type?: string
 	// The timeout in milliseconds for the rate limit service RPC. If not
@@ -57,8 +57,8 @@ RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 	// not respond back. When it is set to true, Envoy will not allow traffic in case of
 	// communication failure between rate limiting service and the proxy.
 	failure_mode_deny?: bool
-	// Specifies whether a “RESOURCE_EXHAUSTED“ gRPC code must be returned instead
-	// of the default “UNAVAILABLE“ gRPC code for a rate limited gRPC call. The
+	// Specifies whether a ``RESOURCE_EXHAUSTED`` gRPC code must be returned instead
+	// of the default ``UNAVAILABLE`` gRPC code for a rate limited gRPC call. The
 	// HTTP code will be 200 for a gRPC response.
 	rate_limited_as_resource_exhausted?: bool
 	// Configuration for an external rate limit service provider. If not
@@ -67,19 +67,19 @@ RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 	rate_limit_service?: v3.#RateLimitServiceConfig
 	// Defines the standard version to use for X-RateLimit headers emitted by the filter:
 	//
-	//   - “X-RateLimit-Limit“ - indicates the request-quota associated to the
-	//     client in the current time-window followed by the description of the
-	//     quota policy. The values are returned by the rate limiting service in
-	//     :ref:`current_limit<envoy_v3_api_field_service.ratelimit.v3.RateLimitResponse.DescriptorStatus.current_limit>`
-	//     field. Example: “10, 10;w=1;name="per-ip", 1000;w=3600“.
-	//   - “X-RateLimit-Remaining“ - indicates the remaining requests in the
-	//     current time-window. The values are returned by the rate limiting service
-	//     in :ref:`limit_remaining<envoy_v3_api_field_service.ratelimit.v3.RateLimitResponse.DescriptorStatus.limit_remaining>`
-	//     field.
-	//   - “X-RateLimit-Reset“ - indicates the number of seconds until reset of
-	//     the current time-window. The values are returned by the rate limiting service
-	//     in :ref:`duration_until_reset<envoy_v3_api_field_service.ratelimit.v3.RateLimitResponse.DescriptorStatus.duration_until_reset>`
-	//     field.
+	// * ``X-RateLimit-Limit`` - indicates the request-quota associated to the
+	//   client in the current time-window followed by the description of the
+	//   quota policy. The values are returned by the rate limiting service in
+	//   :ref:`current_limit<envoy_v3_api_field_service.ratelimit.v3.RateLimitResponse.DescriptorStatus.current_limit>`
+	//   field. Example: ``10, 10;w=1;name="per-ip", 1000;w=3600``.
+	// * ``X-RateLimit-Remaining`` - indicates the remaining requests in the
+	//   current time-window. The values are returned by the rate limiting service
+	//   in :ref:`limit_remaining<envoy_v3_api_field_service.ratelimit.v3.RateLimitResponse.DescriptorStatus.limit_remaining>`
+	//   field.
+	// * ``X-RateLimit-Reset`` - indicates the number of seconds until reset of
+	//   the current time-window. The values are returned by the rate limiting service
+	//   in :ref:`duration_until_reset<envoy_v3_api_field_service.ratelimit.v3.RateLimitResponse.DescriptorStatus.duration_until_reset>`
+	//   field.
 	//
 	// In case rate limiting policy specifies more than one time window, the values
 	// above represent the window that is closest to reaching its limit.
@@ -100,8 +100,7 @@ RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 	// Defaults to 429 (TooManyRequests).
 	//
 	// .. note::
-	//
-	//	If this is set to < 400, 429 will be used instead.
+	//   If this is set to < 400, 429 will be used instead.
 	rate_limited_status?: v31.#HttpStatus
 	// Specifies a list of HTTP headers that should be added to each response for requests that
 	// have been rate limited.
@@ -110,12 +109,12 @@ RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 	// or cannot be reached. The default status is 500.
 	status_on_error?: v31.#HttpStatus
 	// Optional additional prefix to use when emitting statistics. This allows to distinguish
-	// emitted statistics between configured “ratelimit“ filters in an HTTP filter chain.
+	// emitted statistics between configured ``ratelimit`` filters in an HTTP filter chain.
 	stat_prefix?: string
 	// If set, this will enable -- but not necessarily enforce -- the rate limit for the given
 	// fraction of requests.
 	//
-	// If not set then “ratelimit.http_filter_enabled“ runtime key will be used to determine
+	// If not set then ``ratelimit.http_filter_enabled`` runtime key will be used to determine
 	// the fraction of requests to enforce rate limits on. And the default percentage of the
 	// runtime key is 100% for backwards compatibility.
 	filter_enabled?: v32.#RuntimeFractionalPercent
@@ -123,7 +122,7 @@ RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 	//
 	// Note: this only applies to the fraction of enabled requests.
 	//
-	// If not set then “ratelimit.http_filter_enforcing“ runtime key will be used to determine
+	// If not set then ``ratelimit.http_filter_enforcing`` runtime key will be used to determine
 	// the fraction of requests to enforce rate limits on. And the default percentage of the
 	// runtime key is 100% for backwards compatibility.
 	filter_enforced?: v32.#RuntimeFractionalPercent
@@ -134,12 +133,12 @@ RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 	//
 	// .. code-block:: yaml
 	//
-	//	failure_mode_deny: true
-	//	failure_mode_deny_percent:
-	//	  default_value:
-	//	    numerator: 50
-	//	    denominator: HUNDRED
-	//	  runtime_key: ratelimit.failure_mode_deny_percent
+	//   failure_mode_deny: true
+	//   failure_mode_deny_percent:
+	//     default_value:
+	//       numerator: 50
+	//       denominator: HUNDRED
+	//     runtime_key: ratelimit.failure_mode_deny_percent
 	//
 	// This means that when the rate limit service is unavailable, 50% of requests will be denied
 	// (fail closed) and 50% will be allowed (fail open).
@@ -153,19 +152,27 @@ RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 	// will take precedence over this field.
 	//
 	// .. note::
+	//   Not all configuration fields of
+	//   :ref:`rate limit config <envoy_v3_api_msg_config.route.v3.RateLimit>` is supported at here.
+	//   Following fields are not supported:
 	//
-	//	Not all configuration fields of
-	//	:ref:`rate limit config <envoy_v3_api_msg_config.route.v3.RateLimit>` is supported at here.
-	//	Following fields are not supported:
-	//
-	//	1. :ref:`rate limit stage <envoy_v3_api_field_config.route.v3.RateLimit.stage>`.
-	//	2. :ref:`dynamic metadata <envoy_v3_api_field_config.route.v3.RateLimit.Action.dynamic_metadata>`.
-	//	3. :ref:`disable_key <envoy_v3_api_field_config.route.v3.RateLimit.disable_key>`.
-	//	4. :ref:`override limit <envoy_v3_api_field_config.route.v3.RateLimit.limit>`.
+	//   1. :ref:`rate limit stage <envoy_v3_api_field_config.route.v3.RateLimit.stage>`.
+	//   2. :ref:`dynamic metadata <envoy_v3_api_field_config.route.v3.RateLimit.Action.dynamic_metadata>`.
+	//   3. :ref:`disable_key <envoy_v3_api_field_config.route.v3.RateLimit.disable_key>`.
+	//   4. :ref:`override limit <envoy_v3_api_field_config.route.v3.RateLimit.limit>`.
 	rate_limits?: [...v33.#RateLimit]
 	// The namespace where dynamic metadata from rate limit response is saved.
 	// If not set, the default is "envoy.filters.http.ratelimit".
 	metadata_namespace?: string
+	// Specifies whether the filter emits a ``Retry-After`` header when it enforces an HTTP 429
+	// response. This option has no effect on responses with any other status code. The value is the
+	// largest ``duration_until_reset`` among the over-limit descriptor statuses returned by the rate
+	// limit service, expressed in seconds and clamped to at least 1. The header is not emitted when no
+	// over-limit descriptor status is present.
+	// If the rate limit service returns a ``Retry-After`` header, the filter does not overwrite it.
+	//
+	// Disabled by default.
+	enable_retry_after_header?: bool
 }
 
 #RateLimitPerRoute: {
@@ -178,7 +185,7 @@ RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 	override_option?: #RateLimitPerRoute_OverrideOptions
 	// Rate limit configuration that is used to generate a list of descriptor entries based on
 	// the request context. The generated entries will be used to find one or multiple matched rate
-	// limit rule from the “descriptors“.
+	// limit rule from the ``descriptors``.
 	// If this is set, then
 	// :ref:`VirtualHost.rate_limits<envoy_v3_api_field_config.route.v3.VirtualHost.rate_limits>`,
 	// :ref:`RouteAction.rate_limits<envoy_v3_api_field_config.route.v3.RouteAction.rate_limits>` and
@@ -186,15 +193,14 @@ RateLimitPerRoute_OverrideOptions_IGNORE_POLICY:   "IGNORE_POLICY"
 	// will be ignored.
 	//
 	// .. note::
+	//   Not all configuration fields of
+	//   :ref:`rate limit config <envoy_v3_api_msg_config.route.v3.RateLimit>` is supported at here.
+	//   Following fields are not supported:
 	//
-	//	Not all configuration fields of
-	//	:ref:`rate limit config <envoy_v3_api_msg_config.route.v3.RateLimit>` is supported at here.
-	//	Following fields are not supported:
-	//
-	//	1. :ref:`rate limit stage <envoy_v3_api_field_config.route.v3.RateLimit.stage>`.
-	//	2. :ref:`dynamic metadata <envoy_v3_api_field_config.route.v3.RateLimit.Action.dynamic_metadata>`.
-	//	3. :ref:`disable_key <envoy_v3_api_field_config.route.v3.RateLimit.disable_key>`.
-	//	4. :ref:`override limit <envoy_v3_api_field_config.route.v3.RateLimit.limit>`.
+	//   1. :ref:`rate limit stage <envoy_v3_api_field_config.route.v3.RateLimit.stage>`.
+	//   2. :ref:`dynamic metadata <envoy_v3_api_field_config.route.v3.RateLimit.Action.dynamic_metadata>`.
+	//   3. :ref:`disable_key <envoy_v3_api_field_config.route.v3.RateLimit.disable_key>`.
+	//   4. :ref:`override limit <envoy_v3_api_field_config.route.v3.RateLimit.limit>`.
 	rate_limits?: [...v33.#RateLimit]
 	// Overrides the domain. If not set, uses the filter-level domain instead.
 	domain?: string

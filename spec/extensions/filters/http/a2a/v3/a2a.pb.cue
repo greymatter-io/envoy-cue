@@ -21,9 +21,9 @@ A2A_StorageMode_DYNAMIC_METADATA_AND_FILTER_STATE: "DYNAMIC_METADATA_AND_FILTER_
 	// Configures how the filter handles non-A2A traffic.
 	traffic_mode?: #A2A_TrafficMode
 	// Maximum size of the request body to buffer for JSON-RPC validation.
-	// If the request body exceeds this size, the request is rejected with “413
-	// Payload Too Large“. This limit applies to both “REJECT“ and
-	// “PASS_THROUGH“ modes to prevent unbounded buffering.
+	// If the request body exceeds this size, the request is rejected with ``413
+	// Payload Too Large``. This limit applies to both ``REJECT`` and
+	// ``PASS_THROUGH`` modes to prevent unbounded buffering.
 	//
 	// It defaults to 8KB (8192 bytes) and the maximum allowed value is 10MB
 	// (10485760 bytes).
@@ -43,7 +43,7 @@ A2A_StorageMode_DYNAMIC_METADATA_AND_FILTER_STATE: "DYNAMIC_METADATA_AND_FILTER_
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.a2a.v3.MethodParsingConfig"
 	// The group/category name to assign to this method (e.g., "tasks", "message").
 	// If provided, this overrides any built-in classification for the method.
-	// This will be emitted to dynamic metadata under the key specified by “group_metadata_key“.
+	// This will be emitted to dynamic metadata under the key specified by ``group_metadata_key``.
 	group?: string
 	// List of attributes to extract for this method, specified by their JSON paths (e.g., "params.name").
 	paths?: [...string]

@@ -30,10 +30,11 @@ import (
 	//
 	// .. note::
 	//
-	//	Envoy currently requires all packets for a QUIC connection to arrive on the same port. Therefore, unless a
-	//	:ref:`dnat_address <envoy_v3_api_field_extensions.quic.server_preferred_address.v3.FixedServerPreferredAddressConfig.AddressFamilyConfig.dnat_address>`
-	//	is explicitly configured, the port specified here must be set to zero. In such cases, Envoy will automatically
-	//	use the listener's port.
+	//   Envoy currently requires all packets for a QUIC connection to arrive on the same port. Therefore, unless a
+	//   :ref:`dnat_address <envoy_v3_api_field_extensions.quic.server_preferred_address.v3.FixedServerPreferredAddressConfig.AddressFamilyConfig.dnat_address>`
+	//   is explicitly configured, the port specified here must be set to zero. In such cases, Envoy will automatically
+	//   use the listener's port.
+	//
 	address?: v3.#SocketAddress
 	// If a DNAT exists between the client and Envoy, this is the address where Envoy will observe incoming server
 	// preferred address packets. If unspecified, Envoy assumes there is no DNAT, and packets will be sent directly
@@ -41,7 +42,8 @@ import (
 	//
 	// .. note::
 	//
-	//	Envoy currently requires all packets for a QUIC connection to arrive on the same port. Consequently, the
-	//	port for this address must be set to zero, with Envoy defaulting to the listener's port instead.
+	//   Envoy currently requires all packets for a QUIC connection to arrive on the same port. Consequently, the
+	//   port for this address must be set to zero, with Envoy defaulting to the listener's port instead.
+	//
 	dnat_address?: v3.#SocketAddress
 }

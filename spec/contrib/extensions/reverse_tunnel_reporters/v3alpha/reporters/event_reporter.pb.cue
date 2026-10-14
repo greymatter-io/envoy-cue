@@ -12,7 +12,7 @@ package reporters
 #EventReporterConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.reverse_tunnel_reporters.v3alpha.reporters.EventReporterConfig"
 	// Stat prefix for this reporter's metrics.
-	// Metrics will be emitted as “{stat_prefix}.events_pushed“, etc.
+	// Metrics will be emitted as ``{stat_prefix}.events_pushed``, etc.
 	stat_prefix?: string
 	// List of clients to report to.
 	clients?: [...#ReverseConnectionReporterClient]

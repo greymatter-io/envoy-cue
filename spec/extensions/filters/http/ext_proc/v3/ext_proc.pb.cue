@@ -80,21 +80,21 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 // <arch_overview_advanced_filter_state_sharing>` object in a namespace matching the filter
 // name.
 //
-// [#next-free-field: 27]
+// [#next-free-field: 28]
 #ExternalProcessor: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.ExternalProcessor"
 	// Configuration for the gRPC service that the filter will communicate with.
-	// Only one of “grpc_service“ or “http_service“ can be set.
+	// Only one of ``grpc_service`` or ``http_service`` can be set.
 	// It is required that one of them must be set.
 	grpc_service?: v3.#GrpcService
 	// Configuration for the HTTP service that the filter will communicate with.
-	// Only one of “http_service“ or
+	// Only one of ``http_service`` or
 	// :ref:`grpc_service <envoy_v3_api_field_extensions.filters.http.ext_proc.v3.ExternalProcessor.grpc_service>`
 	// can be set. It is required that one of them must be set.
 	//
-	// If “http_service“ is set, the
+	// If ``http_service`` is set, the
 	// :ref:`processing_mode <envoy_v3_api_field_extensions.filters.http.ext_proc.v3.ExternalProcessor.processing_mode>`
-	// cannot be configured to send any body or trailers. i.e., “http_service“ only supports
+	// cannot be configured to send any body or trailers. i.e., ``http_service`` only supports
 	// sending request or response headers to the side stream server.
 	//
 	// With this configuration, the data plane behavior is:
@@ -109,16 +109,17 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 	//
 	// After the side-stream receives this HTTP request message, it is expected to do as follows:
 	//
-	// 1. It converts the body, which is a JSON string, into a “ProcessingRequest“
+	// 1. It converts the body, which is a JSON string, into a ``ProcessingRequest``
 	// proto message to examine and mutate the headers.
 	//
 	// 2. It then sets the mutated headers into a new proto message
 	// :ref:`ProcessingResponse <envoy_v3_api_msg_service.ext_proc.v3.ProcessingResponse>`.
 	//
-	// 3. It converts the “ProcessingResponse“ proto message into a JSON text.
+	// 3. It converts the ``ProcessingResponse`` proto message into a JSON text.
 	//
-	// 4. It then sends an HTTP response back to the data plane with status code as “"200"“,
-	// “content-type“ as “"application/json"“ and sets the JSON text as the body.
+	// 4. It then sends an HTTP response back to the data plane with status code as ``"200"``,
+	// ``content-type`` as ``"application/json"`` and sets the JSON text as the body.
+	//
 	http_service?: #ExtProcHttpService
 	// By default, if in the following cases:
 	//
@@ -135,9 +136,10 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 	//
 	// However, with this parameter set to true and if the above cases happen, the processing
 	// continues without error.
+	//
 	failure_mode_allow?: bool
 	// Specifies default options for how HTTP headers, trailers, and bodies are
-	// sent. See “ProcessingMode“ for details.
+	// sent. See ``ProcessingMode`` for details.
 	processing_mode?: #ProcessingMode
 	// The data plane provides a number of :ref:`attributes <arch_overview_attributes>`
 	// for expressive policies. Each attribute name provided in this field will be
@@ -159,12 +161,12 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 	// an error (subject to the processing mode) if the timer expires before a
 	// matching response is received. There is no timeout when the filter is
 	// running in observability mode or when the body send mode is
-	// “FULL_DUPLEX_STREAMED“ or “GRPC“. Zero is a valid config which means
+	// ``FULL_DUPLEX_STREAMED`` or ``GRPC``. Zero is a valid config which means
 	// the timer will be triggered immediately. If not configured, default is
 	// 200 milliseconds.
 	message_timeout?: string
 	// Optional additional prefix to use when emitting statistics. This allows to distinguish
-	// emitted statistics between configured “ext_proc“ filters in an HTTP filter chain.
+	// emitted statistics between configured ``ext_proc`` filters in an HTTP filter chain.
 	stat_prefix?: string
 	// Rules that determine what modifications an external processing server may
 	// make to message headers. If not set, all headers may be modified except
@@ -180,21 +182,21 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 	mutation_rules?: v31.#HeaderMutationRules
 	// Specify the upper bound of
 	// :ref:`override_message_timeout <envoy_v3_api_field_service.ext_proc.v3.ProcessingResponse.override_message_timeout>`
-	// If not specified, by default it is 0, which will effectively disable the “override_message_timeout“ API.
+	// If not specified, by default it is 0, which will effectively disable the ``override_message_timeout`` API.
 	max_message_timeout?: string
-	// Allow headers matching the “forward_rules“ to be forwarded to the external processing server.
+	// Allow headers matching the ``forward_rules`` to be forwarded to the external processing server.
 	// If not set, all headers are forwarded to the external processing server.
 	forward_rules?: #HeaderForwardingRules
 	// Additional metadata to be added to the filter state for logging purposes. The metadata
 	// will be added to StreamInfo's filter state under the namespace corresponding to the
 	// ext_proc filter name.
 	filter_metadata?: structpb.#Struct
-	// If “allow_mode_override“ is set to true, the filter config :ref:`processing_mode
+	// If ``allow_mode_override`` is set to true, the filter config :ref:`processing_mode
 	// <envoy_v3_api_field_extensions.filters.http.ext_proc.v3.ExternalProcessor.processing_mode>`
 	// can be overridden by the response message from the external processing server
 	// :ref:`mode_override <envoy_v3_api_field_service.ext_proc.v3.ProcessingResponse.mode_override>`.
-	// If not set, “mode_override“ API in the response message will be ignored.
-	// Mode override is not supported if the body send mode is “FULL_DUPLEX_STREAMED“.
+	// If not set, ``mode_override`` API in the response message will be ignored.
+	// Mode override is not supported if the body send mode is ``FULL_DUPLEX_STREAMED``.
 	allow_mode_override?: bool
 	// If set to true, ignore the
 	// :ref:`immediate_response <envoy_v3_api_field_service.ext_proc.v3.ProcessingResponse.immediate_response>`
@@ -204,11 +206,11 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 	disable_immediate_response?: bool
 	// Options related to the sending and receiving of dynamic metadata.
 	metadata_options?: #MetadataOptions
-	// If true, send each part of the HTTP request or response specified by “ProcessingMode“
+	// If true, send each part of the HTTP request or response specified by ``ProcessingMode``
 	// without pausing on filter chain iteration. It is "Send and Go" mode that can be used
 	// by external processor to observe the request's data and status. In this mode:
 	//
-	// 1. Only “STREAMED“, “GRPC“, and “NONE“ body processing modes are supported; for any
+	// 1. Only ``STREAMED``, ``GRPC``, and ``NONE`` body processing modes are supported; for any
 	// other body processing mode, the body will not be sent.
 	//
 	// 2. External processor should not send back processing response, as any responses will be ignored.
@@ -217,28 +219,29 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 	// restriction doesn't apply to this mode.
 	//
 	// 3. External processor may still close the stream to indicate that no more messages are needed.
+	//
 	observability_mode?: bool
 	// Prevents clearing the route-cache when the
 	// :ref:`clear_route_cache <envoy_v3_api_field_service.ext_proc.v3.CommonResponse.clear_route_cache>`
 	// field is set in an external processor response.
-	// Only one of “disable_clear_route_cache“ or “route_cache_action“ can be set.
-	// It is recommended to set “route_cache_action“ which supersedes “disable_clear_route_cache“.
+	// Only one of ``disable_clear_route_cache`` or ``route_cache_action`` can be set.
+	// It is recommended to set ``route_cache_action`` which supersedes ``disable_clear_route_cache``.
 	disable_clear_route_cache?: bool
 	// Specifies the action to be taken when an external processor response is
 	// received in response to request headers. It is recommended to set this field rather than set
 	// :ref:`disable_clear_route_cache <envoy_v3_api_field_extensions.filters.http.ext_proc.v3.ExternalProcessor.disable_clear_route_cache>`.
-	// Only one of “disable_clear_route_cache“ or “route_cache_action“ can be set.
+	// Only one of ``disable_clear_route_cache`` or ``route_cache_action`` can be set.
 	//
 	// .. attention::
 	//
-	//	Clearing the route cache can cause Envoy to recompute route matching after earlier HTTP
-	//	filters have already processed the request. This can be security-sensitive when filters
-	//	that make route-dependent authorization decisions, such as the RBAC filter, run before
-	//	ext_proc and ext_proc mutates route-matching inputs.
+	//   Clearing the route cache can cause Envoy to recompute route matching after earlier HTTP
+	//   filters have already processed the request. This can be security-sensitive when filters
+	//   that make route-dependent authorization decisions, such as the RBAC filter, run before
+	//   ext_proc and ext_proc mutates route-matching inputs.
 	//
-	//	Operators should only enable route cache clearing for trusted external processors, should
-	//	carefully order route-dependent authorization filters, and should use mutation_rules to
-	//	restrict sensitive mutations when appropriate.
+	//   Operators should only enable route cache clearing for trusted external processors, should
+	//   carefully order route-dependent authorization filters, and should use mutation_rules to
+	//   restrict sensitive mutations when appropriate.
 	route_cache_action?: #ExternalProcessor_RouteCacheAction
 	// Specifies the deferred closure timeout for gRPC stream that connects to external processor. Currently, the deferred stream closure
 	// is only used in :ref:`observability_mode <envoy_v3_api_field_extensions.filters.http.ext_proc.v3.ExternalProcessor.observability_mode>`.
@@ -247,7 +250,7 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 	// The default value is 5000 milliseconds (5 seconds) if not specified.
 	deferred_close_timeout?: string
 	// Send body to the side stream server once it arrives without waiting for the header response from that server.
-	// It only works for “STREAMED“ body processing mode. For any other body
+	// It only works for ``STREAMED`` body processing mode. For any other body
 	// processing modes, it is ignored.
 	// The server has two options upon receiving a header request:
 	//
@@ -264,19 +267,18 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 	send_body_without_waiting_for_header_response?: bool
 	// When :ref:`allow_mode_override
 	// <envoy_v3_api_field_extensions.filters.http.ext_proc.v3.ExternalProcessor.allow_mode_override>` is enabled and
-	// “allowed_override_modes“ is configured, the filter config :ref:`processing_mode
+	// ``allowed_override_modes`` is configured, the filter config :ref:`processing_mode
 	// <envoy_v3_api_field_extensions.filters.http.ext_proc.v3.ExternalProcessor.processing_mode>`
 	// can only be overridden by the response message from the external processing server iff the
 	// :ref:`mode_override <envoy_v3_api_field_service.ext_proc.v3.ProcessingResponse.mode_override>` is allowed by
-	// the “allowed_override_modes“ allow-list below.
-	// Since “request_header_mode“ is not applicable in any way, it's ignored in comparison.
+	// the ``allowed_override_modes`` allow-list below.
+	// Since ``request_header_mode`` is not applicable in any way, it's ignored in comparison.
 	allowed_override_modes?: [...#ProcessingMode]
-	// Decorator to introduce custom logic that runs after the “ProcessingRequest“ is constructed, but
-	// before it is sent to the External Processor. The “ProcessingRequest“ may be modified.
+	// Decorator to introduce custom logic that runs after the ``ProcessingRequest`` is constructed, but
+	// before it is sent to the External Processor. The ``ProcessingRequest`` may be modified.
 	//
 	// .. note::
-	//
-	//	Processing request modifiers are currently in alpha.
+	//   Processing request modifiers are currently in alpha.
 	//
 	// [#extension-category: envoy.http.ext_proc.processing_request_modifiers]
 	processing_request_modifier?: v3.#TypedExtensionConfig
@@ -284,17 +286,16 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 	// the External Processor is processed, but before continuing filter chain iteration.
 	//
 	// .. note::
-	//
-	//	Response processors are currently in alpha.
+	//   Response processors are currently in alpha.
 	//
 	// [#extension-category: envoy.http.ext_proc.response_processors]
 	on_processing_response?: v3.#TypedExtensionConfig
 	// Sets the HTTP status code that is returned to the client when the external processing server returns
 	// an error, fails to respond, or cannot be reached.
 	//
-	// The default status is “HTTP 500 Internal Server Error“.
+	// The default status is ``HTTP 500 Internal Server Error``.
 	status_on_error?: v32.#HttpStatus
-	// If true, the filter will not remove the “content-length“ header from the request/response after external processing.
+	// If true, the filter will not remove the ``content-length`` header from the request/response after external processing.
 	// It is typically used in
 	// :ref:`FULL_DUPLEX_STREAMED <envoy_v3_api_enum_value_extensions.filters.http.ext_proc.v3.ProcessingMode.BodySendMode.FULL_DUPLEX_STREAMED>`
 	// mode. If the original body has been modified, the external processing server needs to set the correct content-length header in HeaderMutation
@@ -302,10 +303,17 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 	//
 	// .. warning::
 	//
-	//	This configuration should only be used if you are sure that the content length matches
-	//	the body length after external processing. Otherwise, it may cause vulnerability issues such as
-	//	request smuggling. Thus, please use your own discretion when enabling this feature.
+	//    This configuration should only be used if you are sure that the content length matches
+	//    the body length after external processing. Otherwise, it may cause vulnerability issues such as
+	//    request smuggling. Thus, please use your own discretion when enabling this feature.
+	//
 	allow_content_length_header?: bool
+	// Whether to emit client-side spans for external processing requests.
+	// When set to false, client-side egress spans will not be emitted/exported to trace collectors,
+	// but trace context (e.g. ``traceparent``) will still be propagated to the external processor.
+	//
+	// If unset, defaults to ``true``.
+	emit_client_span?: bool
 }
 
 // ExtProcHttpService is used for HTTP communication between the filter and the external processing service.
@@ -325,7 +333,7 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 	forwarding_namespaces?: #MetadataOptions_MetadataNamespaces
 	// Describes which typed or untyped filter dynamic metadata namespaces to accept from
 	// the external processing server. Set to empty or leave unset to disallow writing
-	// any received dynamic metadata. Receiving of typed metadata is not supported.
+	// any received dynamic metadata.
 	receiving_namespaces?: #MetadataOptions_MetadataNamespaces
 	// Describes which cluster metadata namespaces to forward to
 	// the external processing server.
@@ -350,10 +358,10 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 #HeaderForwardingRules: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.HeaderForwardingRules"
 	// If set, specifically allow any header in this list to be forwarded to the external
-	// processing server. This can be overridden by the below “disallowed_headers“.
+	// processing server. This can be overridden by the below ``disallowed_headers``.
 	allowed_headers?: v33.#ListStringMatcher
 	// If set, specifically disallow any header in this list to be forwarded to the external
-	// processing server. This overrides the above “allowed_headers“ if a header matches both.
+	// processing server. This overrides the above ``allowed_headers`` if a header matches both.
 	disallowed_headers?: v33.#ListStringMatcher
 }
 
@@ -371,7 +379,7 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 }
 
 // Overrides that may be set on a per-route basis
-// [#next-free-field: 10]
+// [#next-free-field: 11]
 #ExtProcOverrides: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.ExtProcOverrides"
 	// Set a different processing mode for this route than the default.
@@ -384,11 +392,11 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 	async_mode?: bool
 	// [#not-implemented-hide:]
 	// Set different optional attributes than the default setting of the
-	// “request_attributes“ field.
+	// ``request_attributes`` field.
 	request_attributes?: [...string]
 	// [#not-implemented-hide:]
 	// Set different optional properties than the default setting of the
-	// “response_attributes“ field.
+	// ``response_attributes`` field.
 	response_attributes?: [...string]
 	// Set a different gRPC service for this route than the default.
 	grpc_service?: v3.#GrpcService
@@ -398,29 +406,31 @@ ExternalProcessor_RouteCacheAction_RETAIN:  "RETAIN"
 	// config used. It is the prerogative of the control plane to ensure this
 	// most-specific config contains the correct final overrides.
 	metadata_options?: #MetadataOptions
-	// Additional metadata to include into streams initiated to the “ext_proc“ gRPC
+	// Additional metadata to include into streams initiated to the ``ext_proc`` gRPC
 	// service. This can be used for scenarios in which additional ad hoc
-	// authorization headers (e.g. “x-foo-bar: baz-key“) are to be injected or
+	// authorization headers (e.g. ``x-foo-bar: baz-key``) are to be injected or
 	// when a route needs to partially override inherited metadata.
 	grpc_initial_metadata?: [...v3.#HeaderValue]
 	// If true, the filter will not fail closed if the gRPC stream is prematurely closed
 	// or could not be opened. This field is the per-route override of
 	// :ref:`failure_mode_allow <envoy_v3_api_field_extensions.filters.http.ext_proc.v3.ExternalProcessor.failure_mode_allow>`.
 	failure_mode_allow?: bool
-	// Decorator to introduce custom logic that runs after the “ProcessingRequest“ is constructed, but
-	// before it is sent to the External Processor. The “ProcessingRequest“ may be modified.
+	// Decorator to introduce custom logic that runs after the ``ProcessingRequest`` is constructed, but
+	// before it is sent to the External Processor. The ``ProcessingRequest`` may be modified.
 	// This is a per-route override of
 	// :ref:`processing_request_modifier <envoy_v3_api_field_extensions.filters.http.ext_proc.v3.ExternalProcessor.processing_request_modifier>`.
 	processing_request_modifier?: v3.#TypedExtensionConfig
+	// Overrides the filter-level ``emit_client_span`` setting for this route.
+	emit_client_span?: bool
 }
 
 #MetadataOptions_MetadataNamespaces: {
 	"@type": "type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.MetadataOptions_MetadataNamespaces"
 	// Specifies a list of metadata namespaces whose values, if present,
-	// will be passed to the “ext_proc“ service as an opaque “protobuf::Struct“.
+	// will be passed to the ``ext_proc`` service as an opaque ``protobuf::Struct``.
 	untyped?: [...string]
 	// Specifies a list of metadata namespaces whose values, if present,
-	// will be passed to the “ext_proc“ service as a “protobuf::Any“. This allows
+	// will be passed to the ``ext_proc`` service as a ``protobuf::Any``. This allows
 	// envoy and the external processing server to share the protobuf message
 	// definition for safe parsing.
 	typed?: [...string]

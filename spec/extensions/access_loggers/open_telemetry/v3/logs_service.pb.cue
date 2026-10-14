@@ -12,47 +12,62 @@ import (
 // populate `opentelemetry.proto.collector.v1.logs.ExportLogsServiceRequest.resource_logs <https://github.com/open-telemetry/opentelemetry-proto/blob/main/opentelemetry/proto/collector/logs/v1/logs_service.proto>`_.
 // In addition, the request start time is set in the dedicated field.
 // [#extension: envoy.access_loggers.open_telemetry]
-// [#next-free-field: 15]
+// [#next-free-field: 16]
 #OpenTelemetryAccessLogConfig: {
 	"@type": "type.googleapis.com/envoy.extensions.access_loggers.open_telemetry.v3.OpenTelemetryAccessLogConfig"
 	// [#comment:TODO(itamarkam): add 'filter_state_objects_to_log' to logs.]
-	// Deprecated. Use “grpc_service“ or “http_service“ instead.
+	// Deprecated. Use ``grpc_service`` or ``http_service`` instead.
 	//
 	// Deprecated: Marked as deprecated in envoy/extensions/access_loggers/open_telemetry/v3/logs_service.proto.
 	common_config?: v3.#CommonGrpcAccessLogConfig
 	// The upstream HTTP cluster that will receive OTLP logs via
 	// `OTLP/HTTP <https://opentelemetry.io/docs/specs/otlp/#otlphttp>`_.
-	// Note: Only one of “common_config“, “grpc_service“, or “http_service“ may be used.
+	// Note: Only one of ``common_config``, ``grpc_service``, or ``http_service`` may be used.
 	//
 	// .. note::
 	//
-	//	The ``request_headers_to_add`` property in the OTLP HTTP exporter service supports
-	//	substitution formatters. The formatters cannot access any HTTP or connection properties, but
-	//	can load content such as environment variables or files or secrets.
+	//   The ``request_headers_to_add`` property in the OTLP HTTP exporter service supports
+	//   substitution formatters. The formatters cannot access any HTTP or connection properties, but
+	//   can load content such as environment variables or files or secrets.
 	http_service?: v31.#HttpService
 	// The upstream gRPC cluster that will receive OTLP logs.
-	// Note: Only one of “common_config“, “grpc_service“, or “http_service“ may be used.
-	// This field is preferred over “common_config.grpc_service“.
+	// Note: Only one of ``common_config``, ``grpc_service``, or ``http_service`` may be used.
+	// This field is preferred over ``common_config.grpc_service``.
 	grpc_service?: v31.#GrpcService
 	// If specified, Envoy will not generate built-in resource labels
-	// like “log_name“, “zone_name“, “cluster_name“, “node_name“.
+	// like ``log_name``, ``zone_name``, ``cluster_name``, ``node_name``.
+	//
+	// Built-in labels have the lowest precedence and can be overridden by matching keys in
+	// :ref:`resource_detectors <envoy_v3_api_field_extensions.access_loggers.open_telemetry.v3.OpenTelemetryAccessLogConfig.resource_detectors>`
+	// or :ref:`resource_attributes <envoy_v3_api_field_extensions.access_loggers.open_telemetry.v3.OpenTelemetryAccessLogConfig.resource_attributes>`.
 	disable_builtin_labels?: bool
 	// OpenTelemetry `Resource <https://github.com/open-telemetry/opentelemetry-proto/blob/main/opentelemetry/proto/logs/v1/logs.proto#L51>`_
 	// attributes are filled with Envoy node info.
-	// Example: “resource_attributes { values { key: "region" value { string_value: "cn-north-7" } } }“.
+	// Example: ``resource_attributes { values { key: "region" value { string_value: "cn-north-7" } } }``.
+	//
+	// Attributes configured here take highest precedence (``resource_attributes`` > ``resource_detectors`` > built-in labels)
+	// and will override any matching keys.
 	resource_attributes?: v1.#KeyValueList
+	// An ordered list of resource detectors to detect OpenTelemetry resource information such as
+	// attributes and schema URL.
+	//
+	// Attributes detected here override built-in labels with matching keys, but are overridden by
+	// :ref:`resource_attributes <envoy_v3_api_field_extensions.access_loggers.open_telemetry.v3.OpenTelemetryAccessLogConfig.resource_attributes>`
+	// (precedence: ``resource_attributes`` > ``resource_detectors`` > built-in labels).
+	// [#extension-category: envoy.tracers.opentelemetry.resource_detectors]
+	resource_detectors?: [...v31.#TypedExtensionConfig]
 	// OpenTelemetry `LogResource <https://github.com/open-telemetry/opentelemetry-proto/blob/main/opentelemetry/proto/logs/v1/logs.proto>`_
 	// fields, following `Envoy access logging formatting <https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage>`_.
 	//
 	// See 'body' in the LogResource proto for more details.
-	// Example: “body { string_value: "%PROTOCOL%" }“.
+	// Example: ``body { string_value: "%PROTOCOL%" }``.
 	body?: v1.#AnyValue
 	// See 'attributes' in the LogResource proto for more details.
-	// Example: “attributes { values { key: "user_agent" value { string_value: "%REQ(USER-AGENT)%" } } }“.
+	// Example: ``attributes { values { key: "user_agent" value { string_value: "%REQ(USER-AGENT)%" } } }``.
 	attributes?: v1.#KeyValueList
 	// Optional. Additional prefix to use on OpenTelemetry access logger stats. If empty, the stats will be rooted at
-	// “access_logs.open_telemetry_access_log.“. If non-empty, stats will be rooted at
-	// “access_logs.open_telemetry_access_log.<stat_prefix>.“.
+	// ``access_logs.open_telemetry_access_log.``. If non-empty, stats will be rooted at
+	// ``access_logs.open_telemetry_access_log.<stat_prefix>.``.
 	stat_prefix?: string
 	// Specifies a collection of Formatter plugins that can be called from the access log configuration.
 	// See the formatters extensions documentation for details.

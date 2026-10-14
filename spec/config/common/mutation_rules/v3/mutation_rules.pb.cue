@@ -35,27 +35,27 @@ import (
 	"@type": "type.googleapis.com/envoy.config.common.mutation_rules.v3.HeaderMutationRules"
 	// By default, certain headers that could affect processing of subsequent
 	// filters or request routing cannot be modified. These headers are
-	// “host“, “:authority“, “:scheme“, and “:method“. Setting this parameter
+	// ``host``, ``:authority``, ``:scheme``, and ``:method``. Setting this parameter
 	// to true allows these headers to be modified as well.
 	allow_all_routing?: bool
 	// If true, allow modification of envoy internal headers. By default, these
-	// start with “x-envoy“ but this may be overridden in the “Bootstrap“
+	// start with ``x-envoy`` but this may be overridden in the ``Bootstrap``
 	// configuration using the
 	// :ref:`header_prefix <envoy_v3_api_field_config.bootstrap.v3.Bootstrap.header_prefix>`
 	// field. Default is false.
 	allow_envoy?: bool
 	// If true, prevent modification of any system header, defined as a header
-	// that starts with a “:“ character, regardless of any other settings.
-	// A processing server may still override the “:status“ of an HTTP response
-	// using an “ImmediateResponse“ message. Default is false.
+	// that starts with a ``:`` character, regardless of any other settings.
+	// A processing server may still override the ``:status`` of an HTTP response
+	// using an ``ImmediateResponse`` message. Default is false.
 	disallow_system?: bool
 	// If true, prevent modifications of all header values, regardless of any
-	// other settings. A processing server may still override the “:status“
-	// of an HTTP response using an “ImmediateResponse“ message. Default is false.
+	// other settings. A processing server may still override the ``:status``
+	// of an HTTP response using an ``ImmediateResponse`` message. Default is false.
 	disallow_all?: bool
 	// If set, specifically allow any header that matches this regular
 	// expression. This overrides all other settings except for
-	// “disallow_expression“.
+	// ``disallow_expression``.
 	allow_expression?: v3.#RegexMatcher
 	// If set, specifically disallow any header that matches this regular
 	// expression regardless of any other settings.
@@ -64,7 +64,7 @@ import (
 	// disallowed, then the filter using this configuration will terminate the
 	// request with a 500 error. In addition, regardless of the setting of this
 	// parameter, any attempt to set, add, or modify a disallowed header will
-	// cause the “rejected_header_mutations“ counter to be incremented.
+	// cause the ``rejected_header_mutations`` counter to be incremented.
 	// Default is false.
 	disallow_is_error?: bool
 }

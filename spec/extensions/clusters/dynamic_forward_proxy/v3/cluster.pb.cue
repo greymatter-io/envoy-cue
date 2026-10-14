@@ -24,10 +24,11 @@ import (
 	//
 	// Compared to the dns_cache_config, it has the following advantages:
 	//
-	//  1. sub clusters will be created with the STRICT_DNS DiscoveryType,
-	//     so that Envoy will use all of the IPs resolved from the host.
+	// 1. sub clusters will be created with the STRICT_DNS DiscoveryType,
+	//    so that Envoy will use all of the IPs resolved from the host.
 	//
 	// 2. each sub cluster is full featured cluster, with lb_policy and health check and etc enabled.
+	//
 	sub_clusters_config?: #SubClustersConfig
 	// If true allow the cluster configuration to disable the auto_sni and auto_san_validation options
 	// in the :ref:`cluster's upstream_http_protocol_options
@@ -38,20 +39,19 @@ import (
 	// resolved address for the new connection matches the peer address of the connection and
 	// the TLS certificate is also valid for the new hostname. For example, if a connection
 	// has previously been established to foo.example.com at IP 1.2.3.4 with a certificate
-	// that is valid for “*.example.com“, then this connection could be used for requests to
+	// that is valid for ``*.example.com``, then this connection could be used for requests to
 	// bar.example.com if that also resolved to 1.2.3.4.
 	//
 	// .. note::
-	//
-	//	By design, this feature will maximize reuse of connections. This means that instead
-	//	opening a new connection when an existing connection reaches the maximum number of
-	//	concurrent streams, requests will instead be sent to the existing connection.
+	//   By design, this feature will maximize reuse of connections. This means that instead
+	//   opening a new connection when an existing connection reaches the maximum number of
+	//   concurrent streams, requests will instead be sent to the existing connection.
 	//
 	// .. note::
+	//   The coalesced connections might be to upstreams that would not be otherwise
+	//   selected by Envoy. See the section `Connection Reuse in RFC 7540
+	//   <https://datatracker.ietf.org/doc/html/rfc7540#section-9.1.1>`_
 	//
-	//	The coalesced connections might be to upstreams that would not be otherwise
-	//	selected by Envoy. See the section `Connection Reuse in RFC 7540
-	//	<https://datatracker.ietf.org/doc/html/rfc7540#section-9.1.1>`_
 	allow_coalesced_connections?: bool
 }
 
@@ -74,7 +74,7 @@ import (
 	preresolve_clusters?: [...v32.#SocketAddress]
 	// Optional DNS configuration for dynamically created sub clusters. When set, sub clusters
 	// are created using the :ref:`DnsCluster <envoy_v3_api_msg_extensions.clusters.dns.v3.DnsCluster>`
-	// extension (“envoy.cluster.dns“) rather than the legacy “STRICT_DNS“ discovery type,
+	// extension (``envoy.cluster.dns``) rather than the legacy ``STRICT_DNS`` discovery type,
 	// enabling full DNS configuration including refresh rates, failure backoff, TTL respect,
 	// lookup family, and resolver selection.
 	//

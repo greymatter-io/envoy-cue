@@ -29,15 +29,15 @@ import (
 	// The actual number of packets to read in total by the UDP listener is also
 	// bound by 6000, regardless of this field or how many connections there are.
 	packets_to_read_to_connection_count_ratio?: uint32
-	// Configure which implementation of “quic::QuicCryptoClientStreamBase“ to be used for this listener.
+	// Configure which implementation of ``quic::QuicCryptoClientStreamBase`` to be used for this listener.
 	// If not specified the :ref:`QUICHE default one configured by <envoy_v3_api_msg_extensions.quic.crypto_stream.v3.CryptoServerStreamConfig>` will be used.
 	// [#extension-category: envoy.quic.server.crypto_stream]
 	crypto_stream_config?: v3.#TypedExtensionConfig
-	// Configure which implementation of “quic::ProofSource“ to be used for this listener.
+	// Configure which implementation of ``quic::ProofSource`` to be used for this listener.
 	// If not specified the :ref:`default one configured by <envoy_v3_api_msg_extensions.quic.proof_source.v3.ProofSourceConfig>` will be used.
 	// [#extension-category: envoy.quic.proof_source]
 	proof_source_config?: v3.#TypedExtensionConfig
-	// Config which implementation of “quic::ConnectionIdGeneratorInterface“ to be used for this listener.
+	// Config which implementation of ``quic::ConnectionIdGeneratorInterface`` to be used for this listener.
 	// If not specified the :ref:`default one configured by <envoy_v3_api_msg_extensions.quic.connection_id_generator.v3.DeterministicConnectionIdGeneratorConfig>` will be used.
 	// [#extension-category: envoy.quic.connection_id_generator]
 	connection_id_generator_config?: v3.#TypedExtensionConfig
@@ -49,7 +49,7 @@ import (
 	// Configure the server to send transport parameter `disable_active_migration <https://www.rfc-editor.org/rfc/rfc9000#section-18.2-4.30.1>`_.
 	// Defaults to false (do not send this transport parameter).
 	send_disable_active_migration?: bool
-	// Configure which implementation of “quic::QuicConnectionDebugVisitor“ to be used for this listener.
+	// Configure which implementation of ``quic::QuicConnectionDebugVisitor`` to be used for this listener.
 	// If not specified, no debug visitor will be attached to connections.
 	// [#extension-category: envoy.quic.connection_debug_visitor]
 	connection_debug_visitor_config?: v3.#TypedExtensionConfig

@@ -66,8 +66,8 @@ RBAC_Action_DENY:  "DENY"
 	"@type": "type.googleapis.com/envoy.config.rbac.v2.RBAC"
 	// The action to take if a policy matches. The request is allowed if and only if:
 	//
-	//   - `action` is "ALLOWED" and at least one policy matches
-	//   - `action` is "DENY" and none of the policies match
+	//   * `action` is "ALLOWED" and at least one policy matches
+	//   * `action` is "DENY" and none of the policies match
 	action?: #RBAC_Action
 	// Maps from policy name to policy. A match occurs when at least one policy matches the request.
 	policies?: [string]: #Policy
@@ -124,17 +124,17 @@ RBAC_Action_DENY:  "DENY"
 	//
 	// .. attention::
 	//
-	//	The behavior of this field may be affected by how Envoy is configured
-	//	as explained below.
+	//   The behavior of this field may be affected by how Envoy is configured
+	//   as explained below.
 	//
-	//	* If the :ref:`TLS Inspector <config_listener_filters_tls_inspector>`
-	//	  filter is not added, and if a `FilterChainMatch` is not defined for
-	//	  the :ref:`server name <envoy_api_field_listener.FilterChainMatch.server_names>`,
-	//	  a TLS connection's requested SNI server name will be treated as if it
-	//	  wasn't present.
+	//   * If the :ref:`TLS Inspector <config_listener_filters_tls_inspector>`
+	//     filter is not added, and if a `FilterChainMatch` is not defined for
+	//     the :ref:`server name <envoy_api_field_listener.FilterChainMatch.server_names>`,
+	//     a TLS connection's requested SNI server name will be treated as if it
+	//     wasn't present.
 	//
-	//	* A :ref:`listener filter <arch_overview_listener_filters>` may
-	//	  overwrite a connection's requested server name within Envoy.
+	//   * A :ref:`listener filter <arch_overview_listener_filters>` may
+	//     overwrite a connection's requested server name within Envoy.
 	//
 	// Please refer to :ref:`this FAQ entry <faq_how_to_setup_sni>` to learn to
 	// setup SNI.

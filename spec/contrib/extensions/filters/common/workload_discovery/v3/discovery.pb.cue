@@ -110,7 +110,7 @@ ApplicationTunnel_Protocol_PROXY: "PROXY"
 	// A list of authorization policies applicable to this workload.
 	// NOTE: this *only* includes Selector based policies. Namespace and global polices
 	// are returned out of band.
-	// Authorization policies are only valid for workloads with “addresses“ rather than “hostname“.
+	// Authorization policies are only valid for workloads with ``addresses`` rather than ``hostname``.
 	authorization_policies?: [...string]
 	status?: #WorkloadStatus
 	// The cluster ID that the workload instance belongs to

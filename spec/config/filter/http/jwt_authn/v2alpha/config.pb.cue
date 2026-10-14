@@ -43,6 +43,7 @@ import (
 	//
 	// Example: https://securetoken.google.com
 	// Example: 1234567-compute@developer.gserviceaccount.com
+	//
 	issuer?: string
 	// The list of JWT `audiences <https://tools.ietf.org/html/rfc7519#section-4.1.3>`_ are
 	// allowed to access. A JWT containing any of these audiences will be accepted. If not specified,
@@ -52,9 +53,10 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//	audiences:
-	//	- bookstore_android.apps.googleusercontent.com
-	//	- bookstore_web.apps.googleusercontent.com
+	//     audiences:
+	//     - bookstore_android.apps.googleusercontent.com
+	//     - bookstore_web.apps.googleusercontent.com
+	//
 	audiences?: [...string]
 	// JWKS can be fetched from remote server via HTTP/HTTPS. This field specifies the remote HTTP
 	// URI and how the fetched JWKS should be cached.
@@ -63,12 +65,13 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//	remote_jwks:
-	//	  http_uri:
-	//	    uri: https://www.googleapis.com/oauth2/v1/certs
-	//	    cluster: jwt.www.googleapis.com|443
-	//	  cache_duration:
-	//	    seconds: 300
+	//    remote_jwks:
+	//      http_uri:
+	//        uri: https://www.googleapis.com/oauth2/v1/certs
+	//        cluster: jwt.www.googleapis.com|443
+	//      cache_duration:
+	//        seconds: 300
+	//
 	remote_jwks?: #RemoteJwks
 	// JWKS is in local data source. It could be either in a local file or embedded in the
 	// inline_string.
@@ -77,15 +80,16 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//	local_jwks:
-	//	  filename: /etc/envoy/jwks/jwks1.txt
+	//    local_jwks:
+	//      filename: /etc/envoy/jwks/jwks1.txt
 	//
 	// Example: inline_string
 	//
 	// .. code-block:: yaml
 	//
-	//	local_jwks:
-	//	  inline_string: ACADADADADA
+	//    local_jwks:
+	//      inline_string: ACADADADADA
+	//
 	local_jwks?: core.#DataSource
 	// If false, the JWT is removed in the request after a success verification. If true, the JWT is
 	// not removed in the request. Default value is false.
@@ -97,7 +101,7 @@ import (
 	// 1. The Authorization header using the `Bearer schema
 	// <https://tools.ietf.org/html/rfc6750#section-2.1>`_. Example::
 	//
-	//	Authorization: Bearer <token>.
+	//    Authorization: Bearer <token>.
 	//
 	// 2. `access_token <https://tools.ietf.org/html/rfc6750#section-2.3>`_ query parameter.
 	//
@@ -108,12 +112,13 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//	from_headers:
-	//	- name: x-goog-iap-jwt-assertion
+	//   from_headers:
+	//   - name: x-goog-iap-jwt-assertion
 	//
 	// can be used to extract token from header::
 	//
-	//	``x-goog-iap-jwt-assertion: <JWT>``.
+	//   ``x-goog-iap-jwt-assertion: <JWT>``.
+	//
 	from_headers?: [...#JwtHeader]
 	// JWT is sent in a query parameter. `jwt_params` represents the query parameter names.
 	//
@@ -121,17 +126,18 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//	from_params:
-	//	- jwt_token
+	//   from_params:
+	//   - jwt_token
 	//
 	// The JWT format in query parameter is::
 	//
-	//	/path?jwt_token=<JWT>
+	//    /path?jwt_token=<JWT>
+	//
 	from_params?: [...string]
 	// This field specifies the header name to forward a successfully verified JWT payload to the
 	// backend. The forwarded data is::
 	//
-	//	base64url_encoded(jwt_payload_in_JSON)
+	//    base64url_encoded(jwt_payload_in_JSON)
 	//
 	// If it is not specified, the payload will not be forwarded.
 	forward_payload_header?: string
@@ -144,12 +150,13 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//	envoy.filters.http.jwt_authn:
-	//	  my_payload:
-	//	    iss: https://example.com
-	//	    sub: test@example.com
-	//	    aud: https://example.com
-	//	    exp: 1501281058
+	//   envoy.filters.http.jwt_authn:
+	//     my_payload:
+	//       iss: https://example.com
+	//       sub: test@example.com
+	//       aud: https://example.com
+	//       exp: 1501281058
+	//
 	payload_in_metadata?: string
 }
 
@@ -160,9 +167,10 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//	http_uri:
-	//	  uri: https://www.googleapis.com/oauth2/v1/certs
-	//	  cluster: jwt.www.googleapis.com|443
+	//    http_uri:
+	//      uri: https://www.googleapis.com/oauth2/v1/certs
+	//      cluster: jwt.www.googleapis.com|443
+	//
 	http_uri?: core.#HttpUri
 	// Duration after which the cached JWKS should be expired. If not specified, default cache
 	// duration is 5 minutes.
@@ -316,8 +324,9 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//	match:
-	//	  prefix: /
+	//    match:
+	//      prefix: /
+	//
 	match?: route.#RouteMatch
 	// Specify a Jwt Requirement. Please detail comment in message JwtRequirement.
 	requires?: #JwtRequirement
@@ -395,49 +404,51 @@ import (
 	//
 	// .. code-block:: yaml
 	//
-	//	providers:
-	//	  provider1:
-	//	     issuer: issuer1
-	//	     audiences:
-	//	     - audience1
-	//	     - audience2
-	//	     remote_jwks:
-	//	       http_uri:
-	//	         uri: https://example.com/.well-known/jwks.json
-	//	         cluster: example_jwks_cluster
-	//	   provider2:
-	//	     issuer: provider2
-	//	     local_jwks:
-	//	       inline_string: jwks_string
+	//   providers:
+	//     provider1:
+	//        issuer: issuer1
+	//        audiences:
+	//        - audience1
+	//        - audience2
+	//        remote_jwks:
+	//          http_uri:
+	//            uri: https://example.com/.well-known/jwks.json
+	//            cluster: example_jwks_cluster
+	//      provider2:
+	//        issuer: provider2
+	//        local_jwks:
+	//          inline_string: jwks_string
+	//
 	providers?: [string]: #JwtProvider
 	// Specifies requirements based on the route matches. The first matched requirement will be
 	// applied. If there are overlapped match conditions, please put the most specific match first.
 	//
-	// # Examples
+	// Examples
 	//
 	// .. code-block:: yaml
 	//
-	//	rules:
-	//	  - match:
-	//	      prefix: /healthz
-	//	  - match:
-	//	      prefix: /baz
-	//	    requires:
-	//	      provider_name: provider1
-	//	  - match:
-	//	      prefix: /foo
-	//	    requires:
-	//	      requires_any:
-	//	        requirements:
-	//	          - provider_name: provider1
-	//	          - provider_name: provider2
-	//	  - match:
-	//	      prefix: /bar
-	//	    requires:
-	//	      requires_all:
-	//	        requirements:
-	//	          - provider_name: provider1
-	//	          - provider_name: provider2
+	//   rules:
+	//     - match:
+	//         prefix: /healthz
+	//     - match:
+	//         prefix: /baz
+	//       requires:
+	//         provider_name: provider1
+	//     - match:
+	//         prefix: /foo
+	//       requires:
+	//         requires_any:
+	//           requirements:
+	//             - provider_name: provider1
+	//             - provider_name: provider2
+	//     - match:
+	//         prefix: /bar
+	//       requires:
+	//         requires_all:
+	//           requirements:
+	//             - provider_name: provider1
+	//             - provider_name: provider2
+	//
 	rules?: [...#RequirementRule]
 	// This message specifies Jwt requirements based on stream_info.filterState.
 	// Other HTTP filters can use it to specify Jwt requirements dynamically.

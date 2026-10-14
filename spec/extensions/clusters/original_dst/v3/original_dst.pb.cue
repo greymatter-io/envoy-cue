@@ -12,13 +12,13 @@ import (
 	//
 	// .. attention::
 	//
-	//	This header isn't sanitized by default, so enabling this feature allows HTTP clients to
-	//	route traffic to arbitrary hosts and/or ports, which may have serious security
-	//	consequences.
+	//   This header isn't sanitized by default, so enabling this feature allows HTTP clients to
+	//   route traffic to arbitrary hosts and/or ports, which may have serious security
+	//   consequences.
 	//
 	// .. note::
 	//
-	//	If the header appears multiple times only the first value is used.
+	//   If the header appears multiple times only the first value is used.
 	use_http_header?: bool
 	// The http header to override destination address if :ref:`use_http_header
 	// <envoy_v3_api_field_extensions.clusters.original_dst.v3.OriginalDstCluster.use_http_header>`

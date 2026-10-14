@@ -50,10 +50,9 @@ ClientConfigStatus_CLIENT_RECEIVED_ERROR: "CLIENT_RECEIVED_ERROR"
 	// is, xDS clients should always dump the most recent accepted xDS config.
 	//
 	// .. attention::
-	//
-	//	This field is deprecated. Use :ref:`ClientResourceStatus
-	//	<envoy_v3_api_enum_admin.v3.ClientResourceStatus>` for per-resource
-	//	config status instead.
+	//   This field is deprecated. Use :ref:`ClientResourceStatus
+	//   <envoy_v3_api_enum_admin.v3.ClientResourceStatus>` for per-resource
+	//   config status instead.
 	//
 	// Deprecated: Marked as deprecated in envoy/service/status/v3/csds.proto.
 	client_status?:       #ClientConfigStatus

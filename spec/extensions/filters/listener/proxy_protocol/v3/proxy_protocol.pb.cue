@@ -27,26 +27,26 @@ ProxyProtocol_KeyValuePair_ValueStringEncoding_BASE64:         "BASE64"
 	//
 	// .. attention::
 	//
-	//	This breaks conformance with the specification.
-	//	Only enable if ALL traffic to the listener comes from a trusted source.
-	//	For more information on the security implications of this feature, see
-	//	https://www.haproxy.org/download/2.1/doc/proxy-protocol.txt
+	//   This breaks conformance with the specification.
+	//   Only enable if ALL traffic to the listener comes from a trusted source.
+	//   For more information on the security implications of this feature, see
+	//   https://www.haproxy.org/download/2.1/doc/proxy-protocol.txt
 	//
 	// .. attention::
 	//
-	//	Requests of 12 or fewer bytes that match the proxy protocol v2 signature
-	//	and requests of 6 or fewer bytes that match the proxy protocol v1
-	//	signature will timeout (Envoy is unable to differentiate these requests
-	//	from incomplete proxy protocol requests).
+	//   Requests of 12 or fewer bytes that match the proxy protocol v2 signature
+	//   and requests of 6 or fewer bytes that match the proxy protocol v1
+	//   signature will timeout (Envoy is unable to differentiate these requests
+	//   from incomplete proxy protocol requests).
 	allow_requests_without_proxy_protocol?: bool
 	// This config controls which TLVs can be passed to filter state if it is Proxy Protocol
 	// V2 header. If there is no setting for this field, no TLVs will be passed through.
 	//
 	// .. note::
 	//
-	//	If this is configured, you likely also want to set
-	//	:ref:`core.v3.ProxyProtocolConfig.pass_through_tlvs <envoy_v3_api_field_config.core.v3.ProxyProtocolConfig.pass_through_tlvs>`,
-	//	which controls pass-through for the upstream.
+	//   If this is configured, you likely also want to set
+	//   :ref:`core.v3.ProxyProtocolConfig.pass_through_tlvs <envoy_v3_api_field_config.core.v3.ProxyProtocolConfig.pass_through_tlvs>`,
+	//   which controls pass-through for the upstream.
 	pass_through_tlvs?: v3.#ProxyProtocolPassThroughTLVs
 	// The PROXY protocol versions that won't be matched. Useful to limit the scope and attack surface of the filter.
 	//
@@ -56,11 +56,11 @@ ProxyProtocol_KeyValuePair_ValueStringEncoding_BASE64:         "BASE64"
 	//
 	// .. attention::
 	//
-	//	When used in conjunction with the :ref:`allow_requests_without_proxy_protocol <envoy_v3_api_field_extensions.filters.listener.proxy_protocol.v3.ProxyProtocol.allow_requests_without_proxy_protocol>`,
-	//	the filter will not attempt to match signatures for the disallowed versions.
-	//	For example, when ``disallowed_versions=V2``, ``allow_requests_without_proxy_protocol=true``,
-	//	and an incoming request matches the V2 signature, the filter will allow the request through without any modification.
-	//	The filter treats this request as if it did not have any PROXY protocol information.
+	//   When used in conjunction with the :ref:`allow_requests_without_proxy_protocol <envoy_v3_api_field_extensions.filters.listener.proxy_protocol.v3.ProxyProtocol.allow_requests_without_proxy_protocol>`,
+	//   the filter will not attempt to match signatures for the disallowed versions.
+	//   For example, when ``disallowed_versions=V2``, ``allow_requests_without_proxy_protocol=true``,
+	//   and an incoming request matches the V2 signature, the filter will allow the request through without any modification.
+	//   The filter treats this request as if it did not have any PROXY protocol information.
 	disallowed_versions?: [...v3.#ProxyProtocolConfig_Version]
 	// The human readable prefix to use when emitting statistics for the filter.
 	// If not configured, statistics will be emitted without the prefix segment.
@@ -78,14 +78,14 @@ ProxyProtocol_KeyValuePair_ValueStringEncoding_BASE64:         "BASE64"
 	// The key to use within the namespace.
 	key?: string
 	// The value encoding scheme that is used to encode the TLV value before it is stored in
-	// dynamic metadata or filter state. If not set, defaults to “SANITIZED_UTF8“, which
+	// dynamic metadata or filter state. If not set, defaults to ``SANITIZED_UTF8``, which
 	// sanitizes the TLV value to a valid UTF-8 string.
 	//
 	// .. note::
 	//
-	//	This option only applies to the legacy untyped dynamic metadata and filter state.
-	//	For the new typed dynamic metadata, the raw TLV value bytes are stored as is and
-	//	no encoding is applied.
+	//   This option only applies to the legacy untyped dynamic metadata and filter state.
+	//   For the new typed dynamic metadata, the raw TLV value bytes are stored as is and
+	//   no encoding is applied.
 	value_string_encoding?: #ProxyProtocol_KeyValuePair_ValueStringEncoding
 }
 
